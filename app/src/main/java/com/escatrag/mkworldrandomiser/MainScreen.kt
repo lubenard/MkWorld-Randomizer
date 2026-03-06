@@ -87,8 +87,6 @@ fun MainScreen(
                             },
                             onClick = {
                                 mexpanded = false
-                                // Logique pour naviguer vers les paramètres
-                                println("Direction les paramètres !")
                                 onSettings()
                             }
                         )
@@ -106,10 +104,11 @@ fun MainScreen(
         ) {
 
             SpinningWheel(
-                items = selectedTracks.ifEmpty { listOf("Merci de choisir au moins une carte") },
+                items = selectedTracks,
                 targetIndex = selectedItem,
-                onItemSelected = {
-                    viewModel.deleteCircuit(it)
+                placeholder = "Merci de choisir au moins une carte",
+                onItemSelected = { track ->
+                    viewModel.deleteCircuit(track)
                 }
             )
 
@@ -139,13 +138,11 @@ fun MainScreen(
                 modifier = Modifier.fillMaxWidth(),
                 onClick = {
                 val currentTime = System.currentTimeMillis()
-                onGenerate(lastClickTime - currentTime)
+                onGenerate(currentTime - lastClickTime)
                 lastClickTime = currentTime
             }) {
                 Text("Choisir un trajet")
             }
-            //TODO: Add une barre de chatte de Leo ?
-
         }
     }
 }

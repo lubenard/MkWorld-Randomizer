@@ -9,13 +9,14 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlin.enums.EnumEntries
 import kotlin.random.Random
 
 class TrackViewModel : ViewModel() {
 
     // Selected tracks that will used for random generation
     private val _selectedTracks = MutableStateFlow(TrackRepository.tracks)
-    val selectedTracks: StateFlow<List<String>> = _selectedTracks
+    val selectedTracks: StateFlow<EnumEntries<Track>> = _selectedTracks
 
     // Randomly Selected Item
     // -1 is for infinite loop
@@ -24,7 +25,7 @@ class TrackViewModel : ViewModel() {
     // All tracks availables: Used for Selection tracks (will include routes if selected in SelectionScreen),
     // but they will not be selected (tho available for selection)
     private val _allTracksAvailable = MutableStateFlow(TrackRepository.tracks)
-    val allTracksAvailable: StateFlow<List<String>> = _allTracksAvailable
+    val allTracksAvailable: StateFlow<EnumEntries<Track>> = _allTracksAvailable
 
     // Option to include routes between tracks
     private val _includeRoutes = MutableStateFlow(false)
@@ -59,7 +60,7 @@ class TrackViewModel : ViewModel() {
     }
 
     fun selectAllTracks(includeRoutes: Boolean) {
-        _selectedTracks.value = emptyList()
+        _selectedTracks.value = emptyList<EnumEntries<Track>>()
         _selectedTracks.value = TrackRepository.tracks
         if (includeRoutes) {
             val addConnectionToList = _selectedTracks.value.toMutableList()

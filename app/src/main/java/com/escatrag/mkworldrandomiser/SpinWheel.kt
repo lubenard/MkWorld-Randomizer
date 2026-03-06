@@ -19,20 +19,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.escatrag.mkworldrandomiser.Track
 import kotlinx.coroutines.isActive
 
 @Composable
 fun SpinningWheel(
-    items: List<String>,
+    items: List<Track>,
     targetIndex: Int,
-    onItemSelected: (String) -> Unit
+    onItemSelected: (Track) -> Unit,
+    placeholder: String = ""
 ) {
     val itemHeight = 60.dp
     val density = LocalDensity.current
     val listState = rememberLazyListState(initialFirstVisibleItemIndex = Int.MAX_VALUE / 2)
 
-    // Conversion propre une seule fois
     val itemHeightPx = with(density) { itemHeight.toPx() }
 
     BoxWithConstraints(
@@ -40,12 +42,10 @@ fun SpinningWheel(
             .fillMaxHeight(0.80f)
             .fillMaxWidth()
             .clipToBounds(),
-        contentAlignment = Alignment.Center // Le curseur sera PILE au milieu
+        contentAlignment = Alignment.Center
     ) {
-        // Calcul du centre exact du composant en pixels
         val centerContainerPx = constraints.maxHeight / 2f
         val halfItemPx = itemHeightPx / 2f
-
         val centerOffsetPx = (centerContainerPx - halfItemPx).toInt()
 
         LaunchedEffect(targetIndex) {
@@ -53,27 +53,18 @@ fun SpinningWheel(
                 while (isActive) {
                     withFrameMillis { listState.dispatchRawDelta(15f) }
                 }
-            } else {
-              //if (targetIndex != -1) {
-
-                val currentVisibleIndex = targetIndex
+            } else if (items.isNotEmpty()) {
+                val currentVisibleIndex = listState.firstVisibleItemIndex
                 val itemsPerRound = items.size
-
-                // Calcul de la destination
                 val nextOccurrence = itemsPerRound - (currentVisibleIndex % itemsPerRound) + targetIndex
                 val finalTargetIndex = currentVisibleIndex + nextOccurrence + (itemsPerRound * 5)
 
-                val test = items[targetIndex]
+                val selectedTrack = items[targetIndex]
+                onItemSelected(selectedTrack)
 
-                Log.d("Luca2", "$finalTargetIndex items ${items}/ $targetIndex / $nextOccurrence -> $test")
-                //Log.d("Luca", "$items}/ $targetIndex : item = ${items[test]}")
-
-                onItemSelected(test)
-
-                // On utilise l'animation intégrée avec le scrollOffset négatif
                 listState.animateScrollToItem(
-                    index = targetIndex,
-                    scrollOffset = -centerOffsetPx // On "pousse" l'item vers le bas
+                    index = finalTargetIndex,
+                    scrollOffset = -centerOffsetPx
                 )
             }
         }
@@ -82,29 +73,26 @@ fun SpinningWheel(
             state = listState,
             modifier = Modifier.fillMaxSize(),
             userScrollEnabled = false
-            // Suppression du contentPadding pour éviter les conflits
         ) {
             items(Int.MAX_VALUE) { index ->
                 Box(
                     modifier = Modifier.height(itemHeight).fillMaxWidth(),
                     contentAlignment = Alignment.Center
                 ) {
-                    //Log.d("Luca", "item selected is ${items[index % items.size]}")
+                    val text = if (items.isEmpty()) placeholder else stringResource(items[index % items.size].nameRes)
                     Text(
-                        text = items[index % items.size],
+                        text = text,
                         style = MaterialTheme.typography.titleLarge
                     )
                 }
             }
         }
 
-        // Le curseur de sélection
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(itemHeight)
                 .border(1.dp, Color.Gray, RoundedCornerShape(8.dp))
-            // Pas de padding ici, align(Alignment.Center) suffit
         )
     }
 }

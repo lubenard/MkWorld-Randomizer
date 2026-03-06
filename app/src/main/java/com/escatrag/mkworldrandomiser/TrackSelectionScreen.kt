@@ -23,13 +23,14 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TrackSelectionScreen(viewModel: TrackViewModel, navController: NavController) {
-    val selectedRoutes by viewModel.selectedTracks.collectAsState()
+    val selectedTracks by viewModel.selectedTracks.collectAsState()
     val includeRoutes by viewModel.includeRoutes.collectAsState()
 
     val allTracksList by viewModel.allTracksAvailable.collectAsState()
@@ -44,7 +45,7 @@ fun TrackSelectionScreen(viewModel: TrackViewModel, navController: NavController
                     }
                 },
                 actions = {
-                    val allSelected = viewModel.selectedTracks == viewModel.allTracksAvailable
+                    val allSelected = selectedTracks.size == allTracksList.size
 
                     TextButton(onClick = {
                         if (allSelected) viewModel.clearAllTracks() else viewModel.selectAllTracks(includeRoutes)
@@ -67,10 +68,10 @@ fun TrackSelectionScreen(viewModel: TrackViewModel, navController: NavController
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Checkbox(
-                            checked = selectedRoutes.contains(track),
-                            onCheckedChange = null // null car le clickable de la Row gère déjà tout
+                            checked = selectedTracks.contains(track),
+                            onCheckedChange = null
                         )
-                        Text(track, modifier = Modifier.padding(start = 8.dp))
+                        Text(stringResource(track.nameRes), modifier = Modifier.padding(start = 8.dp))
                     }
                 }
             }
@@ -87,10 +88,6 @@ fun TrackSelectionScreen(viewModel: TrackViewModel, navController: NavController
                     checked = includeRoutes,
                     onCheckedChange = { state ->
                         viewModel.setIncludeRoutes(state)
-                        if (includeRoutes)
-                            viewModel.deleteRoutesToAvailableTracks()
-                        else
-                            viewModel.addTrajetsToList()
                     }
                 )
             }

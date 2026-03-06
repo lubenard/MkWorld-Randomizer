@@ -1,3 +1,41 @@
 <resources>
     <string name="app_name">MkWorld Randomiser</string>
+
+    <string name="track_mario_bros">Circuit Mario Bros.</string>
+    <string name="track_tropheopolis">Trophéopolis</string>
+    <string name="track_mont_tchou_tchou">Mont Tchou Tchou</string>
+    <string name="track_spatioport_dk">Spatioport DK</string>
+
+    <string name="track_desert_soleil">Désert du Soleil</string>
+    <string name="track_souk_maskass">Souk Maskass</string>
+    <string name="track_stade_wario">Stade Wario</string>
+    <string name="track_bateau_volant">Bateau Volant</string>
+
+    <string name="track_alpes_dk">Alpes DK</string>
+    <string name="track_pic_observatoire">Pic de l’Observatoire</string>
+    <string name="track_cite_sorbet">Cité Sorbet</string>
+    <string name="track_galion_wario">Galion de Wario</string>
+
+    <string name="track_plage_koopa">Plage Koopa</string>
+    <string name="track_savane_sauvage">Savane Sauvage</string>
+
+    <string name="track_plage_peach">Plage Peach</string>
+    <string name="track_cite_fleur_sel">Cité Fleur-de-sel</string>
+    <string name="track_jungle_dino_dino">Jungle Dino Dino</string>
+    <string name="track_bloc_antique">Bloc Antique</string>
+
+    <string name="track_chutes_cheep_cheep">Chutes Cheep Cheep</string>
+    <string name="track_gouffre_pissenlit">Gouffre Pissenlit</string>
+    <string name="track_cinema_boo">Cinéma Boo</string>
+    <string name="track_fournaise_osseuse">Fournaise Osseuse</string>
+
+    <string name="track_prairie_meuh_meuh">Prairie Meuh Meuh</string>
+    <string name="track_montagne_choco">Montagne Choco</string>
+    <string name="track_usine_toad">Usine Toad</string>
+    <string name="track_chateau_bowser">Château de Bowser</string>
+
+    <string name="track_chemin_chene">Chemin du Chêne</string>
+    <string name="track_circuit_mario">Circuit Mario</string>
+    <string name="track_stade_peach">Stade Peach</string>
+    <string name="track_route_arc_en_ciel">Route Arc-en-ciel</string>
 </resources>
