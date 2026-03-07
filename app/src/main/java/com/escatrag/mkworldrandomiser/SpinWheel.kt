@@ -13,6 +13,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.withFrameMillis
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -23,12 +24,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.escatrag.mkworldrandomiser.Track
 import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 
 @Composable
 fun SpinningWheel(
     items: List<Track>,
     targetIndex: Int,
-    onItemSelected: (Track) -> Unit,
+    onItemSelected: (Int) -> Unit,
     placeholder: String = ""
 ) {
     val itemHeight = 60.dp
@@ -47,6 +49,7 @@ fun SpinningWheel(
         val centerContainerPx = constraints.maxHeight / 2f
         val halfItemPx = itemHeightPx / 2f
         val centerOffsetPx = (centerContainerPx - halfItemPx).toInt()
+        val scope = rememberCoroutineScope()
 
         LaunchedEffect(targetIndex) {
             if (targetIndex == -1) {
@@ -60,12 +63,16 @@ fun SpinningWheel(
                 val finalTargetIndex = currentVisibleIndex + nextOccurrence + (itemsPerRound * 5)
 
                 val selectedTrack = items[targetIndex]
-                onItemSelected(selectedTrack)
 
-                listState.animateScrollToItem(
-                    index = finalTargetIndex,
-                    scrollOffset = -centerOffsetPx
-                )
+
+                scope.launch {
+                    listState.animateScrollToItem(
+                        index = finalTargetIndex,
+                        scrollOffset = -centerOffsetPx
+                    )
+                    Log.d("Luca", "end of scroll")
+                    onItemSelected(selectedTrack)
+                }
             }
         }
 

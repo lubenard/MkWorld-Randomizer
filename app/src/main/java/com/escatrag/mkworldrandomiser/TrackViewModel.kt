@@ -16,7 +16,7 @@ class TrackViewModel : ViewModel() {
 
     // Selected tracks that will used for random generation
     private val _selectedTracks = MutableStateFlow(TrackRepository.tracks)
-    val selectedTracks: StateFlow<EnumEntries<Track>> = _selectedTracks
+    val selectedTracks: StateFlow<List<TrackItem>> = _selectedTracks
 
     // Randomly Selected Item
     // -1 is for infinite loop
@@ -25,7 +25,7 @@ class TrackViewModel : ViewModel() {
     // All tracks availables: Used for Selection tracks (will include routes if selected in SelectionScreen),
     // but they will not be selected (tho available for selection)
     private val _allTracksAvailable = MutableStateFlow(TrackRepository.tracks)
-    val allTracksAvailable: StateFlow<EnumEntries<Track>> = _allTracksAvailable
+    val allTracksAvailable: StateFlow<List<TrackItem>> = _allTracksAvailable
 
     // Option to include routes between tracks
     private val _includeRoutes = MutableStateFlow(false)
@@ -34,6 +34,9 @@ class TrackViewModel : ViewModel() {
     // Option to delete One track from the selectedTracks after completion (after selecting a random track)
     private val _deleteTrackAfterCompletion = MutableStateFlow(false)
     val deleteTrackAfterCompletion: StateFlow<Boolean> = _deleteTrackAfterCompletion
+
+    private val _showResultPopup = MutableStateFlow<String?>(null)
+    val showResultPopup: StateFlow<String?> = _showResultPopup
 
     fun toggleTrack(id: String) {
         _selectedTracks.update { current ->
@@ -60,7 +63,7 @@ class TrackViewModel : ViewModel() {
     }
 
     fun selectAllTracks(includeRoutes: Boolean) {
-        _selectedTracks.value = emptyList<EnumEntries<Track>>()
+        _selectedTracks.value = emptyList()
         _selectedTracks.value = TrackRepository.tracks
         if (includeRoutes) {
             val addConnectionToList = _selectedTracks.value.toMutableList()
@@ -73,10 +76,10 @@ class TrackViewModel : ViewModel() {
         _selectedTracks.value = emptyList()
     }
 
-    fun transformConnectionsToList(connections: Map<String, List<String>>): List<String> {
+    fun transformConnectionsToList(connections: Map<String, List<String>>): List<TrackItem> {
         return connections.flatMap { (depart, destinations) ->
             destinations.map { destination ->
-                "$depart > $destination"
+                TrackItem("$depart > $destination")
             }
         }
     }
@@ -107,5 +110,9 @@ class TrackViewModel : ViewModel() {
 
     fun updateDeleteTrackAfterCompletion(it: Boolean) {
         _deleteTrackAfterCompletion.value = it
+    }
+
+    fun setPopupDisplay(newValue: String?) {
+        _showResultPopup.value = newValue
     }
 }
