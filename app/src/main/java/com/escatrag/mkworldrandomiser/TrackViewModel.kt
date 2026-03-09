@@ -76,7 +76,7 @@ class TrackViewModel : ViewModel() {
         _selectedTracks.value = emptyList()
     }
 
-    fun transformConnectionsToList(connections: Map<String, List<String>>): List<TrackItem> {
+    fun transformConnectionsToList(connections: Map<Track, List<Track>>): List<TrackItem> {
         return connections.flatMap { (depart, destinations) ->
             destinations.map { destination ->
                 TrackItem("$depart > $destination")

@@ -23,6 +23,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -58,12 +59,14 @@ fun TrackSelectionScreen(viewModel: TrackViewModel, navController: NavController
     ) { padding ->
         Column(modifier = Modifier.padding(padding)) {
             // Liste des circuits
+            val context = LocalContext.current
+
             LazyColumn(modifier = Modifier.weight(1f)) {
                 items(allTracksList) { track ->
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clickable { viewModel.toggleTrack(track) }
+                            .clickable { viewModel.toggleTrack(context.getString(track.text)) }
                             .padding(horizontal = 16.dp, vertical = 4.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
@@ -71,7 +74,7 @@ fun TrackSelectionScreen(viewModel: TrackViewModel, navController: NavController
                             checked = selectedTracks.contains(track),
                             onCheckedChange = null
                         )
-                        Text(stringResource(track.nameRes), modifier = Modifier.padding(start = 8.dp))
+                        Text(stringResource(track.text), modifier = Modifier.padding(start = 8.dp))
                     }
                 }
             }

@@ -1,7 +1,7 @@
 package com.escatrag.mkworldrandomiser
 
 data class TrackItem(
-    val text: String,
+    val text: Int, // Resource
     // Start, then destination resource
-    val icon: List<Int>
+    val icon: Int
 )

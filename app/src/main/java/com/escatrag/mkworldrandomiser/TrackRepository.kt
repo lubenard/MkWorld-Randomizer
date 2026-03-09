@@ -2,83 +2,46 @@ package com.escatrag.mkworldrandomiser
 
 object TrackRepository {
 
-    val tracks = listOf(
-        TrackItem("Circuit Mario Bros.", listOf(R.drawable.circuit_mario_bros)),
-        TrackItem("Trophéopolis", listOf(R.drawable.tropheopolis)),
-        TrackItem("Mont Tchou Tchou",listOf(R.drawable.mont_tchou_tchou)),
-        TrackItem("Spatioport DK",listOf(R.drawable.spatioport_dk)),
-
-        TrackItem("Désert du Soleil",listOf(R.drawable.desert_du_soleil)),
-        TrackItem("Souk Maskass",listOf(R.drawable.souk_maskass)),
-        TrackItem("Stade Wario",listOf(R.drawable.stade_warrio)),
-        TrackItem("Bateau Volant",listOf(R.drawable.bateau_volant)),
-
-        TrackItem("Alpes DK",listOf(R.drawable.alpes_dk)),
-        TrackItem("Pic de l’Observatoire",listOf(R.drawable.pic_observatoire)),
-        TrackItem("Cité Sorbet",listOf(R.drawable.cite_sorbet)),
-        TrackItem("Galion de Wario",listOf(R.drawable.galion_warion)),
-
-        TrackItem("Plage Koopa",listOf(R.drawable.plage_koopa)),
-        TrackItem("Savane Sauvage",listOf(R.drawable.savane_sauvage)),
-
-        TrackItem("Plage Peach",listOf(R.drawable.plage_peach)),
-        TrackItem("Cité Fleur-de-sel",listOf(R.drawable.cite_fleur_sel)),
-        TrackItem("Jungle Dino Dino",listOf(R.drawable.jungle_dino_dino)),
-        TrackItem("Bloc ? Antique",listOf(R.drawable.bloc_antique)),
-
-        TrackItem("Chutes Cheep Cheep",listOf(R.drawable.chutes_cheep_cheep)),
-        TrackItem("Gouffre Pissenlit",listOf(R.drawable.gouffre_pissenlit)),
-        TrackItem("Cinéma Boo",listOf(R.drawable.cinema_boo)),
-        TrackItem("Fournaise Osseuse",listOf(R.drawable.fournaise_osseuse)),
-
-        TrackItem("Prairie Meuh Meuh",listOf(R.drawable.circuit_meuh_meuh)),
-        TrackItem("Montagne Choco",listOf(R.drawable.montagne_choco)),
-        TrackItem("Usine Toad",listOf(R.drawable.usine_toad)),
-        TrackItem("Château de Bowser",listOf(R.drawable.chateau_bowser)),
-
-        TrackItem("Chemin du Chêne",listOf(R.drawable.chemin_du_chene)),
-        TrackItem("Circuit Mario", listOf(R.drawable.circuit_mario)),
-        TrackItem("Stade Peach",listOf(R.drawable.stade_peach)),
-        TrackItem("Route Arc-en-ciel", listOf(R.drawable.route_arcenciel)),
-    )
+    val tracks
+        get() = Track.entries.toList()
 
     // Graph des connexions
     val connections = mapOf(
-        "Circuit Mario Bros." to listOf("Stade Wario"),
-        "Trophéopolis" to listOf("Montagne Choco"),
-        "Mont Tchou Tchou" to listOf("Désert du Soleil"),
-        "Spatioport DK" to listOf("Mont Tchou Tchou"),
+        Track.MARIO_BROS to listOf(Track.STADE_WARIO),
+        Track.TROPHEOPOLIS to listOf(Track.MONTAGNE_CHOCO),
+        Track.MONT_TCHOU_TCHOU to listOf(Track.DESERT_SOLEIL),
+        Track.SPATIOPORT_DK to listOf(Track.MONT_TCHOU_TCHOU),
 
-        "Désert du Soleil" to listOf("Souk Maskass"),
-        "Souk Maskass" to listOf("Désert du Soleil", "Bateau Volant"),
-        "Stade Wario" to listOf("Château de Bowser"),
-        "Bateau Volant" to listOf("Château de Bowser"),
+        Track.DESERT_SOLEIL to listOf(Track.SOUK_MASKASS),
+        Track.SOUK_MASKASS to listOf(Track.DESERT_SOLEIL, Track.BATEAU_VOLANT),
+        Track.STADE_WARIO to listOf(Track.CHATEAU_BOWSER),
+        Track.BATEAU_VOLANT to listOf(Track.CHATEAU_BOWSER),
 
-        "Alpes DK" to listOf("Cité Sorbet"),
-        "Pic de l’Observatoire" to listOf("Cité Sorbet"),
-        "Cité Sorbet" to listOf("Galion de Wario", "Cité Fleur-de-sel", "Alpes DK", "Chutes Cheep Cheep", "Gouffre Pissenlit", "Pic de l’Observatoire"), // VERIFIED
-        "Galion de Wario" to listOf("Plage Peach"),
+        Track.ALPES_DK to listOf(Track.CITE_SORBET),
+        Track.PIC_OBSERVATOIRE to listOf(Track.CITE_SORBET),
+        Track.CITE_SORBET to listOf(Track.GALION_WARIO, Track.CITE_FLEUR_SEL, Track.ALPES_DK, Track.CHUTES_CHEEP_CHEEP, Track.GOUFFRE_PISSENLIT, Track.PIC_OBSERVATOIRE), // VERIFIED
+        Track.GALION_WARIO to listOf(Track.PLAGE_PEACH),
 
-        "Plage Koopa" to listOf("Spatioport DK"),
-        "Savane Sauvage" to listOf("Chutes Cheep Cheep"),
+        Track.PLAGE_KOOPA to listOf(Track.SPATIOPORT_DK),
+        Track.SAVANE_SAUVAGE to listOf(Track.CHUTES_CHEEP_CHEEP),
 
-        "Plage Peach" to listOf("Bloc ? Antique"),
-        "Cité Fleur-de-sel" to listOf("Alpes DK", "Galion de Wario", "Plage Peach", "Bloc ? Antique", "Jungle Dino Dino", "Savane Sauvage", "Chutes Cheep Cheep"), // VERIFIED
-        "Jungle Dino Dino" to listOf("Plage Koopa", "Savane Sauvage", "Cité Fleur-de-sel", "Plage Peach", "Bloc ? Antique"), // VERIFIED
-        "Bloc ? Antique" to listOf("Jungle Dino Dino"),
+        Track.PLAGE_PEACH to listOf(Track.BLOC_ANTIQUE),
+        Track.CITE_FLEUR_SEL to listOf(Track.ALPES_DK, Track.GALION_WARIO, Track.PLAGE_PEACH, Track.BLOC_ANTIQUE, Track.JUNGLE_DINO_DINO, Track.SAVANE_SAUVAGE, Track.CHUTES_CHEEP_CHEEP), // VERIFIED
+        Track.JUNGLE_DINO_DINO to listOf(Track.PLAGE_KOOPA, Track.SAVANE_SAUVAGE, Track.CITE_FLEUR_SEL, Track.PLAGE_PEACH, Track.BLOC_ANTIQUE), // VERIFIED
+        Track.BLOC_ANTIQUE to listOf(Track.JUNGLE_DINO_DINO),
 
-        "Chutes Cheep Cheep" to listOf("Gouffre Pissenlit"),
-        "Gouffre Pissenlit" to listOf("Cinéma Boo"),
-        "Cinéma Boo" to listOf("Pic de l’Observatoire"),
-        "Fournaise Osseuse" to listOf("Chemin du Chêne"),
+        Track.CHUTES_CHEEP_CHEEP to listOf(Track.GOUFFRE_PISSENLIT),
+        Track.GOUFFRE_PISSENLIT to listOf(Track.CINEMA_BOO),
+        Track.CINEMA_BOO to listOf(Track.PIC_OBSERVATOIRE),
+        Track.FOURNAISE_OSSEUSE to listOf(Track.CHEMIN_CHENE),
 
-        "Prairie Meuh Meuh" to listOf("Circuit Mario"),
-        "Montagne Choco" to listOf("Usine Toad"),
-        "Usine Toad" to listOf("Fournaise Osseuse"),
-        "Château de Bowser" to listOf("Fournaise Osseuse"),
+        Track.PRAIRIE_MEUH_MEUH to listOf(Track.CIRCUIT_MARIO),
+        Track.MONTAGNE_CHOCO to listOf(Track.USINE_TOAD),
+        Track.USINE_TOAD to listOf(Track.FOURNAISE_OSSEUSE),
+        Track.CHATEAU_BOWSER to listOf(Track.FOURNAISE_OSSEUSE),
 
-        "Chemin du Chêne" to listOf("Cinéma Boo"),
-        "Circuit Mario" to listOf("Chemin du Chêne"),
-        "Stade Peach" to listOf("Route Arc-en-ciel")
+        Track.CHEMIN_CHENE to listOf(Track.CINEMA_BOO),
+        Track.CIRCUIT_MARIO to listOf(Track.CHEMIN_CHENE),
+        Track.STADE_PEACH to listOf(Track.ROUTE_ARC_EN_CIEL) // VERIFIED
     )
 }
