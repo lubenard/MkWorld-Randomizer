@@ -2,6 +2,7 @@ package com.escatrag.mkworldrandomiser
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -37,6 +38,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.delay
@@ -105,34 +107,67 @@ fun MainScreen(
 
         val dialogString = viewModel.showResultPopup.collectAsState()
 
+        val endTrack = viewModel.selectedEndTrack.collectAsState()
+
         val context = LocalContext.current
 
         if (dialogString.value != null) {
+
+            val endTrackAvailable = endTrack.value != null
+
             AlertDialog(
                 onDismissRequest = { viewModel.setPopupDisplay(null) },
                 title = {
-                    Text("Sélectionné !")
+                    Text(
+                        modifier = Modifier.fillMaxWidth(),
+                        text = "Sélectionné !",
+                        textAlign = TextAlign.Center
+                    )
                 },
                 text = {
                     Column(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalAlignment = Alignment.CenterHorizontally
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
                     ) {
-                        Image(
-                            modifier = Modifier.size(240.dp),
-                            painter = painterResource(dialogString.value!!.first().imgRes),
-                            contentDescription = context.getString(dialogString.value!!.first().nameRes),
-                        )
-                        Text(
-                            text = context.getString(dialogString.value!!.first().nameRes),
-                            fontSize = 30.sp
-                        )
-                    }
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                Image(
+                                    modifier = Modifier.size(if (endTrackAvailable) 120.dp else 240.dp),
+                                    painter = painterResource(dialogString.value!!.imgRes),
+                                    contentDescription = context.getString(dialogString.value!!.nameRes),
+                                )
+                                Text(
+                                    text = context.getString(dialogString.value!!.nameRes),
+                                    fontSize = if (endTrackAvailable) 15.sp else 30.sp
+                                )
+                            }
 
+                            if (endTrack.value != null) {
+                                Text(">", fontSize = 50.sp)
+                                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                    Image(
+                                        modifier = Modifier.size(if (endTrackAvailable) 120.dp else 240.dp),
+                                        painter = painterResource(endTrack.value!!.imgRes),
+                                        contentDescription = context.getString(endTrack.value!!.nameRes),
+                                    )
+                                    Text(
+                                        text = context.getString(endTrack.value!!.nameRes),
+                                        fontSize = if (endTrackAvailable) 15.sp else 30.sp
+                                    )
+                                }
+                            }
+                        }
+                    }
                 },
                 confirmButton = {
-                    Button(onClick = { viewModel.setPopupDisplay(null) }) {
-                        Text("Fermer")
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Button(onClick = { viewModel.setPopupDisplay(null) }) {
+                            Text("Fermer")
+                        }
                     }
                 }
             )

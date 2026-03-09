@@ -9,7 +9,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlin.enums.EnumEntries
 import kotlin.random.Random
 
 class TrackViewModel : ViewModel() {
@@ -21,6 +20,7 @@ class TrackViewModel : ViewModel() {
     // Randomly Selected Item
     // -1 is for infinite loop
     var selectedItem = MutableStateFlow(-1)
+    var selectedEndTrack = MutableStateFlow<Track?>(null)
 
     // All tracks availables: Used for Selection tracks (will include routes if selected in SelectionScreen),
     // but they will not be selected (tho available for selection)
@@ -35,8 +35,8 @@ class TrackViewModel : ViewModel() {
     private val _deleteTrackAfterCompletion = MutableStateFlow(false)
     val deleteTrackAfterCompletion: StateFlow<Boolean> = _deleteTrackAfterCompletion
 
-    private val _showResultPopup = MutableStateFlow<List<Track>?>(null)
-    val showResultPopup: StateFlow<List<Track>?> = _showResultPopup
+    private val _showResultPopup = MutableStateFlow<Track?>(null)
+    val showResultPopup: StateFlow<Track?> = _showResultPopup
 
     fun toggleTrack(id: String) {
         // 1. On cherche le vrai objet Track qui correspond à cet ID
@@ -62,8 +62,16 @@ class TrackViewModel : ViewModel() {
     // Generate a route based on selectedTracks
     fun generateCourse(delay: Long) {
         if (selectedTracks.value.isNotEmpty()) {
-            selectedItem.value = Random.nextInt(selectedTracks.value.size)
-            Log.d("lubenard", "onClick ${selectedItem.value} ${selectedTracks.value} -> ${_selectedTracks.value.get(selectedItem.value)} / $delay")
+            val selectedTrackIndex = Random.nextInt(selectedTracks.value.size)
+            if (_includeRoutes.value) {
+                Log.d("lubenard", "onClick1 _includeRoutes == true / selectedTrackIndex $selectedTrackIndex")
+                val mSelectedItem = _selectedTracks.value[selectedTrackIndex]
+                val circuit = TrackRepository.connections[mSelectedItem]
+                selectedEndTrack.value = TrackRepository.connections[mSelectedItem]!![Random.nextInt(circuit!!.size)]
+                Log.d("lubenard", "onClick 2.5 ${selectedEndTrack.value}")
+            }
+            selectedItem.value = selectedTrackIndex
+            Log.d("lubenard", "onClick2 ${selectedItem.value} ${selectedTracks.value} -> ${_selectedTracks.value.get(selectedItem.value)} / $delay")
         }
     }
 
@@ -123,6 +131,6 @@ class TrackViewModel : ViewModel() {
     }
 
     fun setPopupDisplay(newValue: Track?) {
-        _showResultPopup.value = newValue?.let { listOf(it) }
+        _showResultPopup.value = newValue
     }
 }
