@@ -7,14 +7,14 @@ object TrackRepository {
 
     // Graph des connexions
     val connections = mapOf(
-        Track.MARIO_BROS to listOf(Track.STADE_WARIO),
-        Track.TROPHEOPOLIS to listOf(Track.MONTAGNE_CHOCO),
-        Track.MONT_TCHOU_TCHOU to listOf(Track.DESERT_SOLEIL),
-        Track.SPATIOPORT_DK to listOf(Track.MONT_TCHOU_TCHOU),
+        Track.CIRCUIT_MARIO_BROS to listOf(Track.STADE_WARIO, Track.STADE_WARIO, Track.MONTAGNE_CHOCO, Track.TROPHEOPOLIS, Track.MONT_TCHOU_TCHOU, Track.DESERT_SOLEIL, Track.SOUK_MASKASS), // VERIFIED
+        Track.TROPHEOPOLIS to listOf(Track.MONTAGNE_CHOCO, Track.PRAIRIE_MEUH_MEUH, Track.STADE_PEACH, Track.SAVANE_SAUVAGE, Track.PLAGE_KOOPA, Track.SPATIOPORT_DK, Track.MONT_TCHOU_TCHOU, Track.DESERT_SOLEIL, Track.CIRCUIT_MARIO_BROS, Track.STADE_WARIO), // VERIFIED
+        Track.MONT_TCHOU_TCHOU to listOf(Track.DESERT_SOLEIL, Track.CIRCUIT_MARIO_BROS, Track.MONTAGNE_CHOCO, Track.TROPHEOPOLIS, Track.PLAGE_KOOPA, Track.SPATIOPORT_DK), // VERIFIED
+        Track.SPATIOPORT_DK to listOf(Track.MONT_TCHOU_TCHOU, Track.DESERT_SOLEIL, Track.CIRCUIT_MARIO_BROS, Track.TROPHEOPOLIS, Track.STADE_PEACH, Track.PLAGE_KOOPA), // VERIFIED
 
-        Track.DESERT_SOLEIL to listOf(Track.SOUK_MASKASS),
-        Track.SOUK_MASKASS to listOf(Track.DESERT_SOLEIL, Track.BATEAU_VOLANT),
-        Track.STADE_WARIO to listOf(Track.CHATEAU_BOWSER),
+        Track.DESERT_SOLEIL to listOf(Track.SOUK_MASKASS, Track.SOUK_MASKASS, Track.CIRCUIT_MARIO_BROS, Track.TROPHEOPOLIS, Track.PLAGE_KOOPA, Track.MONT_TCHOU_TCHOU), // VERIFIED
+        Track.SOUK_MASKASS to listOf(Track.BATEAU_VOLANT, Track.STADE_WARIO, Track.MONTAGNE_CHOCO, Track.CIRCUIT_MARIO_BROS, Track.DESERT_SOLEIL), // VERIFIED
+        Track.STADE_WARIO to listOf(Track.CHATEAU_BOWSER, Track.FOURNAISE_OSSEUSE, Track.USINE_TOAD, Track.MONTAGNE_CHOCO, Track.TROPHEOPOLIS, Track.CIRCUIT_MARIO_BROS, Track.SOUK_MASKASS, Track.BATEAU_VOLANT), // VERIFIED
         Track.BATEAU_VOLANT to listOf(Track.CHATEAU_BOWSER),
 
         Track.ALPES_DK to listOf(Track.CITE_SORBET),
@@ -22,7 +22,7 @@ object TrackRepository {
         Track.CITE_SORBET to listOf(Track.GALION_WARIO, Track.CITE_FLEUR_SEL, Track.ALPES_DK, Track.CHUTES_CHEEP_CHEEP, Track.GOUFFRE_PISSENLIT, Track.PIC_OBSERVATOIRE), // VERIFIED
         Track.GALION_WARIO to listOf(Track.PLAGE_PEACH),
 
-        Track.PLAGE_KOOPA to listOf(Track.SPATIOPORT_DK),
+        Track.PLAGE_KOOPA to listOf(Track.SPATIOPORT_DK, Track.SPATIOPORT_DK, Track.TROPHEOPOLIS, Track.STADE_PEACH, Track.SAVANE_SAUVAGE, Track.JUNGLE_DINO_DINO), // VERIFIED
         Track.SAVANE_SAUVAGE to listOf(Track.CHUTES_CHEEP_CHEEP),
 
         Track.PLAGE_PEACH to listOf(Track.BLOC_ANTIQUE),
@@ -36,12 +36,12 @@ object TrackRepository {
         Track.FOURNAISE_OSSEUSE to listOf(Track.CHEMIN_CHENE),
 
         Track.PRAIRIE_MEUH_MEUH to listOf(Track.CIRCUIT_MARIO),
-        Track.MONTAGNE_CHOCO to listOf(Track.USINE_TOAD),
+        Track.MONTAGNE_CHOCO to listOf(Track.USINE_TOAD, Track.PRAIRIE_MEUH_MEUH, Track.CHUTES_CHEEP_CHEEP, Track.STADE_PEACH, Track.TROPHEOPOLIS, Track.MONT_TCHOU_TCHOU, Track.CIRCUIT_MARIO_BROS, Track.SOUK_MASKASS, Track.STADE_WARIO, Track.CHATEAU_BOWSER), // VERIFIED
         Track.USINE_TOAD to listOf(Track.FOURNAISE_OSSEUSE),
         Track.CHATEAU_BOWSER to listOf(Track.FOURNAISE_OSSEUSE),
 
         Track.CHEMIN_CHENE to listOf(Track.CINEMA_BOO),
         Track.CIRCUIT_MARIO to listOf(Track.CHEMIN_CHENE),
-        Track.STADE_PEACH to listOf(Track.ROUTE_ARC_EN_CIEL) // VERIFIED
+        Track.STADE_PEACH to listOf(Track.ROUTE_ARC_EN_CIEL)
     )
 }

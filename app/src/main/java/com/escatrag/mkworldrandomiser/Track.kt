@@ -3,7 +3,7 @@ package com.escatrag.mkworldrandomiser
 import androidx.annotation.StringRes
 
 enum class Track(@StringRes val nameRes: Int, val imgRes: Int) {
-    MARIO_BROS(R.string.track_mario_bros, R.drawable.circuit_mario_bros),
+    CIRCUIT_MARIO_BROS(R.string.track_mario_bros, R.drawable.circuit_mario_bros),
     TROPHEOPOLIS(R.string.track_tropheopolis, R.drawable.tropheopolis),
     MONT_TCHOU_TCHOU(R.string.track_mont_tchou_tchou, R.drawable.tropheopolis),
     SPATIOPORT_DK(R.string.track_spatioport_dk, R.drawable.spatioport_dk),
