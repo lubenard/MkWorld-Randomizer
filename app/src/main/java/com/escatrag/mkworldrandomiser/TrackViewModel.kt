@@ -14,9 +14,9 @@ import kotlin.random.Random
 
 class TrackViewModel : ViewModel() {
 
-    // Selected tracks that will used for random generation
+    // Selected tracks that will be used for random generation
     private val _selectedTracks = MutableStateFlow(TrackRepository.tracks)
-    val selectedTracks: StateFlow<List<TrackItem>> = _selectedTracks
+    val selectedTracks: StateFlow<List<Track>> = _selectedTracks
 
     // Randomly Selected Item
     // -1 is for infinite loop
@@ -25,7 +25,7 @@ class TrackViewModel : ViewModel() {
     // All tracks availables: Used for Selection tracks (will include routes if selected in SelectionScreen),
     // but they will not be selected (tho available for selection)
     private val _allTracksAvailable = MutableStateFlow(TrackRepository.tracks)
-    val allTracksAvailable: StateFlow<List<TrackItem>> = _allTracksAvailable
+    val allTracksAvailable: StateFlow<List<Track>> = _allTracksAvailable
 
     // Option to include routes between tracks
     private val _includeRoutes = MutableStateFlow(false)
@@ -35,12 +35,23 @@ class TrackViewModel : ViewModel() {
     private val _deleteTrackAfterCompletion = MutableStateFlow(false)
     val deleteTrackAfterCompletion: StateFlow<Boolean> = _deleteTrackAfterCompletion
 
-    private val _showResultPopup = MutableStateFlow<String?>(null)
-    val showResultPopup: StateFlow<String?> = _showResultPopup
+    private val _showResultPopup = MutableStateFlow<List<Track>?>(null)
+    val showResultPopup: StateFlow<List<Track>?> = _showResultPopup
 
     fun toggleTrack(id: String) {
+        // 1. On cherche le vrai objet Track qui correspond à cet ID
+        val trackToToggle = Track.entries.find { it.name == id }
+
+        // Si on ne trouve pas le circuit (ID invalide), on arrête tout pour éviter un crash
+        if (trackToToggle == null) return
+
+        // 2. On met à jour la liste avec le VRAI objet Track
         _selectedTracks.update { current ->
-            if (current.contains(id)) current - id else current + id
+            if (current.contains(trackToToggle)) {
+                current - trackToToggle // Le circuit est déjà là : on le retire
+            } else {
+                current + trackToToggle // Le circuit n'y est pas : on l'ajoute
+            }
         }
     }
 
@@ -52,9 +63,7 @@ class TrackViewModel : ViewModel() {
     fun generateCourse(delay: Long) {
         if (selectedTracks.value.isNotEmpty()) {
             selectedItem.value = Random.nextInt(selectedTracks.value.size)
-            Log.d("Luca", "onClick ${selectedItem.value} ${selectedTracks.value} -> ${_selectedTracks.value.get(selectedItem.value)} / $delay")
-            //if (_deleteTrackAfterCompletion.value)
-                //deleteCircuit(_selectedTracks.value[selectedItem.value], skipScrollDelay = 500)
+            Log.d("lubenard", "onClick ${selectedItem.value} ${selectedTracks.value} -> ${_selectedTracks.value.get(selectedItem.value)} / $delay")
         }
     }
 
@@ -76,12 +85,13 @@ class TrackViewModel : ViewModel() {
         _selectedTracks.value = emptyList()
     }
 
-    fun transformConnectionsToList(connections: Map<Track, List<Track>>): List<TrackItem> {
-        return connections.flatMap { (depart, destinations) ->
+    fun transformConnectionsToList(connections: Map<Track, List<Track>>): List<Track> {
+        return emptyList()
+        /*return connections.flatMap { (depart, destinations) ->
             destinations.map { destination ->
                 TrackItem("$depart > $destination")
             }
-        }
+        }*/
     }
 
     fun addTrajetsToList() {
@@ -97,13 +107,13 @@ class TrackViewModel : ViewModel() {
 
     fun deleteCircuit(circuit: String, skipScrollDelay: Long = 3500) {
         viewModelScope.launch(Dispatchers.IO) {
-            Log.d("Luca", "Trying to delete track $circuit -> ${_deleteTrackAfterCompletion.value}")
+            Log.d("lubenard", "Trying to delete track $circuit -> ${_deleteTrackAfterCompletion.value}")
             if (_deleteTrackAfterCompletion.value) {
-                Log.d("Luca", "Deleting track $circuit}")
+                Log.d("lubenard", "Deleting track $circuit}")
                 val tempValue = _selectedTracks.value.toMutableList()
                 delay(skipScrollDelay)
-                Log.d("Luca", "Updating selectedTracks without $circuit")
-                _selectedTracks.value = tempValue.filter { it != circuit }
+                Log.d("lubenard", "Updating selectedTracks without $circuit")
+                _selectedTracks.value = tempValue.filter { it.name != circuit }
             }
         }
     }
@@ -112,7 +122,7 @@ class TrackViewModel : ViewModel() {
         _deleteTrackAfterCompletion.value = it
     }
 
-    fun setPopupDisplay(newValue: String?) {
-        _showResultPopup.value = newValue
+    fun setPopupDisplay(newValue: Track?) {
+        _showResultPopup.value = newValue?.let { listOf(it) }
     }
 }

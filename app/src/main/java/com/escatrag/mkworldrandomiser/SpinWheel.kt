@@ -65,14 +65,13 @@ fun SpinningWheel(
 
                 val selectedTrack = items[targetIndex]
 
-
                 scope.launch {
                     listState.animateScrollToItem(
                         index = finalTargetIndex,
                         scrollOffset = -centerOffsetPx
                     )
-                    Log.d("Luca", "end of scroll")
-                    onItemSelected(selectedTrack)
+                    Log.d("lubenard", "end of scroll $targetIndex")
+                    onItemSelected(targetIndex)
                 }
             }
         }
