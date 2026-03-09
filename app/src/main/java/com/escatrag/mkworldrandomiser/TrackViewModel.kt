@@ -102,17 +102,6 @@ class TrackViewModel : ViewModel() {
         }*/
     }
 
-    fun addTrajetsToList() {
-        val newTracks = _allTracksAvailable.value.toMutableList()
-        newTracks.addAll(transformConnectionsToList(TrackRepository.connections))
-        _allTracksAvailable.value = newTracks
-    }
-
-    fun deleteRoutesToAvailableTracks() {
-        _allTracksAvailable.value = emptyList()
-        _allTracksAvailable.value = TrackRepository.tracks
-    }
-
     fun deleteCircuit(circuit: String, skipScrollDelay: Long = 3500) {
         viewModelScope.launch(Dispatchers.IO) {
             Log.d("lubenard", "Trying to delete track $circuit -> ${_deleteTrackAfterCompletion.value}")
