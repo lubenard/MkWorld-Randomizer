@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Boy
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.AlertDialog
@@ -49,7 +50,8 @@ fun MainScreen(
     viewModel: TrackViewModel,
     onGenerate: (delay: Long) -> Unit,
     onNavigate: () -> Unit,
-    onSettings: () -> Unit
+    onSettings: () -> Unit,
+    onTeam: () -> Unit
 ) {
 
     val selectedTracks by viewModel.selectedTracks.collectAsState()
@@ -97,6 +99,16 @@ fun MainScreen(
                             onClick = {
                                 mexpanded = false
                                 onSettings()
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text("Teams") },
+                            leadingIcon = {
+                                Icon(Icons.Default.Boy, contentDescription = null)
+                            },
+                            onClick = {
+                                mexpanded = false
+                                onTeam()
                             }
                         )
                     }

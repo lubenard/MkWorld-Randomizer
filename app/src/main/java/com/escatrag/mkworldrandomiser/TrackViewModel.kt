@@ -35,11 +35,17 @@ class TrackViewModel : ViewModel() {
     private val _deleteTrackAfterCompletion = MutableStateFlow(false)
     val deleteTrackAfterCompletion: StateFlow<Boolean> = _deleteTrackAfterCompletion
 
+    // Show the result popup.... or not !
     private val _showResultPopup = MutableStateFlow<Track?>(null)
     val showResultPopup: StateFlow<Track?> = _showResultPopup
 
+    // generation bias: 0 for only tracks, 50 for random between tracks & connection, 100 for connections only
     private val _generationBias = MutableStateFlow(0F)
     val generationBias: StateFlow<Float> = _generationBias
+
+    // Variables to manages teams
+    private val _groups = MutableStateFlow<List<Pair<String, String>>>(emptyList())
+    val groups: StateFlow<List<Pair<String, String>>> = _groups
 
     fun toggleTrack(id: String) {
         // 1. On cherche le vrai objet Track qui correspond à cet ID
@@ -134,5 +140,13 @@ class TrackViewModel : ViewModel() {
 
     fun updateGenerationBias(newValue: Float) {
         _generationBias.value = newValue
+    }
+
+    fun addGroup(pair: Pair<String, String>) {
+        _groups.update { it + pair }
+    }
+
+    fun removeGroup(pair: Pair<String, String>) {
+        _groups.update { it - pair }
     }
 }

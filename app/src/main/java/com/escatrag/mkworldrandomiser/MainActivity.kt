@@ -23,15 +23,10 @@ class MainActivity : ComponentActivity() {
                 composable("main") {
                     MainScreen(
                         viewModel = vm,
-                        onGenerate = { delay ->
-                            vm.generateCourse(delay)
-                        },
-                        onNavigate = {
-                            navController.navigate("selection")
-                        },
-                        onSettings = {
-                            navController.navigate("settings")
-                        }
+                        onGenerate = { delay -> vm.generateCourse(delay) },
+                        onNavigate = { navController.navigate("selection") },
+                        onSettings = { navController.navigate("settings") },
+                        onTeam = { navController.navigate("teams") }
                     )
                 }
 
@@ -45,6 +40,11 @@ class MainActivity : ComponentActivity() {
                     TestSlider(bias.value) {
                         vm.updateGenerationBias(it)
                     }
+                }
+
+                composable("teams") {
+                    //GroupingScreen(vm)
+                    PlayerGroupingScreen(vm)
                 }
             }
         }
