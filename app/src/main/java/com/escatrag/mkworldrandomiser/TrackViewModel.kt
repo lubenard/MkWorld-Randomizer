@@ -121,5 +121,8 @@ class TrackViewModel : ViewModel() {
 
     fun setPopupDisplay(newValue: Track?) {
         _showResultPopup.value = newValue
+        if (newValue == null) {
+            selectedEndTrack.value = null
+        }
     }
 }
