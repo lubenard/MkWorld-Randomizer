@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.material3.Text
+import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.*
 import androidx.navigation.compose.rememberNavController
@@ -40,6 +41,10 @@ class MainActivity : ComponentActivity() {
 
                 composable("settings") {
                     Text("Hello World")
+                    val bias = vm.generationBias.collectAsState()
+                    TestSlider(bias.value) {
+                        vm.updateGenerationBias(it)
+                    }
                 }
             }
         }
