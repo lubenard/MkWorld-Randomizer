@@ -1,7 +1,6 @@
 package com.escatrag.mkworldrandomiser
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Boy
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.AlertDialog
@@ -35,7 +35,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
@@ -49,12 +50,13 @@ fun MainScreen(
     viewModel: TrackViewModel,
     onGenerate: (delay: Long) -> Unit,
     onNavigate: () -> Unit,
-    onSettings: () -> Unit
+    onSettings: () -> Unit,
+    onTeam: () -> Unit
 ) {
 
     val selectedTracks by viewModel.selectedTracks.collectAsState()
     val deleteTrackAfterCompletion by viewModel.deleteTrackAfterCompletion.collectAsState()
-    val selectedItem by viewModel.selectedItem.collectAsState()
+    val selectedItem by viewModel.selectedTrack.collectAsState()
 
     var mexpanded by remember { mutableStateOf(false) }
 
@@ -97,6 +99,16 @@ fun MainScreen(
                             onClick = {
                                 mexpanded = false
                                 onSettings()
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text("Teams") },
+                            leadingIcon = {
+                                Icon(Icons.Default.Boy, contentDescription = null)
+                            },
+                            onClick = {
+                                mexpanded = false
+                                onTeam()
                             }
                         )
                     }
@@ -173,10 +185,17 @@ fun MainScreen(
             )
         }
 
+        Image(
+            modifier = Modifier.fillMaxSize().alpha(0.7f),
+            painter = painterResource(R.drawable.map),
+            contentScale = ContentScale.Crop,
+            contentDescription = "",
+        )
+
         Column(
             modifier = Modifier
                 .padding(padding)
-                .padding(16.dp)
+                .padding(bottom = 16.dp, start = 16.dp, end = 16.dp)
                 .fillMaxSize()
         ) {
 

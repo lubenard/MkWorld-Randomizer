@@ -19,7 +19,7 @@ class TrackViewModel : ViewModel() {
 
     // Randomly Selected Item
     // -1 is for infinite loop
-    var selectedItem = MutableStateFlow(-1)
+    var selectedTrack = MutableStateFlow(-1)
     var selectedEndTrack = MutableStateFlow<Track?>(null)
 
     // All tracks availables: Used for Selection tracks (will include routes if selected in SelectionScreen),
@@ -35,8 +35,17 @@ class TrackViewModel : ViewModel() {
     private val _deleteTrackAfterCompletion = MutableStateFlow(false)
     val deleteTrackAfterCompletion: StateFlow<Boolean> = _deleteTrackAfterCompletion
 
+    // Show the result popup.... or not !
     private val _showResultPopup = MutableStateFlow<Track?>(null)
     val showResultPopup: StateFlow<Track?> = _showResultPopup
+
+    // generation bias: 0 for only tracks, 50 for random between tracks & connection, 100 for connections only
+    private val _generationBias = MutableStateFlow(0F)
+    val generationBias: StateFlow<Float> = _generationBias
+
+    // Variables to manages teams
+    private val _groups = MutableStateFlow<List<Pair<String, String>>>(emptyList())
+    val groups: StateFlow<List<Pair<String, String>>> = _groups
 
     fun toggleTrack(id: String) {
         // 1. On cherche le vrai objet Track qui correspond à cet ID
@@ -61,8 +70,11 @@ class TrackViewModel : ViewModel() {
 
     // Generate a route based on selectedTracks
     fun generateCourse(delay: Long) {
-        if (selectedTracks.value.isNotEmpty()) {
-            val selectedTrackIndex = Random.nextInt(selectedTracks.value.size)
+        if (_selectedTracks.value.isNotEmpty()) {
+            val selectedTrackIndex = Random.nextInt(_selectedTracks.value.size)
+            if (_generationBias.value == 0f) { _includeRoutes.value = false }
+            else if (_generationBias.value == 100f) { _includeRoutes.value = true }
+            else { _includeRoutes.value = Random.nextBoolean() }
             if (_includeRoutes.value) {
                 Log.d("lubenard", "onClick1 _includeRoutes == true / selectedTrackIndex $selectedTrackIndex")
                 val mSelectedItem = _selectedTracks.value[selectedTrackIndex]
@@ -70,13 +82,13 @@ class TrackViewModel : ViewModel() {
                 selectedEndTrack.value = TrackRepository.connections[mSelectedItem]!![Random.nextInt(circuit!!.size)]
                 Log.d("lubenard", "onClick 2.5 ${selectedEndTrack.value}")
             }
-            selectedItem.value = selectedTrackIndex
-            Log.d("lubenard", "onClick2 ${selectedItem.value} ${selectedTracks.value} -> ${_selectedTracks.value.get(selectedItem.value)} / $delay")
+            selectedTrack.value = selectedTrackIndex
+            Log.d("lubenard", "onClick2 ${selectedTrack.value} ${selectedTracks.value} -> ${_selectedTracks.value.get(selectedTrack.value)} / $delay")
         }
     }
 
     fun resetCourse() {
-        selectedItem.value = -1
+        selectedTrack.value = -1
     }
 
     fun selectAllTracks(includeRoutes: Boolean) {
@@ -124,5 +136,17 @@ class TrackViewModel : ViewModel() {
         if (newValue == null) {
             selectedEndTrack.value = null
         }
+    }
+
+    fun updateGenerationBias(newValue: Float) {
+        _generationBias.value = newValue
+    }
+
+    fun addGroup(pair: Pair<String, String>) {
+        _groups.update { it + pair }
+    }
+
+    fun removeGroup(pair: Pair<String, String>) {
+        _groups.update { it - pair }
     }
 }
