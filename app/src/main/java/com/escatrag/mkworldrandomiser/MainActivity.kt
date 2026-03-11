@@ -20,7 +20,10 @@ class MainActivity : ComponentActivity() {
                 composable("main") {
                     MainScreen(
                         viewModel = vm,
-                        onGenerate = { delay -> vm.generateCourse(delay) },
+                        onGenerate = { delay ->
+                            vm.generateCourse(delay)
+                            vm.pickRandomTeams()
+                        },
                         onNavigate = { navController.navigate("selection") },
                         onSettings = { navController.navigate("settings") },
                         onTeam = { navController.navigate("teams") }

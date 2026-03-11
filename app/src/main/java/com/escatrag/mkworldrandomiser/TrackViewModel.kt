@@ -47,6 +47,13 @@ class TrackViewModel : ViewModel() {
     private val _groups = MutableStateFlow<List<Pair<String, String>>>(emptyList())
     val groups: StateFlow<List<Pair<String, String>>> = _groups
 
+    // Randomly selected teams
+    private val _selectedRandomPlayers = MutableStateFlow<List<String>>(emptyList())
+    val selectedRandomTeams: StateFlow<List<String>> = _selectedRandomPlayers
+
+    private val _teamIndex = MutableStateFlow(false)
+    val teamIndex: StateFlow<Boolean> = _teamIndex
+
     fun toggleTrack(id: String) {
         // 1. On cherche le vrai objet Track qui correspond à cet ID
         val trackToToggle = Track.entries.find { it.name == id }
@@ -148,5 +155,19 @@ class TrackViewModel : ViewModel() {
 
     fun removeGroup(pair: Pair<String, String>) {
         _groups.update { it - pair }
+    }
+
+    fun pickRandomTeams() {
+        val allTeams = _groups.value
+
+        if (allTeams.size > 2) {
+            val randomTeams = allTeams.shuffled().take(4)
+            _selectedRandomPlayers.value = randomTeams.map { item ->
+                if (!_teamIndex.value) item.first else item.second
+            }
+        } else {
+            _selectedRandomPlayers.value = allTeams.flatMap { listOf(it.first, it.second) }
+        }
+        _teamIndex.value = !_teamIndex.value
     }
 }

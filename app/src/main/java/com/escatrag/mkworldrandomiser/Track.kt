@@ -5,7 +5,7 @@ import androidx.annotation.StringRes
 enum class Track(@StringRes val nameRes: Int, val imgRes: Int) {
     CIRCUIT_MARIO_BROS(R.string.track_mario_bros, R.drawable.circuit_mario_bros),
     TROPHEOPOLIS(R.string.track_tropheopolis, R.drawable.tropheopolis),
-    MONT_TCHOU_TCHOU(R.string.track_mont_tchou_tchou, R.drawable.tropheopolis),
+    MONT_TCHOU_TCHOU(R.string.track_mont_tchou_tchou, R.drawable.mont_tchou_tchou),
     SPATIOPORT_DK(R.string.track_spatioport_dk, R.drawable.spatioport_dk),
     DESERT_SOLEIL(R.string.track_desert_soleil, R.drawable.desert_du_soleil),
     SOUK_MASKASS(R.string.track_souk_maskass, R.drawable.souk_maskass),
@@ -19,7 +19,7 @@ enum class Track(@StringRes val nameRes: Int, val imgRes: Int) {
     SAVANE_SAUVAGE(R.string.track_savane_sauvage,R.drawable.savane_sauvage),
     PLAGE_PEACH(R.string.track_plage_peach,R.drawable.plage_peach),
     CITE_FLEUR_SEL(R.string.track_cite_fleur_sel,R.drawable.cite_fleur_sel),
-    JUNGLE_DINO_DINO(R.string.track_jungle_dino_dino,R.drawable.jungle_dino_dino ),
+    JUNGLE_DINO_DINO(R.string.track_jungle_dino_dino,R.drawable.jungle_dino_dino),
     BLOC_ANTIQUE(R.string.track_bloc_antique,R.drawable.bloc_antique),
     CHUTES_CHEEP_CHEEP(R.string.track_chutes_cheep_cheep,R.drawable.chutes_cheep_cheep),
     GOUFFRE_PISSENLIT(R.string.track_gouffre_pissenlit, R.drawable.gouffre_pissenlit),

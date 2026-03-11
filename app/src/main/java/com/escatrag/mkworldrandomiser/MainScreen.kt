@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Boy
 import androidx.compose.material.icons.filled.MoreVert
@@ -121,6 +122,8 @@ fun MainScreen(
 
         val endTrack = viewModel.selectedEndTrack.collectAsState()
 
+        val selectedTeams = viewModel.selectedRandomTeams.collectAsState()
+
         val context = LocalContext.current
 
         if (dialogString.value != null) {
@@ -151,7 +154,7 @@ fun MainScreen(
                                 )
                                 Text(
                                     text = context.getString(dialogString.value!!.nameRes),
-                                    fontSize = if (endTrackAvailable) 15.sp else 30.sp
+                                    fontSize = if (endTrackAvailable) 15.sp else 25.sp
                                 )
                             }
 
@@ -165,8 +168,17 @@ fun MainScreen(
                                     )
                                     Text(
                                         text = context.getString(endTrack.value!!.nameRes),
-                                        fontSize = if (endTrackAvailable) 15.sp else 30.sp
+                                        fontSize = if (endTrackAvailable) 15.sp else 25.sp
                                     )
+                                }
+                            }
+                        }
+                        if (selectedTeams.value.isNotEmpty()) {
+                            Text("Joueurs")
+                            Row {
+                                // Max is 4 players
+                                repeat(selectedTeams.value.size) { index ->
+                                    Text(selectedTeams.value[index], modifier = Modifier.padding(end = 5.dp))
                                 }
                             }
                         }
