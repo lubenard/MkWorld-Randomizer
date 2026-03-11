@@ -48,9 +48,9 @@ class TrackViewModel : ViewModel() {
         // 2. On met à jour la liste avec le VRAI objet Track
         _selectedTracks.update { current ->
             if (current.contains(trackToToggle)) {
-                current - trackToToggle // Le circuit est déjà là : on le retire
+                current - trackToToggle
             } else {
-                current + trackToToggle // Le circuit n'y est pas : on l'ajoute
+                current + trackToToggle
             }
         }
     }

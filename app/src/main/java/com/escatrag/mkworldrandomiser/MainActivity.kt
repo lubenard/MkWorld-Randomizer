@@ -39,7 +39,7 @@ class MainActivity : ComponentActivity() {
                 }
 
                 composable("settings") {
-                    Text("Hello World")
+                    SettingsScreen()
                 }
             }
         }

@@ -1,9 +1,12 @@
 package com.escatrag.mkworldrandomiser
 
+import android.graphics.drawable.Icon
 import android.util.Log
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -22,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.isActive
@@ -86,11 +90,24 @@ fun SpinningWheel(
                     modifier = Modifier.height(itemHeight).fillMaxWidth(),
                     contentAlignment = Alignment.Center
                 ) {
-                    val text = if (items.isEmpty()) placeholder else stringResource(items[index % items.size].nameRes)
-                    Text(
-                        text = text,
-                        style = MaterialTheme.typography.titleLarge
-                    )
+                    Row() {
+                        val text = if (items.isEmpty()) placeholder else stringResource(items[index % items.size].nameRes)
+
+                        //TODO ? Possibility to add icon to the list
+                        /*val img = if (items.isEmpty()) null else painterResource(items[index % items.size].imgRes)
+
+                        if (img != null) {
+                            Image(
+                                painter = img,
+                                contentDescription = text,
+                            )
+                        }*/
+
+                        Text(
+                            text = text,
+                            style = MaterialTheme.typography.titleLarge
+                        )
+                    }
                 }
             }
         }
