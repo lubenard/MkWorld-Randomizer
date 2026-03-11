@@ -9,7 +9,7 @@ import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SettingsScreen() {
+fun SettingsScreen(vm: TrackViewModel) {
     // États locaux (State) pour stocker les préférences
     // Note : Dans une vraie app, on utiliserait un ViewModel et DataStore/SharedPreferences
     var darkModeEnabled by remember { mutableStateOf(false) }
@@ -65,6 +65,11 @@ fun SettingsScreen() {
                 checked = showMirroredTracks,
                 onCheckedChange = { showMirroredTracks = it }
             )
+
+            val bias = vm.generationBias.collectAsState()
+            TestSlider(bias.value) {
+                vm.updateGenerationBias(it)
+            }
 
             Spacer(modifier = Modifier.weight(1f))
 

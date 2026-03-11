@@ -1,7 +1,6 @@
 package com.escatrag.mkworldrandomiser
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -33,7 +32,7 @@ class MainActivity : ComponentActivity() {
                 }
 
                 composable("settings") {
-                    SettingsScreen()
+                    SettingsScreen(vm)
                 }
 
                 composable("teams") {
