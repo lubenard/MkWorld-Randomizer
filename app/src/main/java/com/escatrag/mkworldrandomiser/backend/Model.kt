@@ -1,6 +1,6 @@
-package com.escatrag.mkworldrandomiser
+package com.escatrag.mkworldrandomiser.backend
 
-data class TrackItem(
+data class Track(
     val text: Int, // Resource
     // Start, then destination resource
     val icon: Int

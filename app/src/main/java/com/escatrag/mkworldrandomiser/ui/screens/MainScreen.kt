@@ -1,4 +1,4 @@
-package com.escatrag.mkworldrandomiser
+package com.escatrag.mkworldrandomiser.ui.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Boy
 import androidx.compose.material.icons.filled.MoreVert
@@ -43,6 +42,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.escatrag.mkworldrandomiser.R
+import com.escatrag.mkworldrandomiser.ui.composables.SpinningWheel
+import com.escatrag.mkworldrandomiser.TrackViewModel
 import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -120,7 +122,7 @@ fun MainScreen(
 
         val dialogString = viewModel.showResultPopup.collectAsState()
 
-        val endTrack = viewModel.selectedEndTrack.collectAsState()
+        val endTrack = viewModel.selectedEndTrackItems.collectAsState()
 
         val selectedTeams = viewModel.selectedRandomTeams.collectAsState()
 

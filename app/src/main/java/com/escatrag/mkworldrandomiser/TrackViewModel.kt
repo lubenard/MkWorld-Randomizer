@@ -3,6 +3,9 @@ package com.escatrag.mkworldrandomiser
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.escatrag.mkworldrandomiser.backend.Track
+import com.escatrag.mkworldrandomiser.backend.TrackItems
+import com.escatrag.mkworldrandomiser.backend.map
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,18 +17,23 @@ import kotlin.random.Random
 class TrackViewModel : ViewModel() {
 
     // Selected tracks that will be used for random generation
-    private val _selectedTracks = MutableStateFlow(TrackRepository.tracks)
-    val selectedTracks: StateFlow<List<Track>> = _selectedTracks
+    private val _selectedTracks = MutableStateFlow(TrackRepository.trackItems)
+    val selectedTracks: StateFlow<List<TrackItems>> = _selectedTracks
+
+
+    // Selected tracks that will be used for random generation
+    private val _testSelectedTracks = MutableStateFlow(TrackRepository.trackItems.map())
+    val testSelectedTracks: StateFlow<List<Track>> = _testSelectedTracks
 
     // Randomly Selected Item
     // -1 is for infinite loop
     var selectedTrack = MutableStateFlow(-1)
-    var selectedEndTrack = MutableStateFlow<Track?>(null)
+    var selectedEndTrackItems = MutableStateFlow<TrackItems?>(null)
 
     // All tracks availables: Used for Selection tracks (will include routes if selected in SelectionScreen),
     // but they will not be selected (tho available for selection)
-    private val _allTracksAvailable = MutableStateFlow(TrackRepository.tracks)
-    val allTracksAvailable: StateFlow<List<Track>> = _allTracksAvailable
+    private val _allTracksAvailable = MutableStateFlow(TrackRepository.trackItems)
+    val allTracksAvailable: StateFlow<List<TrackItems>> = _allTracksAvailable
 
     // Option to include routes between tracks
     private val _includeRoutes = MutableStateFlow(false)
@@ -36,8 +44,8 @@ class TrackViewModel : ViewModel() {
     val deleteTrackAfterCompletion: StateFlow<Boolean> = _deleteTrackAfterCompletion
 
     // Show the result popup.... or not !
-    private val _showResultPopup = MutableStateFlow<Track?>(null)
-    val showResultPopup: StateFlow<Track?> = _showResultPopup
+    private val _showResultPopup = MutableStateFlow<TrackItems?>(null)
+    val showResultPopup: StateFlow<TrackItems?> = _showResultPopup
 
     // generation bias: 0 for only tracks, 50 for random between tracks & connection, 100 for connections only
     private val _generationBias = MutableStateFlow(0F)
@@ -56,17 +64,17 @@ class TrackViewModel : ViewModel() {
 
     fun toggleTrack(id: String) {
         // 1. On cherche le vrai objet Track qui correspond à cet ID
-        val trackToToggle = Track.entries.find { it.name == id }
+        val trackItemsToToggle = TrackItems.entries.find { it.name == id }
 
         // Si on ne trouve pas le circuit (ID invalide), on arrête tout pour éviter un crash
-        if (trackToToggle == null) return
+        if (trackItemsToToggle == null) return
 
         // 2. On met à jour la liste avec le VRAI objet Track
         _selectedTracks.update { current ->
-            if (current.contains(trackToToggle)) {
-                current - trackToToggle
+            if (current.contains(trackItemsToToggle)) {
+                current - trackItemsToToggle
             } else {
-                current + trackToToggle
+                current + trackItemsToToggle
             }
         }
     }
@@ -86,8 +94,8 @@ class TrackViewModel : ViewModel() {
                 Log.d("lubenard", "onClick1 _includeRoutes == true / selectedTrackIndex $selectedTrackIndex")
                 val mSelectedItem = _selectedTracks.value[selectedTrackIndex]
                 val circuit = TrackRepository.connections[mSelectedItem]
-                selectedEndTrack.value = TrackRepository.connections[mSelectedItem]!![Random.nextInt(circuit!!.size)]
-                Log.d("lubenard", "onClick 2.5 ${selectedEndTrack.value}")
+                selectedEndTrackItems.value = TrackRepository.connections[mSelectedItem]!![Random.nextInt(circuit!!.size)]
+                Log.d("lubenard", "onClick 2.5 ${selectedEndTrackItems.value}")
             }
             selectedTrack.value = selectedTrackIndex
             Log.d("lubenard", "onClick2 ${selectedTrack.value} ${selectedTracks.value} -> ${_selectedTracks.value.get(selectedTrack.value)} / $delay")
@@ -100,7 +108,7 @@ class TrackViewModel : ViewModel() {
 
     fun selectAllTracks(includeRoutes: Boolean) {
         _selectedTracks.value = emptyList()
-        _selectedTracks.value = TrackRepository.tracks
+        _selectedTracks.value = TrackRepository.trackItems
         if (includeRoutes) {
             val addConnectionToList = _selectedTracks.value.toMutableList()
             addConnectionToList.addAll(transformConnectionsToList(TrackRepository.connections))
@@ -112,7 +120,7 @@ class TrackViewModel : ViewModel() {
         _selectedTracks.value = emptyList()
     }
 
-    fun transformConnectionsToList(connections: Map<Track, List<Track>>): List<Track> {
+    fun transformConnectionsToList(connections: Map<TrackItems, List<TrackItems>>): List<TrackItems> {
         return emptyList()
         /*return connections.flatMap { (depart, destinations) ->
             destinations.map { destination ->
@@ -124,7 +132,7 @@ class TrackViewModel : ViewModel() {
     fun deleteCircuit(circuit: String, skipScrollDelay: Long = 3500) {
         viewModelScope.launch(Dispatchers.IO) {
             Log.d("lubenard", "Trying to delete track $circuit -> ${_deleteTrackAfterCompletion.value}")
-            if (_deleteTrackAfterCompletion.value) {
+            if (_deleteTrackAfterCompletion.value && !_includeRoutes.value) {
                 Log.d("lubenard", "Deleting track $circuit}")
                 val tempValue = _selectedTracks.value.toMutableList()
                 delay(skipScrollDelay)
@@ -138,10 +146,10 @@ class TrackViewModel : ViewModel() {
         _deleteTrackAfterCompletion.value = it
     }
 
-    fun setPopupDisplay(newValue: Track?) {
+    fun setPopupDisplay(newValue: TrackItems?) {
         _showResultPopup.value = newValue
         if (newValue == null) {
-            selectedEndTrack.value = null
+            selectedEndTrackItems.value = null
         }
     }
 

@@ -1,4 +1,4 @@
-package com.escatrag.mkworldrandomiser
+package com.escatrag.mkworldrandomiser.ui.composables
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

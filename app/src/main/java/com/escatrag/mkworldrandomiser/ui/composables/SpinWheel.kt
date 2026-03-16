@@ -1,8 +1,6 @@
-package com.escatrag.mkworldrandomiser
+package com.escatrag.mkworldrandomiser.ui.composables
 
-import android.graphics.drawable.Icon
 import android.util.Log
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -25,15 +23,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.escatrag.mkworldrandomiser.backend.TrackItems
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
 @Composable
 fun SpinningWheel(
-    items: List<Track>,
+    items: List<TrackItems>,
     targetIndex: Int,
     onItemSelected: (Int) -> Unit,
     placeholder: String = ""
