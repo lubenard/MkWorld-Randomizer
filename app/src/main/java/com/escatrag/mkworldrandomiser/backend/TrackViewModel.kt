@@ -29,8 +29,8 @@ class TrackViewModel : ViewModel() {
 
     // All tracks availables: Used for Selection tracks (will include routes if selected in SelectionScreen),
     // but they will not be selected (tho available for selection)
-    private val _allTracksAvailable = MutableStateFlow(TrackRepository.trackItems)
-    val allTracksAvailable: StateFlow<List<TrackItems>> = _allTracksAvailable
+    private val _allTracksAvailable = MutableStateFlow(TrackRepository.trackItems.map())
+    val allTracksAvailable: StateFlow<List<Track>> = _allTracksAvailable
 
     // Option to include routes between tracks
     private val _includeRoutes = MutableStateFlow(false)

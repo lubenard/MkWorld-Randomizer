@@ -18,6 +18,21 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    flavorDimensions += "environnement"
+
+    productFlavors {
+        create("developp") {
+            dimension = "environnement"
+            applicationIdSuffix = ".dev"
+            manifestPlaceholders["appName"] = "debug - MK Randomizer"
+        }
+
+        create("production") {
+            dimension = "environnement"
+            manifestPlaceholders["appName"] = "MK World Randomizer"
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = false
@@ -25,20 +40,22 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            // Note: Attention à bien configurer une vraie clé plus tard pour le store
             signingConfig = signingConfigs.getByName("debug")
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_21
         targetCompatibility = JavaVersion.VERSION_21
     }
+
     buildFeatures {
         compose = true
     }
 }
 
 dependencies {
-
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
