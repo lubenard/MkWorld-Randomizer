@@ -3,7 +3,7 @@ package com.escatrag.mkworldrandomiser.backend
 object TrackRepository {
 
     val trackItems
-        get() = TrackItems.entries.toList()
+        get() = TrackItems.entries.toList().map()
 
     // Graph des connexions
     val connections = mapOf(

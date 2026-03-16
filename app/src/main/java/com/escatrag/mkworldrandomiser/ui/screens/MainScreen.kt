@@ -59,7 +59,7 @@ fun MainScreen(
 
     val selectedTracks by viewModel.selectedTracks.collectAsState()
     val deleteTrackAfterCompletion by viewModel.deleteTrackAfterCompletion.collectAsState()
-    val selectedItem by viewModel.selectedTrack.collectAsState()
+    val selectedItem by viewModel.selectedTrackIndex.collectAsState()
 
     var mexpanded by remember { mutableStateOf(false) }
 
@@ -122,7 +122,7 @@ fun MainScreen(
 
         val dialogString = viewModel.showResultPopup.collectAsState()
 
-        val endTrack = viewModel.selectedEndTrackItems.collectAsState()
+        //val endTrack = viewModel.selectedEndTrackItems.collectAsState()
 
         val selectedTeams = viewModel.selectedRandomTeams.collectAsState()
 
@@ -130,7 +130,7 @@ fun MainScreen(
 
         if (dialogString.value != null) {
 
-            val endTrackAvailable = endTrack.value != null
+            //val endTrackAvailable = endTrack.value != null
 
             AlertDialog(
                 onDismissRequest = { viewModel.setPopupDisplay(null) },
@@ -150,27 +150,27 @@ fun MainScreen(
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                                 Image(
-                                    modifier = Modifier.size(if (endTrackAvailable) 120.dp else 240.dp),
-                                    painter = painterResource(dialogString.value!!.imgRes),
-                                    contentDescription = context.getString(dialogString.value!!.nameRes),
+                                    modifier = Modifier.size(if (dialogString.value?.end != null) 120.dp else 240.dp),
+                                    painter = painterResource(dialogString.value?.start!!.icon),
+                                    contentDescription = context.getString(dialogString.value?.start!!.text),
                                 )
                                 Text(
-                                    text = context.getString(dialogString.value!!.nameRes),
-                                    fontSize = if (endTrackAvailable) 15.sp else 25.sp
+                                    text = context.getString(dialogString.value?.start!!.text),
+                                    fontSize = if (dialogString.value?.end != null) 15.sp else 25.sp
                                 )
                             }
 
-                            if (endTrack.value != null) {
+                            if (dialogString.value?.end != null) {
                                 Text(">", fontSize = 50.sp)
                                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                                     Image(
-                                        modifier = Modifier.size(if (endTrackAvailable) 120.dp else 240.dp),
-                                        painter = painterResource(endTrack.value!!.imgRes),
-                                        contentDescription = context.getString(endTrack.value!!.nameRes),
+                                        modifier = Modifier.size(120.dp),
+                                        painter = painterResource(dialogString.value!!.end?.icon!!),
+                                        contentDescription = context.getString(dialogString.value!!.end?.text!!),
                                     )
                                     Text(
-                                        text = context.getString(endTrack.value!!.nameRes),
-                                        fontSize = if (endTrackAvailable) 15.sp else 25.sp
+                                        text = context.getString(dialogString.value!!.end?.text!!),
+                                        fontSize = 15.sp
                                     )
                                 }
                             }
@@ -220,7 +220,7 @@ fun MainScreen(
                 onItemSelected = {
                     viewModel.setPopupDisplay(viewModel.selectedTracks.value[it])
                     if (viewModel.deleteTrackAfterCompletion.value)
-                        viewModel.deleteCircuit(viewModel.selectedTracks.value[it].name)
+                        viewModel.deleteCircuit(viewModel.selectedTracks.value[it])
                 }
             )
 

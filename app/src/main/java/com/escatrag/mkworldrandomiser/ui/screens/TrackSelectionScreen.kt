@@ -67,7 +67,7 @@ fun TrackSelectionScreen(viewModel: TrackViewModel, navController: NavController
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clickable { viewModel.toggleTrack(context.getString(track.text)) }
+                            .clickable { viewModel.toggleTrack(track) }
                             .padding(horizontal = 16.dp, vertical = 4.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
@@ -75,7 +75,13 @@ fun TrackSelectionScreen(viewModel: TrackViewModel, navController: NavController
                             checked = selectedTracks.contains(track),
                             onCheckedChange = null
                         )
-                        Text(stringResource(track.icon), modifier = Modifier.padding(start = 8.dp))
+
+                        Text(stringResource(track.start.text), modifier = Modifier.padding(start = 8.dp))
+
+                        if (track.end != null) {
+                            Text("> ", modifier = Modifier.padding(start = 8.dp))
+                            Text(stringResource(track.end.text), modifier = Modifier.padding(start = 8.dp))
+                        }
                     }
                 }
             }

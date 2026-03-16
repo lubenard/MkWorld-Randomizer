@@ -2,6 +2,16 @@ package com.escatrag.mkworldrandomiser.backend
 
 data class Track(
     val text: Int, // Resource
-    // Start, then destination resource
-    val icon: Int
+    val icon: Int // Destination resource
 )
+
+data class TrackCombo(
+    val start: Track,
+    val end: Track? = null,
+    val type: TrackComboType
+)
+
+enum class TrackComboType {
+    TRACK,
+    CONNECTION
+}

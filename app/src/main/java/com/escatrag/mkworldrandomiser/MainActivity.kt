@@ -26,7 +26,7 @@ class MainActivity : ComponentActivity() {
                     MainScreen(
                         viewModel = vm,
                         onGenerate = { delay ->
-                            vm.generateCourse(delay)
+                            vm.generateCourse()
                             vm.pickRandomTeams()
                         },
                         onNavigate = { navController.navigate("selection") },
