@@ -7,7 +7,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.escatrag.mkworldrandomiser.ui.composables.TestSlider
-import com.escatrag.mkworldrandomiser.TrackViewModel
+import com.escatrag.mkworldrandomiser.backend.TrackViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

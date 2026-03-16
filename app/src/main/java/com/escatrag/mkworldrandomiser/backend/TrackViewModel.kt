@@ -1,11 +1,8 @@
-package com.escatrag.mkworldrandomiser
+package com.escatrag.mkworldrandomiser.backend
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.escatrag.mkworldrandomiser.backend.Track
-import com.escatrag.mkworldrandomiser.backend.TrackItems
-import com.escatrag.mkworldrandomiser.backend.map
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -86,15 +83,15 @@ class TrackViewModel : ViewModel() {
     // Generate a route based on selectedTracks
     fun generateCourse(delay: Long) {
         if (_selectedTracks.value.isNotEmpty()) {
-            val selectedTrackIndex = Random.nextInt(_selectedTracks.value.size)
+            val selectedTrackIndex = Random.Default.nextInt(_selectedTracks.value.size)
             if (_generationBias.value == 0f) { _includeRoutes.value = false }
             else if (_generationBias.value == 100f) { _includeRoutes.value = true }
-            else { _includeRoutes.value = Random.nextBoolean() }
+            else { _includeRoutes.value = Random.Default.nextBoolean() }
             if (_includeRoutes.value) {
                 Log.d("lubenard", "onClick1 _includeRoutes == true / selectedTrackIndex $selectedTrackIndex")
                 val mSelectedItem = _selectedTracks.value[selectedTrackIndex]
                 val circuit = TrackRepository.connections[mSelectedItem]
-                selectedEndTrackItems.value = TrackRepository.connections[mSelectedItem]!![Random.nextInt(circuit!!.size)]
+                selectedEndTrackItems.value = TrackRepository.connections[mSelectedItem]!![Random.Default.nextInt(circuit!!.size)]
                 Log.d("lubenard", "onClick 2.5 ${selectedEndTrackItems.value}")
             }
             selectedTrack.value = selectedTrackIndex

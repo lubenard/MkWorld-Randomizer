@@ -27,7 +27,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.escatrag.mkworldrandomiser.TrackViewModel
+import com.escatrag.mkworldrandomiser.backend.TrackViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
