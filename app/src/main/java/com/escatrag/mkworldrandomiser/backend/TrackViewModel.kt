@@ -138,16 +138,20 @@ class TrackViewModel : ViewModel() {
 
     fun selectAllTracks(includeRoutes: Boolean) {
         _selectedTracks.value = emptyList()
-        _selectedTracks.value = TrackRepository.trackItems
+        Log.d("escatrag", "test $includeRoutes")
         if (includeRoutes) {
-            val addConnectionToList = _selectedTracks.value.toMutableList()
-            addConnectionToList.addAll(transformConnectionsToList(TrackRepository.connections))
-            _selectedTracks.value = addConnectionToList
+            val test = _allTracksAvailable.value.toMutableList()
+            Log.d("escatrag", "test before ${test.size}")
+            test.addAll(transformConnectionsToList(TrackRepository.connections))
+            Log.d("escatrag", "test after ${test.size}")
+            _testSelectedTracks.value = test
+        } else {
+            _testSelectedTracks.value = TrackRepository.trackItems
         }
     }
 
     fun clearAllTracks() {
-        _selectedTracks.value = emptyList()
+        _testSelectedTracks.value = emptyList()
     }
 
     fun transformConnectionsToList(connections: Map<TrackItems, List<TrackItems>>): List<TrackCombo> {
