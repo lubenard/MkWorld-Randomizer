@@ -32,7 +32,7 @@ import com.escatrag.mkworldrandomiser.backend.TrackViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TrackSelectionScreen(viewModel: TrackViewModel, navController: NavController) {
-    val selectedTracks by viewModel.testSelectedTracks.collectAsState()
+    val selectedTracks by viewModel.selectedTracks.collectAsState()
     val includeRoutes by viewModel.includeRoutes.collectAsState()
 
     val allTracksList by viewModel.allTracksAvailable.collectAsState()
