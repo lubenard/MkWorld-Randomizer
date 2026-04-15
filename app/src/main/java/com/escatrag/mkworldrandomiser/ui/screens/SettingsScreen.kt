@@ -6,6 +6,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.escatrag.mkworldrandomiser.BuildConfig
 import com.escatrag.mkworldrandomiser.ui.composables.TestSlider
 import com.escatrag.mkworldrandomiser.backend.TrackViewModel
 
@@ -77,7 +78,7 @@ fun SettingsScreen(vm: TrackViewModel) {
 
             // Version de l'app en bas
             Text(
-                text = "Version 1.0 - Mario Kart World App",
+                text = "Version 1.0 - Mario Kart World App - ${BuildConfig.COMMIT_SHA}",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.align(Alignment.CenterHorizontally)

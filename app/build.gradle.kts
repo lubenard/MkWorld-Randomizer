@@ -4,6 +4,18 @@ plugins {
     alias(libs.plugins.kotlin.compose)
 }
 
+fun getGitHash(): String {
+    return try {
+        // Exécute la commande directement via le système
+        val process = ProcessBuilder("git", "rev-parse", "--short", "HEAD").start()
+
+        // Lit le résultat proprement
+        process.inputStream.bufferedReader().readText().trim()
+    } catch (e: Exception) {
+        "unknown"
+    }
+}
+
 android {
     namespace = "com.escatrag.mkworldrandomiser"
     compileSdk = 36
@@ -25,11 +37,13 @@ android {
             dimension = "environnement"
             applicationIdSuffix = ".dev"
             manifestPlaceholders["appName"] = "debug - MK Randomizer"
+            buildConfigField("String", "COMMIT_SHA", "\"${getGitHash()}\"")
         }
 
         create("production") {
             dimension = "environnement"
             manifestPlaceholders["appName"] = "MK World Randomizer"
+            buildConfigField("String", "COMMIT_SHA", "\"${getGitHash()}\"")
         }
     }
 
@@ -53,6 +67,8 @@ android {
     buildFeatures {
         compose = true
     }
+
+    android.buildFeatures.buildConfig = true
 }
 
 dependencies {
