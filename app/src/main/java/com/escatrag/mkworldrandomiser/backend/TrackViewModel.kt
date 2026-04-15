@@ -15,22 +15,20 @@ class TrackViewModel : ViewModel() {
 
     // Selected tracks that will be used for random generation
     private val _selectedTracks = MutableStateFlow(TrackRepository.trackItems)
-    val selectedTracks: StateFlow<List<TrackItems>> = _selectedTracks
-
+    val selectedTracks: StateFlow<List<TrackCombo>> = _selectedTracks
 
     // Selected tracks that will be used for random generation
-    private val _testSelectedTracks = MutableStateFlow(TrackRepository.trackItems.map())
-    val testSelectedTracks: StateFlow<List<Track>> = _testSelectedTracks
-
-    // Randomly Selected Item
-    // -1 is for infinite loop
-    var selectedTrack = MutableStateFlow(-1)
-    var selectedEndTrackItems = MutableStateFlow<TrackItems?>(null)
+    private val _testSelectedTracks = MutableStateFlow(TrackRepository.trackItems)
+    val testSelectedTracks: StateFlow<List<TrackCombo>> = _testSelectedTracks
 
     // All tracks availables: Used for Selection tracks (will include routes if selected in SelectionScreen),
     // but they will not be selected (tho available for selection)
     private val _allTracksAvailable = MutableStateFlow(TrackRepository.trackItems)
-    val allTracksAvailable: StateFlow<List<TrackItems>> = _allTracksAvailable
+    val allTracksAvailable: StateFlow<List<TrackCombo>> = _allTracksAvailable
+
+    // Randomly Selected Item
+    // -1 is for infinite loop
+    var selectedTrackIndex = MutableStateFlow(-1)
 
     // Option to include routes between tracks
     private val _includeRoutes = MutableStateFlow(false)
@@ -41,8 +39,8 @@ class TrackViewModel : ViewModel() {
     val deleteTrackAfterCompletion: StateFlow<Boolean> = _deleteTrackAfterCompletion
 
     // Show the result popup.... or not !
-    private val _showResultPopup = MutableStateFlow<TrackItems?>(null)
-    val showResultPopup: StateFlow<TrackItems?> = _showResultPopup
+    private val _showResultPopup = MutableStateFlow<TrackCombo?>(null)
+    val showResultPopup: StateFlow<TrackCombo?> = _showResultPopup
 
     // generation bias: 0 for only tracks, 50 for random between tracks & connection, 100 for connections only
     private val _generationBias = MutableStateFlow(0F)
@@ -59,9 +57,9 @@ class TrackViewModel : ViewModel() {
     private val _teamIndex = MutableStateFlow(false)
     val teamIndex: StateFlow<Boolean> = _teamIndex
 
-    fun toggleTrack(id: String) {
+    fun toggleTrack(id: TrackCombo) {
         // 1. On cherche le vrai objet Track qui correspond à cet ID
-        val trackItemsToToggle = TrackItems.entries.find { it.name == id }
+        val trackItemsToToggle = _allTracksAvailable.value.find { it == id }
 
         // Si on ne trouve pas le circuit (ID invalide), on arrête tout pour éviter un crash
         if (trackItemsToToggle == null) return
@@ -78,55 +76,97 @@ class TrackViewModel : ViewModel() {
 
     fun setIncludeRoutes(value: Boolean) {
         _includeRoutes.value = value
+        _allTracksAvailable.value = _allTracksAvailable.value.plus(transformConnectionsToList(TrackRepository.connections))
     }
 
     // Generate a route based on selectedTracks
-    fun generateCourse(delay: Long) {
-        if (_selectedTracks.value.isNotEmpty()) {
-            val selectedTrackIndex = Random.Default.nextInt(_selectedTracks.value.size)
-            if (_generationBias.value == 0f) { _includeRoutes.value = false }
-            else if (_generationBias.value == 100f) { _includeRoutes.value = true }
-            else { _includeRoutes.value = Random.Default.nextBoolean() }
-            if (_includeRoutes.value) {
-                Log.d("lubenard", "onClick1 _includeRoutes == true / selectedTrackIndex $selectedTrackIndex")
-                val mSelectedItem = _selectedTracks.value[selectedTrackIndex]
-                val circuit = TrackRepository.connections[mSelectedItem]
-                selectedEndTrackItems.value = TrackRepository.connections[mSelectedItem]!![Random.Default.nextInt(circuit!!.size)]
-                Log.d("lubenard", "onClick 2.5 ${selectedEndTrackItems.value}")
+    fun generateCourse() {
+        val currentSelected = _selectedTracks.value
+
+        if (currentSelected.isNotEmpty()) {
+            // 1. Tirage au sort de l'index
+            val randomIndex = Random.nextInt(currentSelected.size)
+            val selectedCombo = currentSelected[randomIndex]
+
+            // 2. Détermination du type de course (Bias)
+            val shouldIncludeRoute = when (_generationBias.value) {
+                0f -> false
+                100f -> true
+                else -> Random.nextBoolean()
             }
-            selectedTrack.value = selectedTrackIndex
-            Log.d("lubenard", "onClick2 ${selectedTrack.value} ${selectedTracks.value} -> ${_selectedTracks.value.get(selectedTrack.value)} / $delay")
+
+            // 3. Construction du résultat final
+            var finalResult = selectedCombo // Par défaut, on garde le combo tel quel
+
+            if (shouldIncludeRoute) {
+                // Matching : Track -> TrackItems (Enum)
+                val startEnum = TrackItems.entries.find { it.nameRes == selectedCombo.start.text }
+                val possibleDestinations = startEnum?.let { TrackRepository.connections[it] }
+
+                if (!possibleDestinations.isNullOrEmpty()) {
+                    val randomDestEnum = possibleDestinations.random()
+
+                    // Création du combo avec la destination
+                    finalResult = TrackCombo(
+                        start = selectedCombo.start,
+                        end = randomDestEnum.map(),
+                        type = TrackComboType.CONNECTION
+                    )
+                    _includeRoutes.value = true
+                } else {
+                    // Pas de connexions trouvées, on force le type TRACK
+                    finalResult = selectedCombo.copy(type = TrackComboType.TRACK)
+                    _includeRoutes.value = false
+                }
+            } else {
+                // Simple circuit
+                finalResult = selectedCombo.copy(type = TrackComboType.TRACK)
+                _includeRoutes.value = false
+            }
+
+            // 4. Mise à jour des StateFlow pour l'UI
+            selectedTrackIndex.value = randomIndex
+            _showResultPopup.value = finalResult
+
+            Log.d("lubenard", "Course générée à l'index $randomIndex : ${finalResult.type}")
         }
     }
 
     fun resetCourse() {
-        selectedTrack.value = -1
+        selectedTrackIndex.value = -1
     }
 
     fun selectAllTracks(includeRoutes: Boolean) {
         _selectedTracks.value = emptyList()
-        _selectedTracks.value = TrackRepository.trackItems
+        Log.d("escatrag", "test $includeRoutes")
         if (includeRoutes) {
-            val addConnectionToList = _selectedTracks.value.toMutableList()
-            addConnectionToList.addAll(transformConnectionsToList(TrackRepository.connections))
-            _selectedTracks.value = addConnectionToList
+            val test = _allTracksAvailable.value.toMutableList()
+            Log.d("escatrag", "test before ${test.size}")
+            test.addAll(transformConnectionsToList(TrackRepository.connections))
+            Log.d("escatrag", "test after ${test.size}")
+            _testSelectedTracks.value = test
+        } else {
+            _testSelectedTracks.value = TrackRepository.trackItems
         }
     }
 
     fun clearAllTracks() {
-        _selectedTracks.value = emptyList()
+        _testSelectedTracks.value = emptyList()
     }
 
-    fun transformConnectionsToList(connections: Map<TrackItems, List<TrackItems>>): List<TrackItems> {
-        return emptyList()
-        /*return connections.flatMap { (depart, destinations) ->
-            destinations.map { destination ->
-                TrackItem("$depart > $destination")
+    fun transformConnectionsToList(connections: Map<TrackItems, List<TrackItems>>): List<TrackCombo> {
+        return connections.flatMap { (parent, children) ->
+            children.map { child ->
+                TrackCombo(
+                    start = parent.map(),
+                    end = child.map(),
+                    type = TrackComboType.CONNECTION,
+                )
             }
-        }*/
+        }
     }
 
-    fun deleteCircuit(circuit: String, skipScrollDelay: Long = 3500) {
+    fun deleteCircuit(circuit: TrackCombo, skipScrollDelay: Long = 3500) {
         viewModelScope.launch(Dispatchers.IO) {
             Log.d("lubenard", "Trying to delete track $circuit -> ${_deleteTrackAfterCompletion.value}")
             if (_deleteTrackAfterCompletion.value && !_includeRoutes.value) {
@@ -134,7 +174,7 @@ class TrackViewModel : ViewModel() {
                 val tempValue = _selectedTracks.value.toMutableList()
                 delay(skipScrollDelay)
                 Log.d("lubenard", "Updating selectedTracks without $circuit")
-                _selectedTracks.value = tempValue.filter { it.name != circuit }
+                _selectedTracks.value = tempValue.filter { it != circuit }
             }
         }
     }
@@ -143,11 +183,11 @@ class TrackViewModel : ViewModel() {
         _deleteTrackAfterCompletion.value = it
     }
 
-    fun setPopupDisplay(newValue: TrackItems?) {
+    fun setPopupDisplay(newValue: TrackCombo?) {
         _showResultPopup.value = newValue
-        if (newValue == null) {
+        /*if (newValue == null) {
             selectedEndTrackItems.value = null
-        }
+        }*/
     }
 
     fun updateGenerationBias(newValue: Float) {

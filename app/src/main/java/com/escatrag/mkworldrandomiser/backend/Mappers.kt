@@ -1,13 +1,14 @@
 package com.escatrag.mkworldrandomiser.backend
 
-import com.escatrag.mkworldrandomiser.backend.TrackItems
-
 fun TrackItems.map(): Track {
     return Track(text = nameRes, icon = imgRes)
 }
 
-fun List<TrackItems>.map(): List<Track> {
+fun List<TrackItems>.map(): List<TrackCombo> {
     return map {
-        it.map()
+        TrackCombo(
+            start = it.map(),
+            type = TrackComboType.TRACK
+        )
     }
 }

@@ -32,7 +32,7 @@ import com.escatrag.mkworldrandomiser.backend.TrackViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TrackSelectionScreen(viewModel: TrackViewModel, navController: NavController) {
-    val selectedTracks by viewModel.selectedTracks.collectAsState()
+    val selectedTracks by viewModel.testSelectedTracks.collectAsState()
     val includeRoutes by viewModel.includeRoutes.collectAsState()
 
     val allTracksList by viewModel.allTracksAvailable.collectAsState()
@@ -67,7 +67,7 @@ fun TrackSelectionScreen(viewModel: TrackViewModel, navController: NavController
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clickable { viewModel.toggleTrack(track.name) }
+                            .clickable { viewModel.toggleTrack(track) }
                             .padding(horizontal = 16.dp, vertical = 4.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
@@ -75,7 +75,13 @@ fun TrackSelectionScreen(viewModel: TrackViewModel, navController: NavController
                             checked = selectedTracks.contains(track),
                             onCheckedChange = null
                         )
-                        Text(stringResource(track.nameRes), modifier = Modifier.padding(start = 8.dp))
+
+                        Text(stringResource(track.start.text), modifier = Modifier.padding(start = 8.dp))
+
+                        if (track.end != null) {
+                            Text("> ", modifier = Modifier.padding(start = 8.dp))
+                            Text(stringResource(track.end.text), modifier = Modifier.padding(start = 8.dp))
+                        }
                     }
                 }
             }
