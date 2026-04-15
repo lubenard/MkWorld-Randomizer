@@ -1,21 +1,26 @@
 package com.escatrag.mkworldrandomiser.ui.screens
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Boy
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -36,6 +41,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -241,19 +248,35 @@ fun MainScreen(
                 onClick = onNavigate,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("Séléctioner des trajet")
+                Text("Séléctioner des trajet", color = Color.Black)
             }
 
             var lastClickTime by remember { mutableLongStateOf(0L) }
 
+            val rainbowColors = listOf(
+                Color(0xFFFC7777), // Rouge pastel
+                Color(0xFFFDB468), // Orange pastel
+                Color(0xFFFCFC6E), // Jaune pastel
+                Color(0xFF75FF75), // Vert pastel
+                Color(0xFF6FC4FF), // Bleu pastel
+                Color(0xFF72BAFD), // Indigo pastel (bleu-violet très clair)
+                Color(0xFFBF66FF)  // Violet pastel
+            )
+
+            val rainbowBrush = Brush.horizontalGradient(colors = rainbowColors)
+
             Button(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().height(50.dp).background(brush = rainbowBrush, shape = RoundedCornerShape(16.dp)),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color.Transparent
+                ),
+                contentPadding = PaddingValues(),
                 onClick = {
                 val currentTime = System.currentTimeMillis()
                 onGenerate(currentTime - lastClickTime)
                 lastClickTime = currentTime
             }) {
-                Text("Choisir un trajet")
+                Text("Choisir un trajet", color = Color.Black)
             }
         }
     }

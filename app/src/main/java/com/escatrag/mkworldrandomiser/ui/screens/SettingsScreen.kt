@@ -37,28 +37,12 @@ fun SettingsScreen(vm: TrackViewModel) {
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Text(
-                text = "Préférences de l'application",
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.primary
-            )
-
-            HorizontalDivider()
-
             // Option 1 : Mode Sombre
             SettingSwitchRow(
                 title = "Mode Sombre",
                 subtitle = "Activer le thème de la Route Arc-en-Ciel (Sombre)",
                 checked = darkModeEnabled,
                 onCheckedChange = { darkModeEnabled = it }
-            )
-
-            // Option 2 : Musique
-            SettingSwitchRow(
-                title = "Musique et Sons",
-                subtitle = "Jouer la musique des circuits dans les menus",
-                checked = musicEnabled,
-                onCheckedChange = { musicEnabled = it }
             )
 
             // Option 3 : Circuits Miroir
