@@ -7,17 +7,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.escatrag.mkworldrandomiser.BuildConfig
+import com.escatrag.mkworldrandomiser.backend.SettingsViewModel
 import com.escatrag.mkworldrandomiser.ui.composables.TestSlider
 import com.escatrag.mkworldrandomiser.backend.TrackViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SettingsScreen(vm: TrackViewModel) {
-    // États locaux (State) pour stocker les préférences
-    // Note : Dans une vraie app, on utiliserait un ViewModel et DataStore/SharedPreferences
+fun SettingsScreen(vm: TrackViewModel, settingsViewModel: SettingsViewModel) {
     var darkModeEnabled by remember { mutableStateOf(false) }
-    var musicEnabled by remember { mutableStateOf(true) }
     var showMirroredTracks by remember { mutableStateOf(false) }
+    var showTrackPopup by remember { mutableStateOf(true) }
+
+    val showPopup = settingsViewModel.isPopupEnabled.collectAsState()
 
     Scaffold(
         topBar = {
@@ -47,10 +48,17 @@ fun SettingsScreen(vm: TrackViewModel) {
 
             // Option 3 : Circuits Miroir
             SettingSwitchRow(
-                title = "Mode Miroir",
+                title = "Mode Miroir - pas encore disponible",
                 subtitle = "Inclure les circuits inversés dans les choix",
                 checked = showMirroredTracks,
                 onCheckedChange = { showMirroredTracks = it }
+            )
+
+            SettingSwitchRow(
+                title = "Voir la popup de circuit",
+                subtitle = "Afficher ou pas la popup de circuit",
+                checked = showPopup.value,
+                onCheckedChange = { settingsViewModel.setPopupEnabled(it) }
             )
 
             val bias = vm.generationBias.collectAsState()

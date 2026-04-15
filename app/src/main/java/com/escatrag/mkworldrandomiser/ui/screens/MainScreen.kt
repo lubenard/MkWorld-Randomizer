@@ -50,6 +50,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.escatrag.mkworldrandomiser.R
+import com.escatrag.mkworldrandomiser.backend.SettingsViewModel
 import com.escatrag.mkworldrandomiser.ui.composables.SpinningWheel
 import com.escatrag.mkworldrandomiser.backend.TrackViewModel
 import kotlinx.coroutines.delay
@@ -58,6 +59,7 @@ import kotlinx.coroutines.delay
 @Composable
 fun MainScreen(
     viewModel: TrackViewModel,
+    settingsViewModel: SettingsViewModel,
     onGenerate: (delay: Long) -> Unit,
     onNavigate: () -> Unit,
     onSettings: () -> Unit,
@@ -135,11 +137,14 @@ fun MainScreen(
 
         val context = LocalContext.current
 
+        val shopPopup = settingsViewModel.isPopupEnabled.collectAsState()
+
         if (dialogString.value != null) {
 
             //val endTrackAvailable = endTrack.value != null
 
             AlertDialog(
+                modifier = Modifier.then(if (!shopPopup.value) Modifier.alpha(0.4f) else Modifier),
                 onDismissRequest = { viewModel.setPopupDisplay(null) },
                 title = {
                     Text(
