@@ -7,15 +7,15 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.escatrag.mkworldrandomiser.backend.SettingsViewModel
-import com.escatrag.mkworldrandomiser.backend.TrackViewModel
 import com.escatrag.mkworldrandomiser.ui.screens.MainScreen
 import com.escatrag.mkworldrandomiser.ui.screens.MonthlyScoreScreen
 import com.escatrag.mkworldrandomiser.ui.screens.PlayerGroupingScreen
 import com.escatrag.mkworldrandomiser.ui.screens.RaceResultScreen
 import com.escatrag.mkworldrandomiser.ui.screens.SettingsScreen
+import com.escatrag.mkworldrandomiser.ui.screens.TrackSelectionScreen
 import com.escatrag.mkworldrandomiser.viewmodels.ScoreViewModel
-import com.escatrag.mkworldrandomiser.viewmodels.TrackSelectionScreen
+import com.escatrag.mkworldrandomiser.viewmodels.SettingsViewModel
+import com.escatrag.mkworldrandomiser.viewmodels.TrackViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

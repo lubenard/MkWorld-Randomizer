@@ -1,8 +1,13 @@
-package com.escatrag.mkworldrandomiser.backend
+package com.escatrag.mkworldrandomiser.viewmodels
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.escatrag.mkworldrandomiser.backend.TrackCombo
+import com.escatrag.mkworldrandomiser.backend.TrackComboType
+import com.escatrag.mkworldrandomiser.backend.TrackItems
+import com.escatrag.mkworldrandomiser.backend.TrackRepository
+import com.escatrag.mkworldrandomiser.backend.map
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -76,7 +81,8 @@ class TrackViewModel : ViewModel() {
 
     fun setIncludeRoutes(value: Boolean) {
         _includeRoutes.value = value
-        _allTracksAvailable.value = _allTracksAvailable.value.plus(transformConnectionsToList(TrackRepository.connections))
+        _allTracksAvailable.value = _allTracksAvailable.value.plus(transformConnectionsToList(
+            TrackRepository.connections))
     }
 
     // Generate a route based on selectedTracks
@@ -85,14 +91,14 @@ class TrackViewModel : ViewModel() {
 
         if (currentSelected.isNotEmpty()) {
             // 1. Tirage au sort de l'index
-            val randomIndex = Random.nextInt(currentSelected.size)
+            val randomIndex = Random.Default.nextInt(currentSelected.size)
             val selectedCombo = currentSelected[randomIndex]
 
             // 2. Détermination du type de course (Bias)
             val shouldIncludeRoute = when (_generationBias.value) {
                 0f -> false
                 100f -> true
-                else -> Random.nextBoolean()
+                else -> Random.Default.nextBoolean()
             }
 
             // 3. Construction du résultat final

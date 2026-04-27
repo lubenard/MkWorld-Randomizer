@@ -34,7 +34,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.escatrag.mkworldrandomiser.backend.TrackViewModel
+import com.escatrag.mkworldrandomiser.viewmodels.TrackViewModel
 
 @Composable
 fun PlayerGroupingScreen(viewModel: TrackViewModel) {

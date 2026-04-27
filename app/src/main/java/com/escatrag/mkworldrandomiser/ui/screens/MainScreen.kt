@@ -59,9 +59,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.escatrag.mkworldrandomiser.R
-import com.escatrag.mkworldrandomiser.backend.SettingsViewModel
-import com.escatrag.mkworldrandomiser.backend.TrackViewModel
 import com.escatrag.mkworldrandomiser.ui.composables.SpinningWheel
+import com.escatrag.mkworldrandomiser.viewmodels.SettingsViewModel
+import com.escatrag.mkworldrandomiser.viewmodels.TrackViewModel
 import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)

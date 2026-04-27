@@ -1,4 +1,4 @@
-package com.escatrag.mkworldrandomiser.viewmodels
+package com.escatrag.mkworldrandomiser.ui.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -47,7 +47,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.escatrag.mkworldrandomiser.backend.TrackViewModel
+import com.escatrag.mkworldrandomiser.viewmodels.TrackViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
