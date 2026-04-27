@@ -15,7 +15,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.BarChart
 import androidx.compose.material.icons.filled.Boy
+import androidx.compose.material.icons.filled.Groups
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Map
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.AlertDialog
@@ -26,6 +30,8 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -34,6 +40,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -51,8 +58,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.escatrag.mkworldrandomiser.R
 import com.escatrag.mkworldrandomiser.backend.SettingsViewModel
-import com.escatrag.mkworldrandomiser.ui.composables.SpinningWheel
 import com.escatrag.mkworldrandomiser.backend.TrackViewModel
+import com.escatrag.mkworldrandomiser.ui.composables.SpinningWheel
 import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -65,14 +72,14 @@ fun MainScreen(
     onSettings: () -> Unit,
     onTeam: () -> Unit
 ) {
-
     val selectedTracks by viewModel.selectedTracks.collectAsState()
     val deleteTrackAfterCompletion by viewModel.deleteTrackAfterCompletion.collectAsState()
     val selectedItem by viewModel.selectedTrackIndex.collectAsState()
 
     var mexpanded by remember { mutableStateOf(false) }
 
-    var lastClickTime by remember { mutableLongStateOf(0L) }
+    // État pour l'onglet sélectionné dans la barre du bas
+    var selectedTab by remember { mutableIntStateOf(0) }
 
     LaunchedEffect(Unit) {
         viewModel.resetCourse()
@@ -90,49 +97,86 @@ fun MainScreen(
             TopAppBar(
                 title = { Text("Sélection des circuits") },
                 actions = {
-                    // 2. L'icône des trois points
                     IconButton(onClick = { mexpanded = true }) {
-                        Icon(
-                            imageVector = Icons.Default.MoreVert,
-                            contentDescription = "Menu"
-                        )
+                        Icon(imageVector = Icons.Default.MoreVert, contentDescription = "Menu")
                     }
-
-                    // 3. Le menu qui s'ouvre
                     DropdownMenu(
                         expanded = mexpanded,
                         onDismissRequest = { mexpanded = false }
                     ) {
                         DropdownMenuItem(
                             text = { Text("Paramètres") },
-                            leadingIcon = {
-                                Icon(Icons.Default.Settings, contentDescription = null)
-                            },
-                            onClick = {
-                                mexpanded = false
-                                onSettings()
-                            }
+                            leadingIcon = { Icon(Icons.Default.Settings, contentDescription = null) },
+                            onClick = { mexpanded = false; onSettings() }
                         )
                         DropdownMenuItem(
                             text = { Text("Teams") },
-                            leadingIcon = {
-                                Icon(Icons.Default.Boy, contentDescription = null)
-                            },
-                            onClick = {
-                                mexpanded = false
-                                onTeam()
-                            }
+                            leadingIcon = { Icon(Icons.Default.Boy, contentDescription = null) },
+                            onClick = { mexpanded = false; onTeam() }
                         )
                     }
                 }
             )
+        },
+        // --- AJOUT DE LA BARRE DE NAVIGATION ---
+        bottomBar = {
+            NavigationBar {
+                NavigationBarItem(
+                    selected = selectedTab == 0,
+                    onClick = { selectedTab = 0 },
+                    label = { Text("Aléatoire") },
+                    icon = { Icon(Icons.Default.Home, contentDescription = null) }
+                )
+                NavigationBarItem(
+                    selected = selectedTab == 1,
+                    onClick = {
+                        selectedTab = 1
+                        onNavigate()
+                    },
+                    label = { Text("Circuits") },
+                    icon = { Icon(Icons.Default.Map, contentDescription = null) }
+                )
+                NavigationBarItem(
+                    selected = selectedTab == 2,
+                    onClick = {
+                        selectedTab = 2
+                        onTeam()
+                    },
+                    label = { Text("Scores") },
+                    icon = { Icon(Icons.Default.Groups, contentDescription = null) }
+                )
+//                NavigationBarItem(
+//                    selected = selectedTab == 2,
+//                    onClick = {
+//                        selectedTab = 2
+//                        onTeam()
+//                    },
+//                    label = { Text("Teams") },
+//                    icon = { Icon(Icons.Default.Groups, contentDescription = null) }
+//                )
+                NavigationBarItem(
+                    selected = selectedTab == 3,
+                    onClick = {
+                        selectedTab = 3
+                        // Logique pour l'historique ou les stats par exemple
+                    },
+                    label = { Text("Infos") },
+                    icon = { Icon(Icons.Default.BarChart, contentDescription = null) }
+                )
+                NavigationBarItem(
+                    selected = selectedTab == 4,
+                    onClick = {
+                        selectedTab = 4
+                        onSettings()
+                    },
+                    label = { Text("Réglages") },
+                    icon = { Icon(Icons.Default.Settings, contentDescription = null) }
+                )
+            }
         }
     ) { padding ->
 
         val dialogString = viewModel.showResultPopup.collectAsState()
-
-        //val endTrack = viewModel.selectedEndTrackItems.collectAsState()
-
         val selectedTeams = viewModel.selectedRandomTeams.collectAsState()
 
         val context = LocalContext.current
@@ -247,13 +291,6 @@ fun MainScreen(
                 )
                 Spacer(Modifier.width(8.dp))
                 Text("Supp. les trajets faits")
-            }
-
-            Button(
-                onClick = onNavigate,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("Séléctioner des trajet", color = Color.Black)
             }
 
             var lastClickTime by remember { mutableLongStateOf(0L) }
