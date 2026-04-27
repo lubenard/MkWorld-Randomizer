@@ -162,13 +162,15 @@ fun PodiumBar(
 fun MonthlyScoreScreen(viewModel: ScoreViewModel) {
     // Liste triée des joueurs (commence vide)
     val players by viewModel.sortedPlayers.collectAsState()
+    val unsortedPlayers by viewModel.players.collectAsState()
+
 
     // Profil en cours d'édition (si non null, on montre la popup)
     val editingProfile by viewModel.editingProfile.collectAsState()
 
     // On sépare les données pour le podium
-    val topThree = players.take(3)
-    val theRest = players.drop(3)
+    val topThree = if (players.isNotEmpty()) players.take(3) else unsortedPlayers.take(3)
+    val theRest = if (players.isNotEmpty()) players.drop(3) else unsortedPlayers.drop(3)
 
     Scaffold(
         topBar = {
@@ -203,7 +205,7 @@ fun MonthlyScoreScreen(viewModel: ScoreViewModel) {
             modifier = Modifier.fillMaxSize().padding(padding)
         ) {
             // --- GESTION DE L'ÉTAT VIDE ---
-            if (players.isEmpty()) {
+            if (players.isEmpty() && unsortedPlayers.isEmpty()) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Text("Aucun pilote pour l'instant...", style = MaterialTheme.typography.bodyLarge, color = Color.Gray)

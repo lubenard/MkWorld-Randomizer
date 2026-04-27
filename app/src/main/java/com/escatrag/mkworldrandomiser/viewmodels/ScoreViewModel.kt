@@ -33,6 +33,7 @@ class ScoreViewModel : ViewModel() {
 
     // La liste commence VIDE au début
     private val _players = MutableStateFlow<List<PlayerProfile>>(emptyList())
+    val players = _players.asStateFlow()
 
     // Liste triée pour l'affichage (Podium + Reste)
     val sortedPlayers: StateFlow<List<PlayerProfile>> = MutableStateFlow(emptyList())
