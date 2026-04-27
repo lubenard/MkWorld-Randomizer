@@ -22,10 +22,6 @@ class TrackViewModel : ViewModel() {
     private val _selectedTracks = MutableStateFlow(TrackRepository.trackItems)
     val selectedTracks: StateFlow<List<TrackCombo>> = _selectedTracks
 
-    // Selected tracks that will be used for random generation
-    private val _testSelectedTracks = MutableStateFlow(TrackRepository.trackItems)
-    val testSelectedTracks: StateFlow<List<TrackCombo>> = _testSelectedTracks
-
     // All tracks availables: Used for Selection tracks (will include routes if selected in SelectionScreen),
     // but they will not be selected (tho available for selection)
     private val _allTracksAvailable = MutableStateFlow(TrackRepository.trackItems)
@@ -150,14 +146,14 @@ class TrackViewModel : ViewModel() {
             Log.d("escatrag", "test before ${test.size}")
             test.addAll(transformConnectionsToList(TrackRepository.connections))
             Log.d("escatrag", "test after ${test.size}")
-            _testSelectedTracks.value = test
+            _selectedTracks.value = test
         } else {
-            _testSelectedTracks.value = TrackRepository.trackItems
+            _selectedTracks.value = TrackRepository.trackItems
         }
     }
 
     fun clearAllTracks() {
-        _testSelectedTracks.value = emptyList()
+        _selectedTracks.value = emptyList()
     }
 
     fun transformConnectionsToList(connections: Map<TrackItems, List<TrackItems>>): List<TrackCombo> {
