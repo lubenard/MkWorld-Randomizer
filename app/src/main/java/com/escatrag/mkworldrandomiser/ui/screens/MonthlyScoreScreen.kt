@@ -43,7 +43,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.escatrag.mkworldrandomiser.viewmodels.PlayerProfile
 import com.escatrag.mkworldrandomiser.viewmodels.ScoreViewModel
 
@@ -160,7 +159,7 @@ fun PodiumBar(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MonthlyScoreScreen(viewModel: ScoreViewModel = viewModel()) {
+fun MonthlyScoreScreen(viewModel: ScoreViewModel) {
     // Liste triée des joueurs (commence vide)
     val players by viewModel.sortedPlayers.collectAsState()
 

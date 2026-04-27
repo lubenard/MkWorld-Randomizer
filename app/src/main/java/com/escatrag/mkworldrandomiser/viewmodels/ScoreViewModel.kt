@@ -51,33 +51,48 @@ class ScoreViewModel : ViewModel() {
     }
 
     fun saveProfile(profile: PlayerProfile) {
-        // Logique simplifiée : si le nom est vide, on n'enregistre pas
-        if (profile.name.isBlank()) {
-            closeEditPopup()
-            return
-        }
-
-        _players.update { currentList ->
-            // On vérifie si le joueur existe déjà (édition) ou si c'est un nouveau
-            if (currentList.any { it.id == profile.id }) {
-                currentList.map { if (it.id == profile.id) profile else it }
+        if (profile.name.isBlank()) return
+        _players.update { current ->
+            if (current.any { it.id == profile.id }) {
+                current.map { if (it.id == profile.id) profile else it }
             } else {
-                currentList + profile
+                // NOUVEAU : On ne met plus de score aléatoire ici
+                current + profile
             }
         }
-
-        // Mise à jour de la liste triée
-        updateSortedList()
         closeEditPopup()
     }
+
+    // Nouvelle fonction pour enregistrer les résultats d'une course
+    fun submitRaceResults(results: Map<String, Int>) {
+        // results est un Map<PlayerId, Position>
+        _players.update { currentList ->
+            currentList.map { player ->
+                val position = results[player.id]
+                if (position != null) {
+                    // Barème de points (Exemple : 1er = 10pts, 2nd = 7pts, 3ème = 5pts, etc.)
+                    val pointsGained = when(position) {
+                        1 -> 10
+                        2 -> 7
+                        3 -> 5
+                        else -> 2
+                    }
+                    player.copy(currentMonthScore = player.currentMonthScore + pointsGained)
+                } else {
+                    player
+                }
+            }
+        }
+    }
+
 
     private fun updateSortedList() {
         // Tri par score descendant (simulation car score=0 pour les nouveaux)
         // Pour tester le podium, j'ajoute un score aléatoire lors de la sauvegarde
         // Dans la vraie app, tu enlèveras le '.copy(score = ...)'
-        _players.update { list ->
+        /*_players.update { list ->
             list.map { if (it.currentMonthScore == 0) it.copy(currentMonthScore = (100..1000).random()) else it }
-        }
+        }*/
 
         (sortedPlayers as MutableStateFlow).value =
             _players.value.sortedByDescending { it.currentMonthScore }

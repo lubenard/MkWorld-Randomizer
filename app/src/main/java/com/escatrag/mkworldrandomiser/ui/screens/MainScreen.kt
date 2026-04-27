@@ -17,6 +17,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.BarChart
 import androidx.compose.material.icons.filled.Boy
+import androidx.compose.material.icons.filled.EmojiEvents
 import androidx.compose.material.icons.filled.Groups
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Map
@@ -30,6 +31,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
@@ -71,7 +73,8 @@ fun MainScreen(
     onNavigate: () -> Unit,
     onSettings: () -> Unit,
     onScore: () -> Unit,
-    onTeam: () -> Unit
+    onScoreSelection: () -> Unit,
+    onTeam: () -> Unit,
 ) {
     val selectedTracks by viewModel.selectedTracks.collectAsState()
     val deleteTrackAfterCompletion by viewModel.deleteTrackAfterCompletion.collectAsState()
@@ -240,6 +243,20 @@ fun MainScreen(
                                     Text(selectedTeams.value[index], modifier = Modifier.padding(end = 5.dp))
                                 }
                             }
+                        }
+                        // --- LE NOUVEAU BOUTON ---
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Button(
+                            onClick = {
+                                viewModel.setPopupDisplay(null) // Ferme la popup actuelle
+                                onScoreSelection() // Déclenche la navigation vers l'écran des scores
+                            },
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary)
+                        ) {
+                            Icon(Icons.Default.EmojiEvents, contentDescription = null)
+                            Spacer(Modifier.width(8.dp))
+                            Text("Entrer les scores de la course")
                         }
                     }
                 },

@@ -12,7 +12,9 @@ import com.escatrag.mkworldrandomiser.backend.TrackViewModel
 import com.escatrag.mkworldrandomiser.ui.screens.MainScreen
 import com.escatrag.mkworldrandomiser.ui.screens.MonthlyScoreScreen
 import com.escatrag.mkworldrandomiser.ui.screens.PlayerGroupingScreen
+import com.escatrag.mkworldrandomiser.ui.screens.RaceResultScreen
 import com.escatrag.mkworldrandomiser.ui.screens.SettingsScreen
+import com.escatrag.mkworldrandomiser.viewmodels.ScoreViewModel
 import com.escatrag.mkworldrandomiser.viewmodels.TrackSelectionScreen
 
 class MainActivity : ComponentActivity() {
@@ -22,6 +24,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             val navController = rememberNavController()
             val vm: TrackViewModel = viewModel()
+            val scoreVm: ScoreViewModel = viewModel()
             val settingsVM: SettingsViewModel = viewModel()
 
             NavHost(navController, startDestination = "main") {
@@ -37,6 +40,7 @@ class MainActivity : ComponentActivity() {
                         onNavigate = { navController.navigate("selection") },
                         onSettings = { navController.navigate("settings") },
                         onScore = { navController.navigate("score") },
+                        onScoreSelection = { navController.navigate("scoreSelection") },
                     ) { navController.navigate("teams") }
                 }
 
@@ -53,8 +57,12 @@ class MainActivity : ComponentActivity() {
                     PlayerGroupingScreen(vm)
                 }
 
+                composable("scoreSelection") {
+                    RaceResultScreen(scoreVm, {})
+                }
+
                 composable("score") {
-                    MonthlyScoreScreen()
+                    MonthlyScoreScreen(scoreVm)
                 }
             }
         }
