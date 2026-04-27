@@ -58,7 +58,9 @@ class MainActivity : ComponentActivity() {
                 }
 
                 composable("scoreSelection") {
-                    RaceResultScreen(scoreVm, {})
+                    RaceResultScreen(scoreVm, {
+                        navController.popBackStack()
+                    })
                 }
 
                 composable("score") {

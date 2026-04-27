@@ -1,49 +1,82 @@
 package com.escatrag.mkworldrandomiser.viewmodels
 
+import android.app.Application
+import android.content.Context
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
-import androidx.lifecycle.ViewModel
-import com.escatrag.mkworldrandomiser.R
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.datastore.preferences.preferencesDataStore
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.viewModelScope
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import java.util.UUID
 
 
+// Extension pour le DataStore
+private val Context.dataStore by preferencesDataStore(name = "scores_prefs")
+
 data class PlayerProfile(
-    val id: String = UUID.randomUUID().toString(), // Identifiant unique
+    val id: String = UUID.randomUUID().toString(),
     val name: String = "",
-    val avatarRes: Int = R.drawable.ic_launcher_background, // Une icône par défaut
-    val profileColor: Int = Color.Gray.toArgb(), // Couleur stockée en Int pour simplification
-    val currentMonthScore: Int = 0 // Score initial à 0
+    val avatarRes: Int? = null, // Mis en optionnel pour gérer les initiales
+    val profileColor: Int = Color.Gray.toArgb(),
+    val currentMonthScore: Int = 0
 ) {
-    // Helper pour récupérer la couleur Compose facilement
     val composeColor: Color get() = Color(profileColor)
+    val initials: String get() = if (name.isNotEmpty()) name.take(1).uppercase() else "?"
 }
 
-// Modèle de données
-data class PlayerScore(
-    val name: String,
-    val score: Int,
-    val avatarRes: Int? = null
-)
+class ScoreViewModel(application: Application) : AndroidViewModel(application) {
 
-class ScoreViewModel : ViewModel() {
+    private val gson = Gson()
+    private val PLAYERS_KEY = stringPreferencesKey("players_list")
+    private val context = application.applicationContext
 
-    // La liste commence VIDE au début
+    // 1. Source de vérité : Chargée depuis le DataStore
     private val _players = MutableStateFlow<List<PlayerProfile>>(emptyList())
     val players = _players.asStateFlow()
 
-    // Liste triée pour l'affichage (Podium + Reste)
-    val sortedPlayers: StateFlow<List<PlayerProfile>> = MutableStateFlow(emptyList())
+    // 2. Liste triée automatique : Elle réagit dès que _players change
+    val sortedPlayers: StateFlow<List<PlayerProfile>> = _players
+        .map { list -> list.sortedByDescending { it.currentMonthScore } }
+        .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
-    // État pour gérer la popup d'édition
     private val _editingProfile = MutableStateFlow<PlayerProfile?>(null)
     val editingProfile = _editingProfile.asStateFlow()
 
+    init {
+        // Charger les données sauvegardées au démarrage
+        viewModelScope.launch {
+            context.dataStore.data.collect { prefs ->
+                val json = prefs[PLAYERS_KEY] ?: ""
+                if (json.isNotEmpty()) {
+                    val type = object : TypeToken<List<PlayerProfile>>() {}.type
+                    val savedList: List<PlayerProfile> = gson.fromJson(json, type)
+                    _players.value = savedList
+                }
+            }
+        }
+    }
+
+    private fun persistData(newList: List<PlayerProfile>) {
+        viewModelScope.launch {
+            _players.value = newList
+            context.dataStore.edit { prefs ->
+                prefs[PLAYERS_KEY] = gson.toJson(newList)
+            }
+        }
+    }
+
     fun startCreatingProfile() {
-        // Ouvre la popup avec un profil vierge
         _editingProfile.value = PlayerProfile()
     }
 
@@ -53,49 +86,34 @@ class ScoreViewModel : ViewModel() {
 
     fun saveProfile(profile: PlayerProfile) {
         if (profile.name.isBlank()) return
-        _players.update { current ->
-            if (current.any { it.id == profile.id }) {
-                current.map { if (it.id == profile.id) profile else it }
-            } else {
-                // NOUVEAU : On ne met plus de score aléatoire ici
-                current + profile
-            }
+        val currentList = _players.value
+        val newList = if (currentList.any { it.id == profile.id }) {
+            currentList.map { if (it.id == profile.id) profile else it }
+        } else {
+            currentList + profile
         }
+        persistData(newList)
         closeEditPopup()
     }
 
-    // Nouvelle fonction pour enregistrer les résultats d'une course
     fun submitRaceResults(results: Map<String, Int>) {
-        // results est un Map<PlayerId, Position>
-        _players.update { currentList ->
-            currentList.map { player ->
-                val position = results[player.id]
-                if (position != null) {
-                    // Barème de points (Exemple : 1er = 10pts, 2nd = 7pts, 3ème = 5pts, etc.)
-                    val pointsGained = when(position) {
-                        1 -> 10
-                        2 -> 7
-                        3 -> 5
-                        else -> 2
-                    }
-                    player.copy(currentMonthScore = player.currentMonthScore + pointsGained)
-                } else {
-                    player
+        val newList = _players.value.map { player ->
+            val position = results[player.id]
+            if (position != null) {
+                val pointsGained = when (position) {
+                    1 -> 15
+                    2 -> 12
+                    3 -> 10
+                    4 -> 9
+                    5 -> 8
+                    6, 7 -> 7
+                    else -> 6
                 }
+                player.copy(currentMonthScore = player.currentMonthScore + pointsGained)
+            } else {
+                player
             }
         }
-    }
-
-
-    private fun updateSortedList() {
-        // Tri par score descendant (simulation car score=0 pour les nouveaux)
-        // Pour tester le podium, j'ajoute un score aléatoire lors de la sauvegarde
-        // Dans la vraie app, tu enlèveras le '.copy(score = ...)'
-        /*_players.update { list ->
-            list.map { if (it.currentMonthScore == 0) it.copy(currentMonthScore = (100..1000).random()) else it }
-        }*/
-
-        (sortedPlayers as MutableStateFlow).value =
-            _players.value.sortedByDescending { it.currentMonthScore }
+        persistData(newList)
     }
 }

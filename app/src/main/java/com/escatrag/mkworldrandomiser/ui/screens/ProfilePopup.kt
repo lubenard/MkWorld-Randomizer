@@ -29,7 +29,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -54,7 +53,7 @@ fun EditProfilePopup(
 ) {
     // États locaux pour la popup avant sauvegarde
     var tempName by remember { mutableStateOf(profile.name) }
-    var tempAvatar by remember { mutableIntStateOf(profile.avatarRes) }
+    var tempAvatar by remember { mutableStateOf(profile.avatarRes) }
     var tempColor by remember { mutableStateOf(profile.composeColor) }
 
     // Liste des avatars disponibles (À REMPLACER PAR TES DRAWABLES)
@@ -88,7 +87,7 @@ fun EditProfilePopup(
                     value = tempName,
                     onValueChange = { tempName = it },
                     label = { Text("Prénom") },
-                    placeholder = { Text("Ex: Mario, It's me !") },
+                    placeholder = { Text("Ex: Mario, Luig, Birdo..") },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
                     shape = RoundedCornerShape(12.dp)

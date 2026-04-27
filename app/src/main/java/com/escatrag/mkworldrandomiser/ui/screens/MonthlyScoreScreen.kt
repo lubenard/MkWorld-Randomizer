@@ -103,7 +103,7 @@ fun PodiumBar(
     ) {
         // 1. Avatar du joueur au dessus de la barre
         Image(
-            painter = painterResource(id = player.avatarRes),
+            painter = painterResource(id = player.avatarRes!!),
             contentDescription = null,
             contentScale = ContentScale.Crop,
             modifier = Modifier
@@ -254,7 +254,7 @@ fun ScoreRow(rank: Int, player: PlayerProfile) {
 
             // Avatar
             Image(
-                painter = painterResource(id = player.avatarRes),
+                painter = painterResource(id = player.avatarRes!!),
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.size(45.dp).clip(CircleShape).border(1.dp, Color.LightGray, CircleShape)

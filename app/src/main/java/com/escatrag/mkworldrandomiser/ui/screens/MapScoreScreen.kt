@@ -73,7 +73,7 @@ fun RaceResultScreen(
     viewModel: ScoreViewModel,
     onResultsSubmitted: () -> Unit
 ) {
-    val allPlayers by viewModel.sortedPlayers.collectAsState()
+    val allPlayers by viewModel.players.collectAsState()
     val participants = remember { mutableStateListOf<PlayerProfile>() }
     // Map pour stocker [ID du joueur -> Position]
     val rankings = remember { mutableStateMapOf<String, Int>() }
