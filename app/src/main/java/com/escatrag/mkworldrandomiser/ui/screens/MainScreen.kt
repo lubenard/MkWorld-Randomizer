@@ -70,6 +70,7 @@ fun MainScreen(
     onGenerate: (delay: Long) -> Unit,
     onNavigate: () -> Unit,
     onSettings: () -> Unit,
+    onScore: () -> Unit,
     onTeam: () -> Unit
 ) {
     val selectedTracks by viewModel.selectedTracks.collectAsState()
@@ -140,7 +141,7 @@ fun MainScreen(
                     selected = selectedTab == 2,
                     onClick = {
                         selectedTab = 2
-                        onTeam()
+                        onScore()
                     },
                     label = { Text("Scores") },
                     icon = { Icon(Icons.Default.Groups, contentDescription = null) }

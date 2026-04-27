@@ -4,11 +4,13 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.compose.*
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.escatrag.mkworldrandomiser.backend.SettingsViewModel
 import com.escatrag.mkworldrandomiser.backend.TrackViewModel
 import com.escatrag.mkworldrandomiser.ui.screens.MainScreen
+import com.escatrag.mkworldrandomiser.ui.screens.MonthlyScoreScreen
 import com.escatrag.mkworldrandomiser.ui.screens.PlayerGroupingScreen
 import com.escatrag.mkworldrandomiser.ui.screens.SettingsScreen
 import com.escatrag.mkworldrandomiser.ui.screens.TrackSelectionScreen
@@ -34,8 +36,8 @@ class MainActivity : ComponentActivity() {
                         },
                         onNavigate = { navController.navigate("selection") },
                         onSettings = { navController.navigate("settings") },
-                        onTeam = { navController.navigate("teams") }
-                    )
+                        onScore = { navController.navigate("score") },
+                    ) { navController.navigate("teams") }
                 }
 
                 composable("selection") {
@@ -49,6 +51,10 @@ class MainActivity : ComponentActivity() {
                 composable("teams") {
                     //GroupingScreen(vm)
                     PlayerGroupingScreen(vm)
+                }
+
+                composable("score") {
+                    MonthlyScoreScreen()
                 }
             }
         }
