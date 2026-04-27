@@ -13,7 +13,7 @@ import com.escatrag.mkworldrandomiser.ui.screens.MainScreen
 import com.escatrag.mkworldrandomiser.ui.screens.MonthlyScoreScreen
 import com.escatrag.mkworldrandomiser.ui.screens.PlayerGroupingScreen
 import com.escatrag.mkworldrandomiser.ui.screens.SettingsScreen
-import com.escatrag.mkworldrandomiser.ui.screens.TrackSelectionScreen
+import com.escatrag.mkworldrandomiser.viewmodels.TrackSelectionScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

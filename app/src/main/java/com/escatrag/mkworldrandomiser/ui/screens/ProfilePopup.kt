@@ -44,6 +44,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.escatrag.mkworldrandomiser.R
+import com.escatrag.mkworldrandomiser.viewmodels.PlayerProfile
 
 @Composable
 fun EditProfilePopup(

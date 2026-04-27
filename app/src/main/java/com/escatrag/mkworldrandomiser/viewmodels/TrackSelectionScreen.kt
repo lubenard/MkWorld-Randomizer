@@ -1,4 +1,4 @@
-package com.escatrag.mkworldrandomiser.ui.screens
+package com.escatrag.mkworldrandomiser.viewmodels
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
