@@ -124,4 +124,9 @@ class ScoreViewModel(application: Application) : AndroidViewModel(application) {
         }
         persistData(newList)
     }
+
+    fun resetUsers() {
+        _players.value = listOf()
+        persistData(listOf())
+    }
 }

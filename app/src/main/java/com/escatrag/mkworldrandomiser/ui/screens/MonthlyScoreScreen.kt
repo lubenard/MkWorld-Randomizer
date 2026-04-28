@@ -1,5 +1,6 @@
 package com.escatrag.mkworldrandomiser.ui.screens
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -21,8 +22,10 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.GroupOff
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -50,6 +53,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
 import com.escatrag.mkworldrandomiser.R
 import com.escatrag.mkworldrandomiser.viewmodels.PlayerProfile
 import com.escatrag.mkworldrandomiser.viewmodels.ScoreViewModel
@@ -167,7 +171,7 @@ fun PodiumBar(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MonthlyScoreScreen(viewModel: ScoreViewModel) {
+fun MonthlyScoreScreen(viewModel: ScoreViewModel, navController: NavHostController) {
     // Liste triée des joueurs
     val players by viewModel.sortedPlayers.collectAsState()
     val unsortedPlayers by viewModel.players.collectAsState()
@@ -177,6 +181,7 @@ fun MonthlyScoreScreen(viewModel: ScoreViewModel) {
 
     // --- NOUVEAU : État pour la popup de confirmation de réinitialisation ---
     var showResetDialog by remember { mutableStateOf(false) }
+    var showResetPlayersDialog by remember { mutableStateOf(false) }
 
     // On sépare les données pour le podium
     val topThree = if (players.isNotEmpty()) players.take(3) else unsortedPlayers.take(3)
@@ -206,17 +211,54 @@ fun MonthlyScoreScreen(viewModel: ScoreViewModel) {
         )
     }
 
+    // --- NOUVEAU : Popup de confirmation pour éviter les missclicks ---
+    if (showResetPlayersDialog) {
+        AlertDialog(
+            onDismissRequest = { showResetPlayersDialog = false },
+            title = { Text("Réinitialiser le mois ?") },
+            text = { Text("Tous les joueurs seront remis à zéro. Cette action est irréversible.") },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        viewModel.resetUsers()
+                        showResetPlayersDialog = false
+                    }
+                ) {
+                    Text("Confirmer", color = MaterialTheme.colorScheme.error)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showResetPlayersDialog = false }) {
+                    Text("Annuler")
+                }
+            }
+        )
+    }
+
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
                 title = { Text("Classement du Mois") },
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Retour")
+                    }
+                },
                 // --- NOUVEAU : Bouton pour supprimer/réinitialiser ---
                 actions = {
+                    Log.d("escatrag", "${players.isNotEmpty()} || ${unsortedPlayers.isNotEmpty()}")
                     if (players.isNotEmpty() || unsortedPlayers.isNotEmpty()) {
                         IconButton(onClick = { showResetDialog = true }) {
                             Icon(
                                 imageVector = Icons.Default.Delete,
                                 contentDescription = "Réinitialiser les scores",
+                                tint = MaterialTheme.colorScheme.error
+                            )
+                        }
+                        IconButton(onClick = { showResetPlayersDialog = true }) {
+                            Icon(
+                                imageVector = Icons.Default.GroupOff,
+                                contentDescription = "Supprimer tous les joueurs",
                                 tint = MaterialTheme.colorScheme.error
                             )
                         }
@@ -260,18 +302,36 @@ fun MonthlyScoreScreen(viewModel: ScoreViewModel) {
                     }
                 }
             } else {
-                // Si la liste n'est pas vide, on affiche le podium et la liste
-                PodiumSection(topThree)
+                // Vérifier si tous les scores sont à zéro
+                val allScoresAreZero = players.all { it.currentMonthScore == 0 }
 
-                Spacer(modifier = Modifier.height(16.dp))
+                if (allScoresAreZero) {
+                    // --- MODE LISTE UNIQUEMENT (Début de mois / Reset) ---
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = PaddingValues(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        // On affiche TOUS les joueurs (players) et non juste "theRest"
+                        itemsIndexed(players) { index, player ->
+                            ScoreRow(rank = index + 1, player = player)
+                        }
+                    }
+                } else {
+                    // --- MODE PODIUM (Quand il y a de la compétition) ---
+                    PodiumSection(topThree)
 
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    itemsIndexed(theRest) { index, player ->
-                        ScoreRow(rank = index + 4, player = player)
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = PaddingValues(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        itemsIndexed(theRest) { index, player ->
+                            // On reprend à partir du 4ème
+                            ScoreRow(rank = index + 4, player = player)
+                        }
                     }
                 }
             }

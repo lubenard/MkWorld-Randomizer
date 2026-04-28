@@ -58,7 +58,7 @@ class MainActivity : ComponentActivity() {
                 }
 
                 composable("score") {
-                    MonthlyScoreScreen(scoreVm)
+                    MonthlyScoreScreen(scoreVm, navController)
                 }
             }
         }
