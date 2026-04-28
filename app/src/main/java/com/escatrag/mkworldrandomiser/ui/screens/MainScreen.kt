@@ -19,14 +19,12 @@ import androidx.compose.material.icons.filled.EmojiEvents
 import androidx.compose.material.icons.filled.Groups
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Map
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -98,9 +96,9 @@ fun MainScreen(
             TopAppBar(
                 title = { Text("Sélection des circuits") },
                 actions = {
-                    IconButton(onClick = { mexpanded = true }) {
-                        Icon(imageVector = Icons.Default.MoreVert, contentDescription = "Menu")
-                    }
+//                    IconButton(onClick = { mexpanded = true }) {
+//                        Icon(imageVector = Icons.Default.MoreVert, contentDescription = "Menu")
+//                    }
 //                    DropdownMenu(
 //                        expanded = mexpanded,
 //                        onDismissRequest = { mexpanded = false }
