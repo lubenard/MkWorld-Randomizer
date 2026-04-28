@@ -15,8 +15,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.BarChart
-import androidx.compose.material.icons.filled.Boy
 import androidx.compose.material.icons.filled.EmojiEvents
 import androidx.compose.material.icons.filled.Groups
 import androidx.compose.material.icons.filled.Home
@@ -26,8 +24,6 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -74,6 +70,7 @@ fun MainScreen(
     onSettings: () -> Unit,
     onScore: () -> Unit,
     onScoreSelection: () -> Unit,
+    onInfo: () -> Unit,
     onTeam: () -> Unit,
 ) {
     val selectedTracks by viewModel.selectedTracks.collectAsState()
@@ -104,21 +101,21 @@ fun MainScreen(
                     IconButton(onClick = { mexpanded = true }) {
                         Icon(imageVector = Icons.Default.MoreVert, contentDescription = "Menu")
                     }
-                    DropdownMenu(
-                        expanded = mexpanded,
-                        onDismissRequest = { mexpanded = false }
-                    ) {
-                        DropdownMenuItem(
-                            text = { Text("Paramètres") },
-                            leadingIcon = { Icon(Icons.Default.Settings, contentDescription = null) },
-                            onClick = { mexpanded = false; onSettings() }
-                        )
-                        DropdownMenuItem(
-                            text = { Text("Teams") },
-                            leadingIcon = { Icon(Icons.Default.Boy, contentDescription = null) },
-                            onClick = { mexpanded = false; onTeam() }
-                        )
-                    }
+//                    DropdownMenu(
+//                        expanded = mexpanded,
+//                        onDismissRequest = { mexpanded = false }
+//                    ) {
+//                        DropdownMenuItem(
+//                            text = { Text("Paramètres") },
+//                            leadingIcon = { Icon(Icons.Default.Settings, contentDescription = null) },
+//                            onClick = { mexpanded = false; onSettings() }
+//                        )
+//                        DropdownMenuItem(
+//                            text = { Text("Infos") },
+//                            leadingIcon = { Icon(Icons.Default.Info, contentDescription = null) },
+//                            onClick = { mexpanded = false; onInfo() }
+//                        )
+//                    }
                 }
             )
         },
@@ -158,16 +155,16 @@ fun MainScreen(
 //                    label = { Text("Teams") },
 //                    icon = { Icon(Icons.Default.Groups, contentDescription = null) }
 //                )
+//                NavigationBarItem(
+//                    selected = selectedTab == 3,
+//                    onClick = {
+//                        selectedTab = 3
+//                        //onSettings()
+//                    },
+//                    label = { Text("Infos") },
+//                    icon = { Icon(Icons.Default.BarChart, contentDescription = null) }
+//                )
                 NavigationBarItem(
-                    selected = selectedTab == 3,
-                    onClick = {
-                        selectedTab = 3
-                        onSettings()
-                    },
-                    label = { Text("Infos") },
-                    icon = { Icon(Icons.Default.BarChart, contentDescription = null) }
-                )
-                /*NavigationBarItem(
                     selected = selectedTab == 4,
                     onClick = {
                         selectedTab = 4
@@ -175,7 +172,7 @@ fun MainScreen(
                     },
                     label = { Text("Réglages") },
                     icon = { Icon(Icons.Default.Settings, contentDescription = null) }
-                )*/
+                )
             }
         }
     ) { padding ->

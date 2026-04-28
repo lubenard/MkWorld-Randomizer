@@ -215,7 +215,7 @@ fun MonthlyScoreScreen(viewModel: ScoreViewModel, navController: NavHostControll
     if (showResetPlayersDialog) {
         AlertDialog(
             onDismissRequest = { showResetPlayersDialog = false },
-            title = { Text("Réinitialiser le mois ?") },
+            title = { Text("Réinitialiser les joueurs ?") },
             text = { Text("Tous les joueurs seront remis à zéro. Cette action est irréversible.") },
             confirmButton = {
                 TextButton(

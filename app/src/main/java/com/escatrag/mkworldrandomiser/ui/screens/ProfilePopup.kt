@@ -66,7 +66,7 @@ fun EditProfilePopup(
     // Liste des couleurs de fond disponibles
     val availableColors = listOf(
         Color(0xFFFFCDD2), Color(0xFFE1BEE7), Color(0xFFBBDEFB), Color(0xFFC8E6C9),
-        Color(0xFFFFF9C4), Color(0xFFFFCC80), Color(0xFFD7CCC8), Color(0xFFCFD8DC)
+        Color(0xFFFFF9C4), Color(0xFFFFCC80)
     )
 
     Dialog(onDismissRequest = onDismiss) {
@@ -129,7 +129,7 @@ fun EditProfilePopup(
                 // 3. Choix de couleur
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceEvenly
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
                     availableColors.forEach { color ->
                         val isSelected = tempColor == color
