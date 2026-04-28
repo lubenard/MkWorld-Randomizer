@@ -77,24 +77,26 @@ class TrackViewModel : ViewModel() {
 
     fun setIncludeRoutes(value: Boolean) {
         _includeRoutes.value = value
-        _allTracksAvailable.value = _allTracksAvailable.value.plus(transformConnectionsToList(
-            TrackRepository.connections))
+        if (value)
+            _allTracksAvailable.value = _allTracksAvailable.value.plus(transformConnectionsToList(TrackRepository.connections))
+        else
+            _allTracksAvailable.value = TrackRepository.trackItems
     }
 
     // Generate a route based on selectedTracks
     fun generateCourse() {
-        val currentSelected = _selectedTracks.value
+        val currentSelectedTracks = _selectedTracks.value
 
-        if (currentSelected.isNotEmpty()) {
+        if (currentSelectedTracks.isNotEmpty()) {
             // 1. Tirage au sort de l'index
-            val randomIndex = Random.Default.nextInt(currentSelected.size)
-            val selectedCombo = currentSelected[randomIndex]
+            val randomIndex = Random.nextInt(currentSelectedTracks.size)
+            val selectedCombo = currentSelectedTracks[randomIndex]
 
             // 2. Détermination du type de course (Bias)
             val shouldIncludeRoute = when (_generationBias.value) {
                 0f -> false
                 100f -> true
-                else -> Random.Default.nextBoolean()
+                else -> Random.nextBoolean()
             }
 
             // 3. Construction du résultat final

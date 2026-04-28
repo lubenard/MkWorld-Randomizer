@@ -22,18 +22,25 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -43,6 +50,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.escatrag.mkworldrandomiser.R
 import com.escatrag.mkworldrandomiser.viewmodels.PlayerProfile
 import com.escatrag.mkworldrandomiser.viewmodels.ScoreViewModel
 
@@ -103,7 +111,7 @@ fun PodiumBar(
     ) {
         // 1. Avatar du joueur au dessus de la barre
         Image(
-            painter = painterResource(id = player.avatarRes!!),
+            painter = painterResource(id = player.avatarRes ?: R.drawable.mont_tchou_tchou),
             contentDescription = null,
             contentScale = ContentScale.Crop,
             modifier = Modifier
@@ -160,23 +168,62 @@ fun PodiumBar(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MonthlyScoreScreen(viewModel: ScoreViewModel) {
-    // Liste triée des joueurs (commence vide)
+    // Liste triée des joueurs
     val players by viewModel.sortedPlayers.collectAsState()
     val unsortedPlayers by viewModel.players.collectAsState()
 
-
-    // Profil en cours d'édition (si non null, on montre la popup)
+    // Profil en cours d'édition
     val editingProfile by viewModel.editingProfile.collectAsState()
+
+    // --- NOUVEAU : État pour la popup de confirmation de réinitialisation ---
+    var showResetDialog by remember { mutableStateOf(false) }
 
     // On sépare les données pour le podium
     val topThree = if (players.isNotEmpty()) players.take(3) else unsortedPlayers.take(3)
     val theRest = if (players.isNotEmpty()) players.drop(3) else unsortedPlayers.drop(3)
 
+    // --- NOUVEAU : Popup de confirmation pour éviter les missclicks ---
+    if (showResetDialog) {
+        AlertDialog(
+            onDismissRequest = { showResetDialog = false },
+            title = { Text("Réinitialiser le mois ?") },
+            text = { Text("Tous les scores seront remis à zéro. Cette action est irréversible.") },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        viewModel.resetMonthlyScores()
+                        showResetDialog = false
+                    }
+                ) {
+                    Text("Confirmer", color = MaterialTheme.colorScheme.error)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showResetDialog = false }) {
+                    Text("Annuler")
+                }
+            }
+        )
+    }
+
     Scaffold(
         topBar = {
-            CenterAlignedTopAppBar(title = { Text("Classement du Mois") })
+            CenterAlignedTopAppBar(
+                title = { Text("Classement du Mois") },
+                // --- NOUVEAU : Bouton pour supprimer/réinitialiser ---
+                actions = {
+                    if (players.isNotEmpty() || unsortedPlayers.isNotEmpty()) {
+                        IconButton(onClick = { showResetDialog = true }) {
+                            Icon(
+                                imageVector = Icons.Default.Delete,
+                                contentDescription = "Réinitialiser les scores",
+                                tint = MaterialTheme.colorScheme.error
+                            )
+                        }
+                    }
+                }
+            )
         },
-        // --- AJOUT DU BOUTON ROND EN BAS A DROITE ---
         floatingActionButton = {
             FloatingActionButton(
                 onClick = { viewModel.startCreatingProfile() },
@@ -254,7 +301,7 @@ fun ScoreRow(rank: Int, player: PlayerProfile) {
 
             // Avatar
             Image(
-                painter = painterResource(id = player.avatarRes!!),
+                painter = painterResource(id = player.avatarRes ?: R.drawable.mont_tchou_tchou),
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.size(45.dp).clip(CircleShape).border(1.dp, Color.LightGray, CircleShape)

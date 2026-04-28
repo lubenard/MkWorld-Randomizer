@@ -162,12 +162,12 @@ fun MainScreen(
                     selected = selectedTab == 3,
                     onClick = {
                         selectedTab = 3
-                        // Logique pour l'historique ou les stats par exemple
+                        onSettings()
                     },
                     label = { Text("Infos") },
                     icon = { Icon(Icons.Default.BarChart, contentDescription = null) }
                 )
-                NavigationBarItem(
+                /*NavigationBarItem(
                     selected = selectedTab == 4,
                     onClick = {
                         selectedTab = 4
@@ -175,7 +175,7 @@ fun MainScreen(
                     },
                     label = { Text("Réglages") },
                     icon = { Icon(Icons.Default.Settings, contentDescription = null) }
-                )
+                )*/
             }
         }
     ) { padding ->

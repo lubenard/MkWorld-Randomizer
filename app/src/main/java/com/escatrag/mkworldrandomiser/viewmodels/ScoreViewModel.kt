@@ -76,6 +76,14 @@ class ScoreViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    // Ajoute cette fonction dans ScoreViewModel
+    fun resetMonthlyScores() {
+        val currentList = _players.value
+        // On recrée la liste en mettant le score de tout le monde à 0
+        val resetList = currentList.map { it.copy(currentMonthScore = 0) }
+        persistData(resetList)
+    }
+
     fun startCreatingProfile() {
         _editingProfile.value = PlayerProfile()
     }

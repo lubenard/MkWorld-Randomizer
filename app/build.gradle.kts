@@ -92,4 +92,5 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.gson)
+    implementation(libs.konfetti.compose)
 }
