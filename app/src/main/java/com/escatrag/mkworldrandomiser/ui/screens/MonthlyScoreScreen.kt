@@ -25,6 +25,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Group
 import androidx.compose.material.icons.filled.GroupOff
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
@@ -261,6 +262,9 @@ fun MonthlyScoreScreen(viewModel: ScoreViewModel, navController: NavHostControll
                                 contentDescription = "Supprimer tous les joueurs",
                                 tint = MaterialTheme.colorScheme.error
                             )
+                        }
+                        IconButton(onClick = { navController.navigate("players") }) {
+                            Icon(imageVector = Icons.Default.Group, contentDescription = "Gérer les joueurs")
                         }
                     }
                 }
