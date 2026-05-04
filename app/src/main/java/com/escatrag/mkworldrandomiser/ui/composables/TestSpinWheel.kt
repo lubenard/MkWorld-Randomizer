@@ -31,6 +31,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.escatrag.mkworldrandomiser.backend.TrackCombo
+import kotlinx.coroutines.delay
 
 @Composable
 fun TestSpinWheel(
@@ -97,6 +98,7 @@ fun TestSpinWheel(
             )
         }
         Log.d("lubenard", "$targetIndex ->  ${if (targetIndex <= 0|| targetIndex > items.size -1 ) "<= 0" else ctc.getString(items[targetIndex].start.text)}/ $finalPage -> ${if (finalPage <= 0 || finalPage > items.size -1 ) "null" else items[finalPage]}")
+        delay(5000L)
         onFinished(finalPage)
     }
 

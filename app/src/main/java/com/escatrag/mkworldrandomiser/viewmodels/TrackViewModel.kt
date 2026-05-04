@@ -134,7 +134,7 @@ class TrackViewModel : ViewModel() {
 
             // 4. Mise à jour des StateFlow pour l'UI
             selectedTrackIndex.value = randomIndex
-            selectedTrack.value = finalResult
+            _selectedTrack.value = finalResult
 
 
             Log.d("lubenard", "Course générée à l'index $randomIndex : ${finalResult.start.text}")
@@ -192,11 +192,8 @@ class TrackViewModel : ViewModel() {
         _deleteTrackAfterCompletion.value = it
     }
 
-    fun setPopupDisplay(newValue: TrackCombo?) {
+    fun setResultPopupDisplay(newValue: Boolean) {
         _showResultPopup.value = newValue
-        /*if (newValue == null) {
-            selectedEndTrackItems.value = null
-        }*/
     }
 
     fun updateGenerationBias(newValue: Float) {

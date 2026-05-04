@@ -162,10 +162,11 @@ fun MainScreen(
         val dialogString = viewModel.showResultPopup.collectAsState().value
         val selectedItem = viewModel.selectedTrack.collectAsState().value
         val selectedTeams = viewModel.selectedRandomTeams.collectAsState().value
+        val selectedTrackIndex = viewModel.selectedTrackIndex.collectAsState().value
 
         val shopPopup = settingsViewModel.isPopupEnabled.collectAsState().value
 
-        // Once result has been choose
+        // Once result has been choosen
         if (dialogString) {
             ResultDialog(
                 viewModel,
@@ -205,12 +206,13 @@ fun MainScreen(
             } else {
                 TestSpinWheel(
                     items = selectedTracks,
-                    targetIndex = selectedItem!!,
+                    targetIndex = selectedTrackIndex,
                     onFinished = {
                         showSelectionCube = true
 
                         // TODO: Fix crash here
                         //viewModel.setPopupDisplay(viewModel.selectedTracks.value[it])
+                        viewModel.setResultPopupDisplay(true)
                         //TODO: fic crash here
 //                        if (viewModel.deleteTrackAfterCompletion.value)
 //                            viewModel.deleteCircuit(viewModel.selectedTracks.value[it])

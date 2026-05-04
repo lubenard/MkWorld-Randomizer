@@ -43,7 +43,7 @@ fun ResultDialog(
 
     AlertDialog(
         modifier = then(if (!shopPopup) Modifier.alpha(0.4f) else Modifier),
-        onDismissRequest = { viewModel.setPopupDisplay(null) },
+        onDismissRequest = { viewModel.setResultPopupDisplay(false) },
         title = {
             Text(
                 modifier = Modifier.fillMaxWidth(),
@@ -101,7 +101,7 @@ fun ResultDialog(
                 Spacer(modifier = Modifier.height(16.dp))
                 Button(
                     onClick = {
-                        viewModel.setPopupDisplay(null) // Ferme la popup actuelle
+                        viewModel.setResultPopupDisplay(false) // Ferme la popup actuelle
                         onScoreSelection() // Déclenche la navigation vers l'écran des scores
                     },
                     modifier = Modifier.fillMaxWidth(),
@@ -118,7 +118,7 @@ fun ResultDialog(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center
             ) {
-                Button(onClick = { viewModel.setPopupDisplay(null) }) {
+                Button(onClick = { viewModel.setResultPopupDisplay(false) }) {
                     Text("Fermer")
                 }
             }
