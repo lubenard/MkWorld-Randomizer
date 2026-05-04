@@ -40,8 +40,12 @@ class TrackViewModel : ViewModel() {
     val deleteTrackAfterCompletion: StateFlow<Boolean> = _deleteTrackAfterCompletion
 
     // Show the result popup.... or not !
-    private val _showResultPopup = MutableStateFlow<TrackCombo?>(null)
-    val showResultPopup: StateFlow<TrackCombo?> = _showResultPopup
+    private val _showResultPopup = MutableStateFlow(false)
+    val showResultPopup: StateFlow<Boolean> = _showResultPopup
+
+    // Set the selected track or trajet
+    private val _selectedTrack = MutableStateFlow<TrackCombo?>(null)
+    val selectedTrack:MutableStateFlow<TrackCombo?> = _selectedTrack
 
     // generation bias: 0 for only tracks, 50 for random between tracks & connection, 100 for connections only
     private val _generationBias = MutableStateFlow(0F)
@@ -130,9 +134,10 @@ class TrackViewModel : ViewModel() {
 
             // 4. Mise à jour des StateFlow pour l'UI
             selectedTrackIndex.value = randomIndex
-            _showResultPopup.value = finalResult
+            selectedTrack.value = finalResult
 
-            Log.d("lubenard", "Course générée à l'index $randomIndex : ${finalResult.type}")
+
+            Log.d("lubenard", "Course générée à l'index $randomIndex : ${finalResult.start.text}")
         }
     }
 
