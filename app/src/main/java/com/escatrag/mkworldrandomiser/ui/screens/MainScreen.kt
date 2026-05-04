@@ -209,9 +209,6 @@ fun MainScreen(
                     targetIndex = selectedTrackIndex,
                     onFinished = {
                         showSelectionCube = true
-
-                        // TODO: Fix crash here
-                        //viewModel.setPopupDisplay(viewModel.selectedTracks.value[it])
                         viewModel.setResultPopupDisplay(true)
                         //TODO: fic crash here
 //                        if (viewModel.deleteTrackAfterCompletion.value)
