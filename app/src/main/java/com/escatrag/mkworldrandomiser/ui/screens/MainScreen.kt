@@ -197,7 +197,7 @@ fun MainScreen(
         ) {
 
             if (showSelectionCube) {
-                TestNewHomeUI(30, onClick = {
+                TestNewHomeUI(selectedTracks.size, onClick = {
                     val currentTime = System.currentTimeMillis()
                     showSelectionCube = false
                     onGenerate(currentTime - lastClickTime)
