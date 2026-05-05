@@ -34,7 +34,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
@@ -60,6 +59,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.escatrag.mkworldrandomiser.backend.map
+import com.escatrag.mkworldrandomiser.backend.toTrackItem
+import com.escatrag.mkworldrandomiser.ui.composables.TestNewTrackSelectionConnectionUITile
 import com.escatrag.mkworldrandomiser.viewmodels.TrackViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -82,7 +84,7 @@ fun TrackSelectionScreen(viewModel: TrackViewModel, navController: NavController
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Configuration") },
+                title = { Text("Circuits") },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Retour")
@@ -99,16 +101,6 @@ fun TrackSelectionScreen(viewModel: TrackViewModel, navController: NavController
             verticalArrangement = Arrangement.spacedBy(8.dp),
             contentPadding = PaddingValues(bottom = 16.dp)
         ) {
-            // 1. TITRE
-            item {
-                Text(
-                    text = "Circuits",
-                    style = MaterialTheme.typography.headlineLarge,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(vertical = 8.dp)
-                )
-            }
-
             // 2. BARRE DE RECHERCHE
             item {
                 OutlinedTextField(
@@ -254,31 +246,40 @@ fun TrackSelectionScreen(viewModel: TrackViewModel, navController: NavController
                             Column(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(horizontal = 16.dp, vertical = 8.dp)
+                                    .padding(16.dp) // Padding uniforme autour de la liste d'options
                             ) {
-                                Divider(color = Color.Black.copy(alpha = 0.1f)) // Petite ligne de séparation
+                                Divider(color = Color.Black.copy(alpha = 0.1f))
 
-                                Spacer(modifier = Modifier.height(8.dp))
+                                Spacer(modifier = Modifier.height(12.dp))
 
-                                // Ajoute tes options ici ! Par exemple :
                                 Text(
-                                    text = "Options avancées pour ce circuit :",
+                                    text = "Trajets:",
                                     style = MaterialTheme.typography.labelMedium,
                                     color = Color.DarkGray
                                 )
 
-                                Row(
-                                    modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
-                                    horizontalArrangement = Arrangement.SpaceBetween
-                                ) {
-                                    OutlinedButton(onClick = { /* Action 1 */ }) {
-                                        Text("Mode Miroir")
-                                    }
-                                    OutlinedButton(onClick = { /* Action 2 */ }) {
-                                        Text("200cc Uniquement")
+                                Spacer(modifier = Modifier.height(12.dp))
+
+                                val availableConnections = viewModel.getConnectionsForTrack(track.start.toTrackItem()!!)
+
+                                // --- LA LISTE VERTICALE ---
+                                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                                    availableConnections.forEach { connectedTrackItem ->
+                                        // On vérifie si CETTE connexion spécifique est sélectionnée
+                                        val isThisConnectionSelected = selectedTracks.any {
+                                            it.start == track.start && it.end == connectedTrackItem.map()
+                                        }
+
+                                        TestNewTrackSelectionConnectionUITile(
+                                            title = stringResource(connectedTrackItem.nameRes),
+                                            isActive = isThisConnectionSelected,
+                                            themeColor = randomPastel
+                                        ) {
+                                            // Action : Créer ou supprimer le lien Parent -> Enfant
+                                            viewModel.toggleConnection(track.start, connectedTrackItem)
+                                        }
                                     }
                                 }
-                                Spacer(modifier = Modifier.height(8.dp))
                             }
                         }
                     }

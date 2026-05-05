@@ -3,6 +3,7 @@ package com.escatrag.mkworldrandomiser.viewmodels
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.escatrag.mkworldrandomiser.backend.Track
 import com.escatrag.mkworldrandomiser.backend.TrackCombo
 import com.escatrag.mkworldrandomiser.backend.TrackComboType
 import com.escatrag.mkworldrandomiser.backend.TrackItems
@@ -81,10 +82,25 @@ class TrackViewModel : ViewModel() {
 
     fun setIncludeRoutes(value: Boolean) {
         _includeRoutes.value = value
-        if (value)
-            _allTracksAvailable.value = _allTracksAvailable.value.plus(transformConnectionsToList(TrackRepository.connections))
-        else
-            _allTracksAvailable.value = TrackRepository.trackItems
+    }
+
+    fun getConnectionsForTrack(trackItem: TrackItems): List<TrackItems> {
+        return TrackRepository.connections[trackItem] ?: emptyList()
+    }
+
+    fun toggleConnection(parent: Track, childItem: TrackItems) {
+        val combo = TrackCombo(
+            start = parent,
+            end = childItem.map(),
+            type = TrackComboType.CONNECTION
+        )
+
+        // Si ce trajet existe déjà dans les sélectionnés, on l'enlève, sinon on l'ajoute
+        if (_selectedTracks.value.contains(combo)) {
+            _selectedTracks.value = _selectedTracks.value.minus(combo)
+        } else {
+            _selectedTracks.value = _selectedTracks.value.plus(combo)
+        }
     }
 
     // Generate a route based on selectedTracks

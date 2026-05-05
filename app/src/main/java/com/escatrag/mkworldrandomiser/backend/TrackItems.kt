@@ -35,3 +35,9 @@ enum class TrackItems(@StringRes val nameRes: Int, val imgRes: Int, val largeImg
     STADE_PEACH(R.string.track_stade_peach, R.drawable.stade_peach, R.drawable.large_stade_peach),
     ROUTE_ARC_EN_CIEL(R.string.track_route_arc_en_ciel, R.drawable.route_arcenciel, R.drawable.large_route_arcenciel)
 }
+
+fun Track.toTrackItem(): TrackItems? {
+    // On cherche dans toutes les valeurs de l'Enum TrackItems
+    // celle dont le nom correspond (ou l'id si tu en as un)
+    return TrackItems.entries.firstOrNull { it.nameRes == this.text } ?: null
+}
