@@ -160,6 +160,8 @@ fun TrackSelectionScreen(viewModel: TrackViewModel, navController: NavController
                     label = "arrowRotation"
                 )
 
+                val availableConnections = viewModel.getConnectionsForTrack(track.start.toTrackItem()!!)
+
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -226,17 +228,21 @@ fun TrackSelectionScreen(viewModel: TrackViewModel, navController: NavController
 
                             Spacer(modifier = Modifier.width(8.dp))
 
-                            // 4. LE BOUTON DROPDOWN (À droite du switch)
-                            IconButton(
-                                onClick = { isExpanded = !isExpanded },
-                                modifier = Modifier.size(32.dp)
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.KeyboardArrowDown,
-                                    contentDescription = "Plus d'options",
-                                    modifier = Modifier.rotate(arrowRotationDegree), // La flèche tourne !
-                                    tint = if (isSelected) Color.DarkGray else Color.Gray
-                                )
+                            if (availableConnections.isNotEmpty()) {
+                                // 4. LE BOUTON DROPDOWN (À droite du switch)
+                                IconButton(
+                                    onClick = { isExpanded = !isExpanded },
+                                    modifier = Modifier.size(32.dp)
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.KeyboardArrowDown,
+                                        contentDescription = "Plus d'options",
+                                        modifier = Modifier.rotate(arrowRotationDegree), // La flèche tourne !
+                                        tint = if (isSelected) Color.DarkGray else Color.Gray
+                                    )
+                                }
+                            } else {
+                                Spacer(modifier = Modifier.width(32.dp))
                             }
                         }
 
@@ -260,8 +266,6 @@ fun TrackSelectionScreen(viewModel: TrackViewModel, navController: NavController
 
                                 Spacer(modifier = Modifier.height(12.dp))
 
-                                val availableConnections = viewModel.getConnectionsForTrack(track.start.toTrackItem()!!)
-
                                 // --- LA LISTE VERTICALE ---
                                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                                     availableConnections.forEach { connectedTrackItem ->
@@ -271,11 +275,10 @@ fun TrackSelectionScreen(viewModel: TrackViewModel, navController: NavController
                                         }
 
                                         TestNewTrackSelectionConnectionUITile(
-                                            title = stringResource(connectedTrackItem.nameRes),
+                                            title = "-> ${stringResource(connectedTrackItem.nameRes)}",
                                             isActive = isThisConnectionSelected,
                                             themeColor = randomPastel
                                         ) {
-                                            // Action : Créer ou supprimer le lien Parent -> Enfant
                                             viewModel.toggleConnection(track.start, connectedTrackItem)
                                         }
                                     }
@@ -296,7 +299,10 @@ fun TrackSelectionScreen(viewModel: TrackViewModel, navController: NavController
                     Text("Inclure les trajets", modifier = Modifier.weight(1f))
                     Switch(
                         checked = includeRoutes,
-                        onCheckedChange = { viewModel.setIncludeRoutes(it) }
+                        onCheckedChange = {
+                            viewModel.setIncludeRoutes(it)
+                            viewModel.selectAllTracks(it)
+                        }
                     )
                 }
             }
