@@ -8,6 +8,7 @@ import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -27,9 +28,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.escatrag.mkworldrandomiser.backend.TrackCombo
 import kotlinx.coroutines.delay
 
@@ -134,12 +135,17 @@ fun TestSpinWheel(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) { page ->
                 val itemIndex = page % items.size
-                Text(
+                Image(
+                    painter = painterResource(items[itemIndex].start.largeIcon),
+                    contentDescription = context.getString(items[itemIndex].start.text)
+                )
+
+                /*Text(
                     text = context.getString(items[itemIndex].start.text),
                     style = MaterialTheme.typography.headlineLarge.copy(fontSize = 32.sp),
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.primary
-                )
+                )*/
             }
         }
     }

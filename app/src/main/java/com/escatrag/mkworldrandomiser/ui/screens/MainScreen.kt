@@ -19,7 +19,6 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -76,10 +75,10 @@ fun MainScreen(
     }
 
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Sélection des circuits") },
-                actions = {
+//        topBar = {
+//            TopAppBar(
+//                title = { Text("Sélection des circuits") },
+//                actions = {
 //                    IconButton(onClick = { mexpanded = true }) {
 //                        Icon(imageVector = Icons.Default.MoreVert, contentDescription = "Menu")
 //                    }
@@ -98,9 +97,9 @@ fun MainScreen(
 //                            onClick = { mexpanded = false; onInfo() }
 //                        )
 //                    }
-                }
-            )
-        },
+//                }
+//            )
+//        },
         // --- AJOUT DE LA BARRE DE NAVIGATION ---
         bottomBar = {
             NavigationBar {

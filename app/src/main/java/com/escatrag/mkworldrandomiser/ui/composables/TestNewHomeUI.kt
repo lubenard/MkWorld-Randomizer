@@ -103,12 +103,27 @@ fun TestNewHomeUI(availableCoursesCount: Int = 48, onClick: () -> Unit) {
             .fillMaxHeight(0.85f),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Text("MARIO KART",
-            fontFamily = MinecraftFontFamily,
-            fontSize = 50.sp,
-            color = Color.Yellow,
-            modifier = Modifier.padding(top = 30.dp)
-        )
+        Box(
+            modifier = Modifier.padding(top = 30.dp),
+            contentAlignment = Alignment.TopStart // Aligne les contenus au même endroit
+        ) {
+            // 1. Le texte du dessous (décalé de 3px en rouge)
+            Text(
+                text = "MARIO KART",
+                fontFamily = MinecraftFontFamily,
+                fontSize = 50.sp,
+                color = Color.Red,
+                modifier = Modifier.offset(x = 3.dp, y = 3.dp)
+            )
+
+            // 2. Le texte du dessus (en jaune)
+            Text(
+                text = "MARIO KART",
+                fontFamily = MinecraftFontFamily,
+                fontSize = 50.sp,
+                color = Color.Yellow
+            )
+        }
         Text("Circuit aléatoire".uppercase(),
             fontFamily = MinecraftFontFamily,
             fontSize = 30.sp,
