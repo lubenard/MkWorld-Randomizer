@@ -175,7 +175,11 @@ class TrackViewModel : ViewModel() {
         }
     }
 
-    fun deleteCircuit(circuit: TrackCombo, skipScrollDelay: Long = 3500) {
+    fun deleteCircuit(circuit: TrackCombo?, skipScrollDelay: Long = 3500) {
+        if (circuit == null) {
+            Log.e("lubenard", "circuit is null !!")
+            return
+        }
         viewModelScope.launch(Dispatchers.IO) {
             Log.d("lubenard", "Trying to delete track $circuit -> ${_deleteTrackAfterCompletion.value}")
             if (_deleteTrackAfterCompletion.value && !_includeRoutes.value) {

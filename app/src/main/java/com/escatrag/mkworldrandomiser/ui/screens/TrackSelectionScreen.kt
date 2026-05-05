@@ -1,7 +1,10 @@
 package com.escatrag.mkworldrandomiser.ui.screens
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -16,6 +19,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -28,6 +32,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -136,11 +141,21 @@ fun TrackSelectionScreen(viewModel: TrackViewModel, navController: NavController
             items(filteredTracks) { track ->
                 val isSelected = selectedTracks.contains(track)
 
+                // 1. Générer une couleur pastel unique et stable pour ce circuit
+                val randomPastel = remember(track) {
+                    val hue = (0..360).random().toFloat()
+                    // Saturation basse (0.4-0.6) et Luminosité haute (0.8-0.9) pour du pastel
+                    Color.hsl(hue = hue, saturation = 0.5f, lightness = 0.85f)
+                }
+
+                val borderColor = if (isSelected) randomPastel else Color.LightGray
+                val backgroundColor = if (isSelected) randomPastel.copy(alpha = 0.8f) else Color.White.copy(alpha = 0.4f)
+
                 Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = CardDefaults.cardColors(
-                        containerColor = if (isSelected) Color.White.copy(alpha = 0.9f) else Color.White.copy(alpha = 0.4f)
-                    ),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .border(2.dp, borderColor, RoundedCornerShape(12.dp)), // Border dynamique
+                    colors = CardDefaults.cardColors(containerColor = backgroundColor),
                     shape = RoundedCornerShape(12.dp),
                     onClick = { viewModel.toggleTrack(track) }
                 ) {
@@ -148,38 +163,73 @@ fun TrackSelectionScreen(viewModel: TrackViewModel, navController: NavController
                         modifier = Modifier.padding(12.dp).fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        // Icône de la map (Start)
-                        Image(
-                            painter = painterResource(id = track.start.icon),
-                            contentDescription = null,
+                        // --- IMAGE AVEC OVERLAY SI INACTIF ---
+                        Box(
                             modifier = Modifier
-                                .size(45.dp)
-                                .clip(RoundedCornerShape(8.dp)),
-                            contentScale = ContentScale.Crop
-                        )
+                                .size(width = 60.dp, height = 40.dp)
+                                .clip(RoundedCornerShape(4.dp)),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Image(
+                                painter = painterResource(id = track.start.largeIcon),
+                                contentDescription = null,
+                                modifier = Modifier.fillMaxSize(),
+                                contentScale = ContentScale.Crop
+                            )
+
+                            // Si pas sélectionné : on ajoute l'ombre et la croix
+                            if (!isSelected) {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .background(Color.Black.copy(alpha = 0.4f)), // Ombre
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Close,
+                                        contentDescription = null,
+                                        tint = Color.White,
+                                        modifier = Modifier.size(24.dp)
+                                    )
+                                }
+                            }
+                        }
 
                         Spacer(modifier = Modifier.width(12.dp))
 
-                        // Nom de la map
+                        // --- NOM DE LA MAP ---
                         Column(modifier = Modifier.weight(1f)) {
                             Text(
                                 text = stringResource(track.start.text),
                                 style = MaterialTheme.typography.bodyLarge,
-                                fontWeight = FontWeight.Medium
+                                fontWeight = FontWeight.Bold,
+                                color = if (isSelected) Color.Black else Color.Gray
                             )
                             if (track.end != null) {
                                 Text(
                                     text = "vers " + stringResource(track.end.text),
                                     style = MaterialTheme.typography.bodySmall,
-                                    color = Color.Gray
+                                    color = if (isSelected) Color.DarkGray else Color.LightGray
                                 )
                             }
                         }
 
-                        // Switch activé/désactivé
+                        // --- SWITCH PERSONNALISÉ ---
                         Switch(
                             checked = isSelected,
-                            onCheckedChange = { viewModel.toggleTrack(track) }
+                            onCheckedChange = { viewModel.toggleTrack(track) },
+                            colors = SwitchDefaults.colors(
+                                // Couleur du "rail" quand actif
+                                checkedTrackColor = randomPastel,
+                                // Couleur du "rail" quand inactif
+                                uncheckedTrackColor = Color.LightGray.copy(alpha = 0.5f),
+                                // On garde le thumb (le bouton) blanc ou neutre
+                                checkedThumbColor = Color.White,
+                                uncheckedThumbColor = Color.White,
+                                // Optionnel : enlever la bordure du switch pour plus de propreté
+                                uncheckedBorderColor = Color.Transparent,
+                                checkedBorderColor = Color.Transparent
+                            )
                         )
                     }
                 }

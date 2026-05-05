@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.VerticalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.MaterialTheme
@@ -136,6 +137,7 @@ fun TestSpinWheel(
             ) { page ->
                 val itemIndex = page % items.size
                 Image(
+                    modifier = Modifier.size(width = 1200.dp, height = 600.dp),
                     painter = painterResource(items[itemIndex].start.largeIcon),
                     contentDescription = context.getString(items[itemIndex].start.text)
                 )

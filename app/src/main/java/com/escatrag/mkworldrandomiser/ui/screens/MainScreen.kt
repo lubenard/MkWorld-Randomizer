@@ -1,5 +1,6 @@
 package com.escatrag.mkworldrandomiser.ui.screens
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -210,8 +211,9 @@ fun MainScreen(
                         showSelectionCube = true
                         viewModel.setResultPopupDisplay(true)
                         //TODO: fic crash here
-//                        if (viewModel.deleteTrackAfterCompletion.value)
-//                            viewModel.deleteCircuit(viewModel.selectedTracks.value[it])
+                        if (viewModel.deleteTrackAfterCompletion.value)
+                            Log.d("lubenard", "${selectedItem}")
+                            viewModel.deleteCircuit(selectedItem)
                     }
                 )
             }
