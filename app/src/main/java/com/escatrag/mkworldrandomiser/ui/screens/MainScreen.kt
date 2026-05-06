@@ -36,11 +36,17 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.escatrag.mkworldrandomiser.R
-import com.escatrag.mkworldrandomiser.ui.composables.ResultDialog
 import com.escatrag.mkworldrandomiser.ui.composables.TestNewHomeUI
 import com.escatrag.mkworldrandomiser.ui.composables.TestSpinWheel
 import com.escatrag.mkworldrandomiser.viewmodels.SettingsViewModel
 import com.escatrag.mkworldrandomiser.viewmodels.TrackViewModel
+import nl.dionsegijn.konfetti.compose.KonfettiView
+import nl.dionsegijn.konfetti.compose.OnParticleSystemUpdateListener
+import nl.dionsegijn.konfetti.core.Party
+import nl.dionsegijn.konfetti.core.PartySystem
+import nl.dionsegijn.konfetti.core.Position
+import nl.dionsegijn.konfetti.core.emitter.Emitter
+import java.util.concurrent.TimeUnit
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -166,16 +172,55 @@ fun MainScreen(
 
         val shopPopup = settingsViewModel.isPopupEnabled.collectAsState().value
 
-        // Once result has been choosen
-        if (dialogString) {
-            ResultDialog(
-                viewModel,
-                selectedItem!!,
-                selectedTeams,
-                onScoreSelection,
-                shopPopup
+        val colors = listOf(0xFFFF0000.toInt(), 0xFF00FF00.toInt(), 0xFF0000FF.toInt(), 0xFFFFFF00.toInt(), 0xFFFF00FF.toInt())
+
+        val partyLeft = Party(
+            speed = 40f, // Plus de patate pour monter haut
+            maxSpeed = 100f,
+            angle = 300, // Diagonale haut-droite
+            spread = 10,
+            colors = colors,
+            emitter = Emitter(duration = 1, TimeUnit.SECONDS).perSecond(300),
+            position = Position.Relative(0.0, 0.6) // Bas gauche
+        )
+
+        val partyRight = Party(
+            speed = 40f,
+            maxSpeed = 100f,
+            angle = 240, // Diagonale haut-gauche
+            spread = 10,
+            colors = colors,
+            emitter = Emitter(duration = 1, TimeUnit.SECONDS).perSecond(300),
+            position = Position.Relative(1.0, 0.6) // Bas droit
+        )
+
+        var showConfetti by remember { mutableStateOf(false) }
+
+        if (showConfetti) {
+            KonfettiView(
+                modifier = Modifier.fillMaxSize(),
+                parties = listOf(partyLeft, partyRight),
+                updateListener = object : OnParticleSystemUpdateListener {
+                    override fun onParticleSystemEnded(system: PartySystem, activeSystems: Int) {
+                        if (activeSystems == 0) {
+                            showConfetti = false
+                        }
+                    }
+                }
             )
         }
+
+
+        // Once result has been choosen
+//        if (dialogString) {
+//            ResultDialog(
+//                viewModel,
+//                selectedItem!!,
+//                selectedTeams,
+//                onScoreSelection,
+//                shopPopup
+//            )
+//        }
 
         // Background image
         Image(
@@ -203,78 +248,37 @@ fun MainScreen(
                     onGenerate(currentTime - lastClickTime)
                     lastClickTime = currentTime
                 })
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Switch(
+                        checked = deleteTrackAfterCompletion,
+                        onCheckedChange = {
+                            viewModel.updateDeleteTrackAfterCompletion(it)
+                        }
+                    )
+                    Spacer(Modifier.width(8.dp))
+                    Text("Supp. les trajets faits")
+                }
             } else {
                 TestSpinWheel(
                     items = selectedTracks,
                     targetIndex = selectedTrackIndex,
+                    selectedItem = selectedItem,
                     onFinished = {
-                        showSelectionCube = true
                         viewModel.setResultPopupDisplay(true)
-                        //TODO: fic crash here
+                        showConfetti = true
+                        //TODO: fix crash here
                         if (viewModel.deleteTrackAfterCompletion.value)
                             Log.d("lubenard", "${selectedItem}")
                             viewModel.deleteCircuit(selectedItem)
+                    },
+                    onRetry = {
+                        showSelectionCube = true
                     }
                 )
             }
-
-
-
-//            SpinningWheel(
-//                items = selectedTracks,
-//                targetIndex = selectedItem,
-//                placeholder = "Merci de choisir au moins une carte",
-//                onItemSelected = {
-//                    viewModel.setPopupDisplay(viewModel.selectedTracks.value[it])
-//                    if (viewModel.deleteTrackAfterCompletion.value)
-//                        viewModel.deleteCircuit(viewModel.selectedTracks.value[it])
-//                }
-//            )
-
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Switch(
-                    checked = deleteTrackAfterCompletion,
-                    onCheckedChange = {
-                        viewModel.updateDeleteTrackAfterCompletion(it)
-                    }
-                )
-                Spacer(Modifier.width(8.dp))
-                Text("Supp. les trajets faits")
-            }
-
-//            var lastClickTime by remember { mutableLongStateOf(0L) }
-
-//            val rainbowColors = listOf(
-//                Color(0xFFFC7777), // Rouge pastel
-//                Color(0xFFFDB468), // Orange pastel
-//                Color(0xFFFCFC6E), // Jaune pastel
-//                Color(0xFF75FF75), // Vert pastel
-//                Color(0xFF6FC4FF), // Bleu pastel
-//                Color(0xFF72BAFD), // Indigo pastel (bleu-violet très clair)
-//                Color(0xFFBF66FF)  // Violet pastel
-//            )
-//
-//            val rainbowBrush = Brush.horizontalGradient(colors = rainbowColors)
-//
-//            Button(
-//                modifier = Modifier
-//                    .fillMaxWidth()
-//                    .height(50.dp)
-//                    .background(brush = rainbowBrush, shape = RoundedCornerShape(16.dp))
-//                    .padding(top = 15.dp),
-//                colors = ButtonDefaults.buttonColors(
-//                    containerColor = Color.Transparent
-//                ),
-//                contentPadding = PaddingValues(),
-//                onClick = {
-//                val currentTime = System.currentTimeMillis()
-//                onGenerate(currentTime - lastClickTime)
-//                lastClickTime = currentTime
-//            }) {
-//                Text("Choisir un trajet", color = Color.Black)
-//            }
         }
     }
 }

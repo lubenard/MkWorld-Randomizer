@@ -12,6 +12,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -19,19 +20,32 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.VerticalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.escatrag.mkworldrandomiser.R
 import com.escatrag.mkworldrandomiser.backend.TrackCombo
 import kotlinx.coroutines.delay
 
@@ -39,12 +53,16 @@ import kotlinx.coroutines.delay
 fun TestSpinWheel(
     items: List<TrackCombo>,
     targetIndex: Int,
-    onFinished: (Int) -> Unit
+    onFinished: (Int) -> Unit,
+    onRetry: () -> Unit,
+    selectedItem: TrackCombo?
 ) {
     // 1. État du Pager (on met un grand nombre pour simuler un défilement infini)
     val pageCount = 500
     val pagerState = rememberPagerState(pageCount = { pageCount })
     val scope = rememberCoroutineScope()
+
+    var showRestartButton by remember { mutableStateOf(false) }
 
     // 2. Animation du texte qui clignote (très rapide)
     val infiniteTransition = rememberInfiniteTransition(label = "blink")
@@ -63,7 +81,7 @@ fun TestSpinWheel(
 
     // 3. Logique du défilement avec ralentissement
     LaunchedEffect(targetIndex) {
-        val itemsSize = items.size
+        val itemsSize = if (items.isEmpty()) 1 else items.size
         val currentPage = pagerState.currentPage
 
         // 1. On calcule combien de pages il reste pour finir le tour actuel
@@ -100,7 +118,8 @@ fun TestSpinWheel(
             )
         }
         Log.d("lubenard", "$targetIndex ->  ${if (targetIndex <= 0|| targetIndex > items.size -1 ) "<= 0" else ctc.getString(items[targetIndex].start.text)}/ $finalPage -> ${if (finalPage <= 0 || finalPage > items.size -1 ) "null" else items[finalPage]}")
-        delay(1500L)
+        delay(1000L)
+        showRestartButton = true
         onFinished(finalPage)
     }
 
@@ -109,16 +128,22 @@ fun TestSpinWheel(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        // --- TEXTE CLIGNOTANT ---
-        Text(
-            text = "SÉLECTION EN COURS",
-            modifier = Modifier.alpha(textAlpha),
-            style = MaterialTheme.typography.labelLarge,
-            color = MaterialTheme.colorScheme.error,
-            fontWeight = FontWeight.Black
-        )
+        Log.d("lubenard", "$targetIndex -> $showRestartButton")
+
+        if (!showRestartButton) {
+            // --- TEXTE CLIGNOTANT ---
+            Text(
+                text = "SÉLECTION EN COURS",
+                modifier = Modifier.alpha(textAlpha),
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.error,
+                fontWeight = FontWeight.Black
+            )
+        }
 
         Spacer(modifier = Modifier.height(32.dp))
+
+        val fallbackEmptyText = if (items.isEmpty()) "Merci de choisir au moins une carte" else null
 
         // --- LE PAGER (ROULETTE) ---
         Box(
@@ -135,20 +160,93 @@ fun TestSpinWheel(
                 userScrollEnabled = false, // On désactive le swipe manuel pendant le random
                 horizontalAlignment = Alignment.CenterHorizontally
             ) { page ->
-                val itemIndex = page % items.size
-                Image(
-                    modifier = Modifier.size(width = 1200.dp, height = 600.dp),
-                    painter = painterResource(items[itemIndex].start.largeIcon),
-                    contentDescription = context.getString(items[itemIndex].start.text)
-                )
-
-                /*Text(
-                    text = context.getString(items[itemIndex].start.text),
-                    style = MaterialTheme.typography.headlineLarge.copy(fontSize = 32.sp),
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary
-                )*/
+                val itemIndex = if (items.isEmpty()) 1 else page % items.size
+                if (fallbackEmptyText == null) {
+                    Image(
+                        modifier = Modifier.size(width = 1200.dp, height = 600.dp),
+                        painter = painterResource(items[itemIndex].start.largeIcon),
+                        contentDescription = context.getString(items[itemIndex].start.text)
+                    )
+                } else {
+                    Text(
+                        text = fallbackEmptyText,
+                        style = MaterialTheme.typography.headlineLarge.copy(
+                            fontSize = 32.sp,
+                            fontWeight = FontWeight.Bold
+                        ),
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
             }
+        }
+        val context = LocalContext.current
+        if (showRestartButton) {
+            Spacer(modifier = Modifier.height(50.dp))
+            val MinecraftFontFamily = FontFamily(
+                Font(R.font.minecraft, FontWeight.Normal),
+            )
+            Text(
+                text = if (selectedItem?.start?.text == null || selectedItem.start.text <= 0) "Unknown" else context.getString(selectedItem?.start?.text!!),
+                fontWeight = FontWeight.Bold,
+                fontFamily = MinecraftFontFamily,
+                fontSize = 35.sp,
+                textAlign = TextAlign.Center
+            )
+            Spacer(modifier = Modifier.height(50.dp))
+            RecommencerButton(onClick = {
+                showRestartButton = false
+                onRetry()
+            })
+        }
+    }
+}
+
+
+@Composable
+fun RecommencerButton(onClick: () -> Unit) {
+    val MinecraftFontFamily = FontFamily(
+        Font(R.font.minecraft, FontWeight.Normal),
+    )
+
+    // 1. Création de la transition infinie
+    val infiniteTransition = rememberInfiniteTransition(label = "BlinkTransition")
+
+    // 2. Animation de l'opacité (Alpha)
+    // On passe de 1.0 (plein) à 0.4 (estompé) en 1 seconde, puis inversement (RepeatMode.Reverse)
+    val alpha by infiniteTransition.animateFloat(
+        initialValue = 1f,
+        targetValue = 0.4f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(durationMillis = 1000, easing = LinearEasing),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "OpacityAnimation"
+    )
+
+    Button(
+        onClick = onClick,
+        modifier = Modifier
+            .graphicsLayer(alpha = alpha)
+            .height(70.dp), // On donne une hauteur fixe pour stabiliser le rendu
+        colors = ButtonDefaults.buttonColors(
+            containerColor = Color(0xFFFFE401),
+            contentColor = Color.Black
+        ),
+        shape = RoundedCornerShape(8.dp),
+        // ON FORCE LE PADDING À 0 pour que le bouton ne décale pas le texte
+        contentPadding = PaddingValues(0.dp)
+    ) {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center // CENTRAGE TOTAL DANS LA BOX
+        ) {
+            Text(
+                text = "RECOMMENCER",
+                fontWeight = FontWeight.Bold,
+                fontFamily = MinecraftFontFamily,
+                fontSize = 35.sp,
+                textAlign = TextAlign.Center // Centrage interne du texte
+            )
         }
     }
 }
