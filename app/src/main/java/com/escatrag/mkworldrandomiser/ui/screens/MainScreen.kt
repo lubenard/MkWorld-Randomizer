@@ -170,8 +170,6 @@ fun MainScreen(
         val selectedTeams = viewModel.selectedRandomTeams.collectAsState().value
         val selectedTrackIndex = viewModel.selectedTrackIndex.collectAsState().value
 
-        val shopPopup = settingsViewModel.isPopupEnabled.collectAsState().value
-
         val colors = listOf(0xFFFF0000.toInt(), 0xFF00FF00.toInt(), 0xFF0000FF.toInt(), 0xFFFFFF00.toInt(), 0xFFFF00FF.toInt())
 
         val partyLeft = Party(
@@ -209,18 +207,6 @@ fun MainScreen(
                 }
             )
         }
-
-
-        // Once result has been choosen
-//        if (dialogString) {
-//            ResultDialog(
-//                viewModel,
-//                selectedItem!!,
-//                selectedTeams,
-//                onScoreSelection,
-//                shopPopup
-//            )
-//        }
 
         // Background image
         Image(

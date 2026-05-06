@@ -32,10 +32,6 @@ import com.escatrag.mkworldrandomiser.viewmodels.TrackViewModel
 @Composable
 fun SettingsScreen(vm: TrackViewModel, settingsViewModel: SettingsViewModel) {
     var darkModeEnabled by remember { mutableStateOf(false) }
-    var showMirroredTracks by remember { mutableStateOf(false) }
-    var showTrackPopup by remember { mutableStateOf(true) }
-
-    val showPopup = settingsViewModel.isPopupEnabled.collectAsState()
 
     Scaffold(
         topBar = {
@@ -61,21 +57,6 @@ fun SettingsScreen(vm: TrackViewModel, settingsViewModel: SettingsViewModel) {
                 subtitle = "Activer le thème de la Route Arc-en-Ciel (Sombre)",
                 checked = darkModeEnabled,
                 onCheckedChange = { darkModeEnabled = it }
-            )
-
-            // Option 3 : Circuits Miroir
-            SettingSwitchRow(
-                title = "Mode Miroir - pas encore disponible",
-                subtitle = "Inclure les circuits inversés dans les choix",
-                checked = showMirroredTracks,
-                onCheckedChange = { showMirroredTracks = it }
-            )
-
-            SettingSwitchRow(
-                title = "Voir la popup de circuit",
-                subtitle = "Afficher ou pas la popup de circuit",
-                checked = showPopup.value,
-                onCheckedChange = { settingsViewModel.setPopupEnabled(it) }
             )
 
             val bias = vm.generationBias.collectAsState()
