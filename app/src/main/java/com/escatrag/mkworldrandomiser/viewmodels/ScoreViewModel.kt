@@ -112,10 +112,16 @@ class ScoreViewModel(application: Application) : AndroidViewModel(application) {
                     1 -> 15
                     2 -> 12
                     3 -> 10
-                    4 -> 9
-                    5 -> 8
-                    6, 7 -> 7
-                    else -> 6
+                    4, 5 -> 9
+                    6, 7 -> 8
+                    8, 9 -> 7
+                    10, 11, 12 -> 6
+                    13, 14, 15 -> 5
+                    16, 17, 18 -> 4
+                    19, 20, 21 -> 3
+                    22, 23 -> 2
+                    24 -> 1
+                    else -> 0
                 }
                 player.copy(currentMonthScore = player.currentMonthScore + pointsGained)
             } else {

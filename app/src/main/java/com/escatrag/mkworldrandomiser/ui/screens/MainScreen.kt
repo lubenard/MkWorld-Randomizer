@@ -36,8 +36,9 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.escatrag.mkworldrandomiser.R
+import com.escatrag.mkworldrandomiser.ui.composables.HomeUI
 import com.escatrag.mkworldrandomiser.ui.composables.SpinWheel
-import com.escatrag.mkworldrandomiser.ui.composables.TestNewHomeUI
+import com.escatrag.mkworldrandomiser.viewmodels.ScoreViewModel
 import com.escatrag.mkworldrandomiser.viewmodels.SettingsViewModel
 import com.escatrag.mkworldrandomiser.viewmodels.TrackViewModel
 import nl.dionsegijn.konfetti.compose.KonfettiView
@@ -58,6 +59,7 @@ fun MainScreen(
     onSettings: () -> Unit,
     onScore: () -> Unit,
     onScoreSelection: () -> Unit,
+    scoreViewModel: ScoreViewModel,
 ) {
     val selectedTracks by viewModel.selectedTracks.collectAsState()
     val deleteTrackAfterCompletion by viewModel.deleteTrackAfterCompletion.collectAsState()
@@ -167,6 +169,7 @@ fun MainScreen(
         val selectedItem = viewModel.selectedTrack.collectAsState().value
         val selectedTeams = viewModel.selectedRandomTeams.collectAsState().value
         val selectedTrackIndex = viewModel.selectedTrackIndex.collectAsState().value
+        val players = scoreViewModel.players.collectAsState().value
 
         val colors = listOf(0xFFFF0000.toInt(), 0xFF00FF00.toInt(), 0xFF0000FF.toInt(), 0xFFFFFF00.toInt(), 0xFFFF00FF.toInt())
 
@@ -226,7 +229,7 @@ fun MainScreen(
         ) {
 
             if (showSelectionCube) {
-                TestNewHomeUI(selectedTracks.size, onClick = {
+                HomeUI(selectedTracks.size, onClick = {
                     val currentTime = System.currentTimeMillis()
                     showSelectionCube = false
                     onGenerate(currentTime - lastClickTime)
@@ -250,16 +253,18 @@ fun MainScreen(
                     items = selectedTracks,
                     targetIndex = selectedTrackIndex,
                     selectedItem = selectedItem,
+                    playersSize = players.size,
                     onFinished = {
                         viewModel.setResultPopupDisplay(true)
                         showConfetti = true
-                        //TODO: fix crash here
-                        if (viewModel.deleteTrackAfterCompletion.value)
-                            Log.d("lubenard", "${selectedItem}")
-                            viewModel.deleteCircuit(selectedItem)
                     },
                     onRetry = {
                         showSelectionCube = true
+                        //TODO: fix crash here
+                        if (viewModel.deleteTrackAfterCompletion.value) {
+                            Log.d("lubenard", "${selectedItem}")
+                            viewModel.deleteCircuit(selectedItem)
+                        }
                     },
                     onScoreSelection = onScoreSelection
                 )

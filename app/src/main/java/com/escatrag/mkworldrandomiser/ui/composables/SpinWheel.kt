@@ -56,7 +56,8 @@ fun SpinWheel(
     onFinished: (Int) -> Unit,
     onRetry: () -> Unit,
     selectedItem: TrackCombo?,
-    onScoreSelection: () -> Unit
+    onScoreSelection: () -> Unit,
+    playersSize: Int
 ) {
     // 1. État du Pager (on met un grand nombre pour simuler un défilement infini)
     val pageCount = 500
@@ -193,29 +194,32 @@ fun SpinWheel(
                 fontSize = 35.sp,
                 textAlign = TextAlign.Center
             )
-            Spacer(modifier = Modifier.height(20.dp))
 
-            Button(
-                onClick = onScoreSelection,
-                modifier = Modifier
-                    .height(48.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFFFFE401),
-                    contentColor = Color.Black
-                ),
-                shape = RoundedCornerShape(4.dp),
-                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 0.dp)
-            ) {
-                Box(
-                    contentAlignment = Alignment.Center
+            if (playersSize != 0) {
+                Spacer(modifier = Modifier.height(20.dp))
+
+                Button(
+                    onClick = onScoreSelection,
+                    modifier = Modifier
+                        .height(48.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFFFFE401),
+                        contentColor = Color.Black
+                    ),
+                    shape = RoundedCornerShape(4.dp),
+                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 0.dp)
                 ) {
-                    Text(
-                        text = "Saisir les scores",
-                        fontWeight = FontWeight.Bold,
-                        fontFamily = MinecraftFontFamily,
-                        fontSize = 20.sp,
-                        textAlign = TextAlign.Center
-                    )
+                    Box(
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "Saisir les scores",
+                            fontWeight = FontWeight.Bold,
+                            fontFamily = MinecraftFontFamily,
+                            fontSize = 20.sp,
+                            textAlign = TextAlign.Center
+                        )
+                    }
                 }
             }
             Spacer(modifier = Modifier.height(50.dp))

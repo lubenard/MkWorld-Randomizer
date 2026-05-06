@@ -10,7 +10,6 @@ import com.escatrag.mkworldrandomiser.backend.TrackItems
 import com.escatrag.mkworldrandomiser.backend.TrackRepository
 import com.escatrag.mkworldrandomiser.backend.map
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
@@ -191,7 +190,7 @@ class TrackViewModel : ViewModel() {
         }
     }
 
-    fun deleteCircuit(circuit: TrackCombo?, skipScrollDelay: Long = 3500) {
+    fun deleteCircuit(circuit: TrackCombo?) {
         if (circuit == null) {
             Log.e("lubenard", "circuit is null !!")
             return
@@ -201,7 +200,6 @@ class TrackViewModel : ViewModel() {
             if (_deleteTrackAfterCompletion.value && !_includeRoutes.value) {
                 Log.d("lubenard", "Deleting track $circuit}")
                 val tempValue = _selectedTracks.value.toMutableList()
-                delay(skipScrollDelay)
                 Log.d("lubenard", "Updating selectedTracks without $circuit")
                 _selectedTracks.value = tempValue.filter { it != circuit }
             }

@@ -44,7 +44,7 @@ import com.escatrag.mkworldrandomiser.R
 import kotlin.math.sin
 
 @Composable
-fun TestNewHomeUI(availableCoursesCount: Int = 48, onClick: () -> Unit) {
+fun HomeUI(availableCoursesCount: Int = 48, onClick: () -> Unit) {
     // 1. Création du gestionnaire d'animations infinies
     val infiniteTransition = rememberInfiniteTransition(label = "homepage_animations")
 

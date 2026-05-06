@@ -33,6 +33,7 @@ class MainActivity : ComponentActivity() {
                     MainScreen(
                         viewModel = vm,
                         settingsViewModel = settingsVM,
+                        scoreViewModel = scoreVm,
                         onGenerate = { delay ->
                             vm.generateCourse()
                             vm.pickRandomTeams()
