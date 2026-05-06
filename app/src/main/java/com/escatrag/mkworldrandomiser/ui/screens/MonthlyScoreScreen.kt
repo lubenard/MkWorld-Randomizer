@@ -285,7 +285,7 @@ fun MonthlyScoreScreen(viewModel: ScoreViewModel, navController: NavHostControll
 
         // --- GESTION DE LA POPUP D'EDITION ---
         editingProfile?.let { profile ->
-            EditProfilePopup(
+            ProfileCreationPopup(
                 profile = profile,
                 onDismiss = { viewModel.closeEditPopup() },
                 onSave = { updatedProfile ->

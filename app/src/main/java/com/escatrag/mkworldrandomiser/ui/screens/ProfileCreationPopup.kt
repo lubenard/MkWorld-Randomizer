@@ -46,7 +46,7 @@ import com.escatrag.mkworldrandomiser.R
 import com.escatrag.mkworldrandomiser.viewmodels.PlayerProfile
 
 @Composable
-fun EditProfilePopup(
+fun ProfileCreationPopup(
     profile: PlayerProfile,
     onDismiss: () -> Unit,
     onSave: (PlayerProfile) -> Unit
