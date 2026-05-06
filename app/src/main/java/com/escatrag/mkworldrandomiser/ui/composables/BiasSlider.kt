@@ -18,7 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun TestSlider(
+fun BiasSlider(
     value: Float, // Provient de ton viewModel (ex: state.zoomValue)
     onValueChange: (Float) -> Unit // Fonction du viewModel (ex: viewModel::onZoomChange)
 ) {

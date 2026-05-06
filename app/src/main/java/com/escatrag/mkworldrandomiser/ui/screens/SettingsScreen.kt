@@ -24,7 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.escatrag.mkworldrandomiser.BuildConfig
-import com.escatrag.mkworldrandomiser.ui.composables.TestSlider
+import com.escatrag.mkworldrandomiser.ui.composables.BiasSlider
 import com.escatrag.mkworldrandomiser.viewmodels.SettingsViewModel
 import com.escatrag.mkworldrandomiser.viewmodels.TrackViewModel
 
@@ -60,7 +60,7 @@ fun SettingsScreen(vm: TrackViewModel, settingsViewModel: SettingsViewModel) {
             )
 
             val bias = vm.generationBias.collectAsState()
-            TestSlider(bias.value) {
+            BiasSlider(bias.value) {
                 vm.updateGenerationBias(it)
             }
 

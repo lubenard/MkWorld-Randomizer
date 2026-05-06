@@ -60,11 +60,11 @@ import com.escatrag.mkworldrandomiser.viewmodels.PlayerProfile
 import com.escatrag.mkworldrandomiser.viewmodels.ScoreViewModel
 
 @Composable
-fun PodiumSection(topThree: List<PlayerProfile>) {
+fun PodiumSection(podium: List<PlayerProfile>) {
     // On récupère les profils s'ils existent
-    val first = topThree.getOrNull(0)
-    val second = topThree.getOrNull(1)
-    val third = topThree.getOrNull(2)
+    val first = podium.getOrNull(0)
+    val second = podium.getOrNull(1)
+    val third = podium.getOrNull(2)
 
     Row(
         modifier = Modifier
@@ -185,7 +185,7 @@ fun MonthlyScoreScreen(viewModel: ScoreViewModel, navController: NavHostControll
     var showResetPlayersDialog by remember { mutableStateOf(false) }
 
     // On sépare les données pour le podium
-    val topThree = if (players.isNotEmpty()) players.take(3) else unsortedPlayers.take(3)
+    val podium = if (players.isNotEmpty()) players.take(3) else unsortedPlayers.take(3)
     val theRest = if (players.isNotEmpty()) players.drop(3) else unsortedPlayers.drop(3)
 
     // --- NOUVEAU : Popup de confirmation pour éviter les missclicks ---
@@ -323,7 +323,7 @@ fun MonthlyScoreScreen(viewModel: ScoreViewModel, navController: NavHostControll
                     }
                 } else {
                     // --- MODE PODIUM (Quand il y a de la compétition) ---
-                    PodiumSection(topThree)
+                    PodiumSection(podium)
 
                     Spacer(modifier = Modifier.height(16.dp))
 

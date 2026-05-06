@@ -36,8 +36,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.escatrag.mkworldrandomiser.R
+import com.escatrag.mkworldrandomiser.ui.composables.SpinWheel
 import com.escatrag.mkworldrandomiser.ui.composables.TestNewHomeUI
-import com.escatrag.mkworldrandomiser.ui.composables.TestSpinWheel
 import com.escatrag.mkworldrandomiser.viewmodels.SettingsViewModel
 import com.escatrag.mkworldrandomiser.viewmodels.TrackViewModel
 import nl.dionsegijn.konfetti.compose.KonfettiView
@@ -58,8 +58,6 @@ fun MainScreen(
     onSettings: () -> Unit,
     onScore: () -> Unit,
     onScoreSelection: () -> Unit,
-    onInfo: () -> Unit,
-    onTeam: () -> Unit,
 ) {
     val selectedTracks by viewModel.selectedTracks.collectAsState()
     val deleteTrackAfterCompletion by viewModel.deleteTrackAfterCompletion.collectAsState()
@@ -248,7 +246,7 @@ fun MainScreen(
                     Text("Supp. les trajets faits")
                 }
             } else {
-                TestSpinWheel(
+                SpinWheel(
                     items = selectedTracks,
                     targetIndex = selectedTrackIndex,
                     selectedItem = selectedItem,
@@ -262,7 +260,8 @@ fun MainScreen(
                     },
                     onRetry = {
                         showSelectionCube = true
-                    }
+                    },
+                    onScoreSelection = onScoreSelection
                 )
             }
         }

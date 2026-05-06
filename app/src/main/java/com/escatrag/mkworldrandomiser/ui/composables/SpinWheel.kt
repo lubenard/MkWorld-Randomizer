@@ -50,12 +50,13 @@ import com.escatrag.mkworldrandomiser.backend.TrackCombo
 import kotlinx.coroutines.delay
 
 @Composable
-fun TestSpinWheel(
+fun SpinWheel(
     items: List<TrackCombo>,
     targetIndex: Int,
     onFinished: (Int) -> Unit,
     onRetry: () -> Unit,
-    selectedItem: TrackCombo?
+    selectedItem: TrackCombo?,
+    onScoreSelection: () -> Unit
 ) {
     // 1. État du Pager (on met un grand nombre pour simuler un défilement infini)
     val pageCount = 500
@@ -88,7 +89,7 @@ fun TestSpinWheel(
         val offsetInRound = currentPage % itemsSize
 
         // 2. On définit combien de tours complets on veut faire avant de s'arrêter (ex: 3 tours)
-        val fullSpins = 3
+        val fullSpins = 2
 
         // 3. LA FORMULE MAGIQUE :
         // On calcule le nombre de pas nécessaires pour atteindre le targetIndex
@@ -192,6 +193,31 @@ fun TestSpinWheel(
                 fontSize = 35.sp,
                 textAlign = TextAlign.Center
             )
+            Spacer(modifier = Modifier.height(20.dp))
+
+            Button(
+                onClick = onScoreSelection,
+                modifier = Modifier
+                    .height(48.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFFFFE401),
+                    contentColor = Color.Black
+                ),
+                shape = RoundedCornerShape(4.dp),
+                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 0.dp)
+            ) {
+                Box(
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "Saisir les scores",
+                        fontWeight = FontWeight.Bold,
+                        fontFamily = MinecraftFontFamily,
+                        fontSize = 20.sp,
+                        textAlign = TextAlign.Center
+                    )
+                }
+            }
             Spacer(modifier = Modifier.height(50.dp))
             RecommencerButton(onClick = {
                 showRestartButton = false

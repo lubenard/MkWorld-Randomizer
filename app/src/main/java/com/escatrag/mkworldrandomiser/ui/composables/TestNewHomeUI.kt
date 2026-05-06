@@ -166,7 +166,7 @@ fun TestNewHomeUI(availableCoursesCount: Int = 48, onClick: () -> Unit) {
                 imageVector = Icons.Default.QuestionMark,
                 contentDescription = "Star",
                 tint = Color.White,
-                modifier = Modifier.size(40.dp)
+                modifier = Modifier.size(120.dp)
             )
         }
         Spacer(Modifier.height(24.dp))

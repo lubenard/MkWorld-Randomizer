@@ -41,8 +41,7 @@ class MainActivity : ComponentActivity() {
                         onSettings = { navController.navigate("settings") },
                         onScore = { navController.navigate("score") },
                         onScoreSelection = { navController.navigate("scoreSelection") },
-                        onInfo = { navController.navigate("infos") },
-                    ) { navController.navigate("teams") }
+                    )
                 }
 
                 composable("selection") {
