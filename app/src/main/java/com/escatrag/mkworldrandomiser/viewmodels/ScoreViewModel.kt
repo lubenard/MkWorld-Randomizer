@@ -29,7 +29,10 @@ data class PlayerProfile(
     val name: String = "",
     val avatarRes: Int? = null, // Mis en optionnel pour gérer les initiales
     val profileColor: Int = Color.Gray.toArgb(),
-    val currentMonthScore: Int = 0
+    val currentMonthScore: Int = 0,
+    val runNumbers: Int = 0,
+    val victoryNumbers: Int = 0,
+    val timesInPodium: Int = 0
 ) {
     val composeColor: Color get() = Color(profileColor)
     val initials: String get() = if (name.isNotEmpty()) name.take(1).uppercase() else "?"
@@ -123,7 +126,11 @@ class ScoreViewModel(application: Application) : AndroidViewModel(application) {
                     24 -> 1
                     else -> 0
                 }
-                player.copy(currentMonthScore = player.currentMonthScore + pointsGained)
+                player.copy(
+                    currentMonthScore = player.currentMonthScore + pointsGained,
+                    runNumbers = player.runNumbers + 1,
+                    timesInPodium = if (position <= 3) player.timesInPodium + 1 else player.timesInPodium
+                )
             } else {
                 player
             }

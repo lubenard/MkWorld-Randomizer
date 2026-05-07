@@ -80,7 +80,7 @@ fun RaceResultScreen(
     // Map pour stocker [ID du joueur -> Position]
     val rankings = remember { mutableStateMapOf<String, Int>() }
 
-    Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+    Column(modifier = Modifier.fillMaxSize().padding(padding).padding(16.dp)) {
         Text("Résultats de la course", style = MaterialTheme.typography.headlineMedium)
 
         Text("1. Sélectionnez les participants", modifier = Modifier.padding(vertical = 8.dp))
