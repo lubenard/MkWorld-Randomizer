@@ -22,7 +22,6 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Group
@@ -172,7 +171,11 @@ fun PodiumBar(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MonthlyScoreScreen(viewModel: ScoreViewModel, navController: NavHostController) {
+fun MonthlyScoreScreen(
+    viewModel: ScoreViewModel,
+    navController: NavHostController,
+    padding1: PaddingValues
+) {
     // Liste triée des joueurs
     val players by viewModel.sortedPlayers.collectAsState()
     val unsortedPlayers by viewModel.players.collectAsState()
@@ -240,11 +243,6 @@ fun MonthlyScoreScreen(viewModel: ScoreViewModel, navController: NavHostControll
         topBar = {
             CenterAlignedTopAppBar(
                 title = { Text("Classement du Mois") },
-                navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Retour")
-                    }
-                },
                 // --- NOUVEAU : Bouton pour supprimer/réinitialiser ---
                 actions = {
                     Log.d("escatrag", "${players.isNotEmpty()} || ${unsortedPlayers.isNotEmpty()}")
@@ -276,7 +274,7 @@ fun MonthlyScoreScreen(viewModel: ScoreViewModel, navController: NavHostControll
                 containerColor = MaterialTheme.colorScheme.primary,
                 contentColor = Color.White,
                 shape = CircleShape,
-                modifier = Modifier.padding(16.dp)
+                modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 32.dp)
             ) {
                 Icon(Icons.Default.Add, contentDescription = "Ajouter un pilote")
             }

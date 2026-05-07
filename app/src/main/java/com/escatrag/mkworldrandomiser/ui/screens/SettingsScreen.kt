@@ -2,6 +2,7 @@ package com.escatrag.mkworldrandomiser.ui.screens
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -30,7 +31,7 @@ import com.escatrag.mkworldrandomiser.viewmodels.TrackViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SettingsScreen(vm: TrackViewModel, settingsViewModel: SettingsViewModel) {
+fun SettingsScreen(vm: TrackViewModel, settingsViewModel: SettingsViewModel, padding: PaddingValues) {
     var darkModeEnabled by remember { mutableStateOf(false) }
 
     Scaffold(

@@ -6,6 +6,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -71,7 +72,8 @@ fun PlayerAvatar(
 @Composable
 fun RaceResultScreen(
     viewModel: ScoreViewModel,
-    onResultsSubmitted: () -> Unit
+    onResultsSubmitted: () -> Unit,
+    padding: PaddingValues
 ) {
     val allPlayers by viewModel.players.collectAsState()
     val participants = remember { mutableStateListOf<PlayerProfile>() }

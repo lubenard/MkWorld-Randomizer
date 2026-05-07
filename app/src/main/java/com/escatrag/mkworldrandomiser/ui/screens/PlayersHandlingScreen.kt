@@ -32,7 +32,7 @@ import com.escatrag.mkworldrandomiser.viewmodels.ScoreViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ManagePlayersScreen(viewModel: ScoreViewModel, onBack: () -> Unit) {
+fun ManagePlayersScreen(viewModel: ScoreViewModel, onBack: () -> Unit, padding1: PaddingValues) {
     val players by viewModel.players.collectAsState()
 
     Scaffold(
