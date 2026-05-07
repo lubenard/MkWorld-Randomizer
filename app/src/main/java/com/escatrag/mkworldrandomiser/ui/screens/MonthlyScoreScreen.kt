@@ -52,6 +52,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.escatrag.mkworldrandomiser.R
+import com.escatrag.mkworldrandomiser.ui.composables.PlayersDetailsComposable
 import com.escatrag.mkworldrandomiser.ui.composables.PodiumSection
 import com.escatrag.mkworldrandomiser.viewmodels.PlayerProfile
 import com.escatrag.mkworldrandomiser.viewmodels.ScoreViewModel
@@ -80,7 +81,6 @@ fun MonthlyScoreScreen(
     var selectedPlayerForDelete by remember { mutableStateOf<PlayerProfile?>(null) }
     var selectedPlayerForDetails by remember { mutableStateOf<PlayerProfile?>(null) }
 
-
     // Reinitialiser les scores du mois
     if (showResetDialog) {
         AlertDialog(
@@ -106,21 +106,9 @@ fun MonthlyScoreScreen(
     }
 
     if (selectedPlayerForDetails != null) {
-        AlertDialog(
-            onDismissRequest = { selectedPlayerForDetails = null },
-            title = { Text("Détails : ${selectedPlayerForDetails?.name}") },
-            text = {
-                Column {
-                    Text("Score total : ${selectedPlayerForDetails?.currentMonthScore}")
-                    //Text("Dernière partie : ${selectedPlayerForDetails?.lastGameDate}")
-                }
-            },
-            confirmButton = {
-                TextButton(onClick = { selectedPlayerForDetails = null }) {
-                    Text("Fermer")
-                }
-            }
-        )
+        PlayersDetailsComposable(selectedPlayerForDetails!!) {
+            selectedPlayerForDetails = null
+        }
     }
 
     // --- Supprimer tous les joueurs
