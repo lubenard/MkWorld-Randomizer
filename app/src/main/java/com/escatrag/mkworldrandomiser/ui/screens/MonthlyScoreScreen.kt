@@ -268,17 +268,6 @@ fun MonthlyScoreScreen(
                 }
             )
         },
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = { viewModel.startCreatingProfile() },
-                containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = Color.White,
-                shape = CircleShape,
-                modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 32.dp)
-            ) {
-                Icon(Icons.Default.Add, contentDescription = "Ajouter un pilote")
-            }
-        }
     ) { padding ->
 
         // --- GESTION DE LA POPUP D'EDITION ---
@@ -292,50 +281,74 @@ fun MonthlyScoreScreen(
             )
         }
 
-        Column(
-            modifier = Modifier.fillMaxSize().padding(padding)
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
         ) {
-            // --- GESTION DE L'ÉTAT VIDE ---
-            if (players.isEmpty() && unsortedPlayers.isEmpty()) {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text("Aucun pilote pour l'instant...", style = MaterialTheme.typography.bodyLarge, color = Color.Gray)
-                        Text("Clique sur le + pour créer ton profil !", style = MaterialTheme.typography.bodyMedium, color = Color.Gray)
-                    }
-                }
-            } else {
-                // Vérifier si tous les scores sont à zéro
-                val allScoresAreZero = players.all { it.currentMonthScore == 0 }
-
-                if (allScoresAreZero) {
-                    // --- MODE LISTE UNIQUEMENT (Début de mois / Reset) ---
-                    LazyColumn(
-                        modifier = Modifier.fillMaxSize(),
-                        contentPadding = PaddingValues(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        // On affiche TOUS les joueurs (players) et non juste "theRest"
-                        itemsIndexed(players) { index, player ->
-                            ScoreRow(rank = index + 1, player = player)
+            Column(
+                modifier = Modifier.fillMaxSize()
+            ) {
+                // --- GESTION DE L'ÉTAT VIDE ---
+                if (players.isEmpty() && unsortedPlayers.isEmpty()) {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Text(
+                                "Aucun pilote pour l'instant...",
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = Color.Gray
+                            )
+                            Text(
+                                "Clique sur le + pour créer ton profil !",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = Color.Gray
+                            )
                         }
                     }
                 } else {
-                    // --- MODE PODIUM (Quand il y a de la compétition) ---
-                    PodiumSection(podium)
+                    // Vérifier si tous les scores sont à zéro
+                    val allScoresAreZero = players.all { it.currentMonthScore == 0 }
 
-                    Spacer(modifier = Modifier.height(16.dp))
+                    if (allScoresAreZero) {
+                        // --- MODE LISTE UNIQUEMENT (Début de mois / Reset) ---
+                        LazyColumn(
+                            modifier = Modifier.fillMaxSize(),
+                            contentPadding = PaddingValues(16.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            // On affiche TOUS les joueurs (players) et non juste "theRest"
+                            itemsIndexed(players) { index, player ->
+                                ScoreRow(rank = index + 1, player = player)
+                            }
+                        }
+                    } else {
+                        // --- MODE PODIUM (Quand il y a de la compétition) ---
+                        PodiumSection(podium)
 
-                    LazyColumn(
-                        modifier = Modifier.fillMaxSize(),
-                        contentPadding = PaddingValues(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        itemsIndexed(theRest) { index, player ->
-                            // On reprend à partir du 4ème
-                            ScoreRow(rank = index + 4, player = player)
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        LazyColumn(
+                            modifier = Modifier.fillMaxSize(),
+                            contentPadding = PaddingValues(16.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            itemsIndexed(theRest) { index, player ->
+                                // On reprend à partir du 4ème
+                                ScoreRow(rank = index + 4, player = player)
+                            }
                         }
                     }
                 }
+            }
+
+            FloatingActionButton(
+                onClick = { viewModel.startCreatingProfile() },
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = Color.White,
+                shape = CircleShape,
+                modifier = Modifier.align(Alignment.BottomEnd).padding(bottom = 120.dp, end = 16.dp)
+            ) {
+                Icon(Icons.Default.Add, contentDescription = "Ajouter un pilote")
             }
         }
     }
