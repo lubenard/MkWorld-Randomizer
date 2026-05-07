@@ -93,11 +93,11 @@ fun TrackSelectionScreen(
             OutlinedTextField(
                 value = searchQuery,
                 onValueChange = { searchQuery = it },
-                modifier = Modifier.fillMaxWidth(),
+²                modifier = Modifier.fillMaxWidth().background(Color.White),
                 placeholder = { Text("Rechercher un circuit") },
                 leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
                 shape = RoundedCornerShape(12.dp),
-                singleLine = true
+                singleLine = true,
             )
         }
 
