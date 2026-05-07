@@ -35,12 +35,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.escatrag.mkworldrandomiser.R
+import com.escatrag.mkworldrandomiser.ui.theme.MinecraftFontFamily
 import kotlin.math.sin
 
 @Composable
@@ -93,37 +91,13 @@ fun HomeUI(availableCoursesCount: Int = 48, onClick: () -> Unit) {
         label = "wave"
     )
 
-    val MinecraftFontFamily = FontFamily(
-        Font(R.font.minecraft, FontWeight.Normal),
-    )
-
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .fillMaxHeight(0.85f),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Box(
-            modifier = Modifier.padding(top = 30.dp),
-            contentAlignment = Alignment.TopStart // Aligne les contenus au même endroit
-        ) {
-            // 1. Le texte du dessous (décalé de 3px en rouge)
-            Text(
-                text = "MARIO KART",
-                fontFamily = MinecraftFontFamily,
-                fontSize = 50.sp,
-                color = Color.Red,
-                modifier = Modifier.offset(x = 3.dp, y = 3.dp)
-            )
-
-            // 2. Le texte du dessus (en jaune)
-            Text(
-                text = "MARIO KART",
-                fontFamily = MinecraftFontFamily,
-                fontSize = 50.sp,
-                color = Color.Yellow
-            )
-        }
+        TitleComposable(text = "MARIO KART", fontSize = 50.sp, Modifier.padding(top = 30.dp))
         Text("Circuit aléatoire".uppercase(),
             fontFamily = MinecraftFontFamily,
             fontSize = 30.sp,

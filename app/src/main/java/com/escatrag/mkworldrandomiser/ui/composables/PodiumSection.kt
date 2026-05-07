@@ -29,6 +29,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.escatrag.mkworldrandomiser.R
+import com.escatrag.mkworldrandomiser.ui.theme.MinecraftFontFamily
 import com.escatrag.mkworldrandomiser.viewmodels.PlayerProfile
 
 @Composable
@@ -121,11 +122,13 @@ fun PodiumBar(
             text = player.name,
             fontWeight = FontWeight.Bold,
             maxLines = 1,
+            fontFamily = MinecraftFontFamily,
             style = if (rank == 1) MaterialTheme.typography.titleMedium else MaterialTheme.typography.bodyMedium
         )
         Text(
             text = "${player.currentMonthScore} pts",
             style = MaterialTheme.typography.bodySmall,
+            fontFamily = MinecraftFontFamily,
             color = Color.Gray
         )
 

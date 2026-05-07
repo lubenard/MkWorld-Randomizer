@@ -39,14 +39,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.escatrag.mkworldrandomiser.R
 import com.escatrag.mkworldrandomiser.backend.TrackCombo
+import com.escatrag.mkworldrandomiser.ui.theme.MinecraftFontFamily
 import kotlinx.coroutines.delay
 
 @Composable
@@ -184,9 +182,7 @@ fun SpinWheel(
         val context = LocalContext.current
         if (showRestartButton) {
             Spacer(modifier = Modifier.height(50.dp))
-            val MinecraftFontFamily = FontFamily(
-                Font(R.font.minecraft, FontWeight.Normal),
-            )
+
             Text(
                 text = if (selectedItem?.start?.text == null || selectedItem.start.text <= 0) "Unknown" else context.getString(selectedItem?.start?.text!!),
                 fontWeight = FontWeight.Bold,
@@ -234,10 +230,6 @@ fun SpinWheel(
 
 @Composable
 fun RecommencerButton(onClick: () -> Unit) {
-    val MinecraftFontFamily = FontFamily(
-        Font(R.font.minecraft, FontWeight.Normal),
-    )
-
     // 1. Création de la transition infinie
     val infiniteTransition = rememberInfiniteTransition(label = "BlinkTransition")
 

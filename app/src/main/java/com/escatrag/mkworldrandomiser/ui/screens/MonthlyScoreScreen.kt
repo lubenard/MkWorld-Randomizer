@@ -27,13 +27,11 @@ import androidx.compose.material.icons.filled.GroupOff
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -50,10 +48,12 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.escatrag.mkworldrandomiser.R
 import com.escatrag.mkworldrandomiser.ui.composables.PlayersDetailsComposable
 import com.escatrag.mkworldrandomiser.ui.composables.PodiumSection
+import com.escatrag.mkworldrandomiser.ui.composables.TitleComposable
 import com.escatrag.mkworldrandomiser.viewmodels.PlayerProfile
 import com.escatrag.mkworldrandomiser.viewmodels.ScoreViewModel
 
@@ -158,138 +158,131 @@ fun MonthlyScoreScreen(
         )
     }
 
-    Scaffold(
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = { Text("Classement du Mois") },
-                // --- NOUVEAU : Bouton pour supprimer/réinitialiser ---
-                actions = {
-                    Log.d("escatrag", "${players.isNotEmpty()} || ${unsortedPlayers.isNotEmpty()}")
-                    if (players.isNotEmpty() || unsortedPlayers.isNotEmpty()) {
-                        IconButton(onClick = { showResetDialog = true }) {
-                            Icon(
-                                imageVector = Icons.Default.Delete,
-                                contentDescription = "Réinitialiser les scores",
-                                tint = MaterialTheme.colorScheme.error
-                            )
-                        }
-                        IconButton(onClick = { showResetPlayersDialog = true }) {
-                            Icon(
-                                imageVector = Icons.Default.GroupOff,
-                                contentDescription = "Supprimer tous les joueurs",
-                                tint = MaterialTheme.colorScheme.error
-                            )
-                        }
+
+    // --- GESTION DE LA POPUP D'EDITION ---
+    editingProfile?.let { profile ->
+        ProfileCreationPopup(
+            profile = profile,
+            onDismiss = { viewModel.closeEditPopup() },
+            onSave = { updatedProfile ->
+                viewModel.saveProfile(updatedProfile)
+            }
+        )
+    }
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+    ) {
+        Column(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            Row() {
+                TitleComposable(text = "CLASSEMENT", fontSize = 30.sp)
+                Log.d("escatrag", "${players.isNotEmpty()} || ${unsortedPlayers.isNotEmpty()}")
+                if (players.isNotEmpty() || unsortedPlayers.isNotEmpty()) {
+                    IconButton(onClick = { showResetDialog = true }) {
+                        Icon(
+                            imageVector = Icons.Default.Delete,
+                            contentDescription = "Réinitialiser les scores",
+                            tint = MaterialTheme.colorScheme.error
+                        )
+                    }
+                    IconButton(onClick = { showResetPlayersDialog = true }) {
+                        Icon(
+                            imageVector = Icons.Default.GroupOff,
+                            contentDescription = "Supprimer tous les joueurs",
+                            tint = MaterialTheme.colorScheme.error
+                        )
                     }
                 }
-            )
-        },
-    ) { padding ->
+            }
 
-        // --- GESTION DE LA POPUP D'EDITION ---
-        editingProfile?.let { profile ->
-            ProfileCreationPopup(
-                profile = profile,
-                onDismiss = { viewModel.closeEditPopup() },
-                onSave = { updatedProfile ->
-                    viewModel.saveProfile(updatedProfile)
+            // --- GESTION DE L'ÉTAT VIDE ---
+            if (players.isEmpty() && unsortedPlayers.isEmpty()) {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text(
+                            "Aucun pilote pour l'instant...",
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = Color.Gray
+                        )
+                        Text(
+                            "Clique sur le + pour créer ton profil !",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = Color.Gray
+                        )
+                    }
                 }
-            )
-        }
+            } else {
+                // Vérifier si tous les scores sont à zéro
+                val allScoresAreZero = players.all { it.currentMonthScore == 0 }
 
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-        ) {
-            Column(
-                modifier = Modifier.fillMaxSize()
-            ) {
-                // --- GESTION DE L'ÉTAT VIDE ---
-                if (players.isEmpty() && unsortedPlayers.isEmpty()) {
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Text(
-                                "Aucun pilote pour l'instant...",
-                                style = MaterialTheme.typography.bodyLarge,
-                                color = Color.Gray
-                            )
-                            Text(
-                                "Clique sur le + pour créer ton profil !",
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = Color.Gray
+                if (allScoresAreZero) {
+                    // --- MODE LISTE UNIQUEMENT (Début de mois / Reset) ---
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = PaddingValues(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        // On affiche TOUS les joueurs (players) et non juste "theRest"
+                        itemsIndexed(players) { index, player ->
+                            ScoreRow(rank = index + 1, player = player,
+                                onClick = {
+                                    selectedPlayerForDetails = player
+                                },
+                                onLongClick = {
+                                    selectedPlayerForDelete = player
+                                }
                             )
                         }
                     }
                 } else {
-                    // Vérifier si tous les scores sont à zéro
-                    val allScoresAreZero = players.all { it.currentMonthScore == 0 }
-
-                    if (allScoresAreZero) {
-                        // --- MODE LISTE UNIQUEMENT (Début de mois / Reset) ---
-                        LazyColumn(
-                            modifier = Modifier.fillMaxSize(),
-                            contentPadding = PaddingValues(16.dp),
-                            verticalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            // On affiche TOUS les joueurs (players) et non juste "theRest"
-                            itemsIndexed(players) { index, player ->
-                                ScoreRow(rank = index + 1, player = player,
-                                    onClick = {
-                                        selectedPlayerForDetails = player
-                                    },
-                                    onLongClick = {
-                                        selectedPlayerForDelete = player
-                                    }
-                                )
-                            }
-                        }
-                    } else {
-                        // --- MODE PODIUM (Quand il y a de la compétition) ---
-                        PodiumSection(podium,
-                            onClick = { player ->
-                                selectedPlayerForDetails = player
-                            },
-                            onLongClick = { player ->
+                    // --- MODE PODIUM (Quand il y a de la compétition) ---
+                    PodiumSection(podium,
+                        onClick = { player ->
+                            selectedPlayerForDetails = player
+                        },
+                        onLongClick = { player ->
                             selectedPlayerForDelete = player
-                            }
-                        )
+                        }
+                    )
 
-                        Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(16.dp))
 
-                        LazyColumn(
-                            modifier = Modifier.fillMaxSize(),
-                            contentPadding = PaddingValues(16.dp),
-                            verticalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            itemsIndexed(theRest) { index, player ->
-                                // On reprend à partir du 4ème
-                                ScoreRow(rank = index + 4, player = player,
-                                    onClick = {
-                                        selectedPlayerForDetails = player
-                                    },
-                                    onLongClick = {
-                                        selectedPlayerForDelete = player
-                                    }
-                                )
-                            }
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = PaddingValues(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        itemsIndexed(theRest) { index, player ->
+                            // On reprend à partir du 4ème
+                            ScoreRow(rank = index + 4, player = player,
+                                onClick = {
+                                    selectedPlayerForDetails = player
+                                },
+                                onLongClick = {
+                                    selectedPlayerForDelete = player
+                                }
+                            )
                         }
                     }
                 }
             }
+        }
 
-            FloatingActionButton(
-                onClick = { viewModel.startCreatingProfile() },
-                containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = Color.White,
-                shape = CircleShape,
-                modifier = Modifier.align(Alignment.BottomEnd).padding(bottom = 120.dp, end = 16.dp)
-            ) {
-                Icon(Icons.Default.Add, contentDescription = "Ajouter un pilote")
-            }
+        FloatingActionButton(
+            onClick = { viewModel.startCreatingProfile() },
+            containerColor = MaterialTheme.colorScheme.primary,
+            contentColor = Color.White,
+            shape = CircleShape,
+            modifier = Modifier.align(Alignment.BottomEnd).padding(bottom = 120.dp, end = 16.dp)
+        ) {
+            Icon(Icons.Default.Add, contentDescription = "Ajouter un pilote")
         }
     }
 }
+
 
 // --- Mise à jour de ScoreRow pour utiliser PlayerProfile et sa couleur de fond ---
 @Composable
