@@ -1,7 +1,6 @@
 package com.escatrag.mkworldrandomiser.ui.screens
 
 import android.util.Log
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -26,11 +25,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import com.escatrag.mkworldrandomiser.R
 import com.escatrag.mkworldrandomiser.ui.composables.HomeUI
 import com.escatrag.mkworldrandomiser.ui.composables.SpinWheel
 import com.escatrag.mkworldrandomiser.viewmodels.ScoreViewModel
@@ -94,14 +89,6 @@ fun MainScreen(
     LaunchedEffect(Unit) {
         viewModel.resetCourse()
     }
-
-    // Background image
-    Image(
-        modifier = Modifier.fillMaxSize().alpha(0.7f),
-        painter = painterResource(R.drawable.map),
-        contentScale = ContentScale.Crop,
-        contentDescription = "",
-    )
 
     if (showConfetti) {
         KonfettiView(

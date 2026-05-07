@@ -131,6 +131,17 @@ fun PodiumBar(
 
         Spacer(Modifier.height(8.dp))
 
+        // Palette de couleurs pour l'effet métal
+        val goldColors = listOf(Color(0xFFFFD700), Color(0xFFFFF1A6), Color(0xFFD4AF37), Color(0xFFF9E498))
+        val silverColors = listOf(Color(0xFFC0C0C0), Color(0xFFE8E8E8), Color(0xFF8A8A8A), Color(0xFFD1D1D1))
+        val bronzeColors = listOf(Color(0xFFCD7F32), Color(0xFFE3AF84), Color(0xFF8B4513), Color(0xFFA0522D))
+
+        val chromeColors = when (rank) {
+            1 -> goldColors
+            2 -> silverColors
+            3 -> bronzeColors
+            else -> listOf(player.composeColor, player.composeColor.copy(alpha = 0.7f))
+        }
         // 3. La barre du podium
         Box(
             modifier = Modifier
@@ -138,11 +149,13 @@ fun PodiumBar(
                 .fillMaxHeight(heightFraction) // Hauteur proportionnelle au rang
                 .background(
                     brush = Brush.verticalGradient(
-                        colors = listOf(
-                            player.composeColor, // Sa couleur choisie
-                            player.composeColor.copy(alpha = 0.6f)
-                        )
+                        colors = chromeColors
                     ),
+                    shape = RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp)
+                )
+                .border(
+                    width = 2.dp,
+                    color = player.composeColor.copy(alpha = 0.5f),
                     shape = RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp)
                 ),
             contentAlignment = Alignment.TopCenter

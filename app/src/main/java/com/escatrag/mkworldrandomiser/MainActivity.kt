@@ -3,6 +3,8 @@ package com.escatrag.mkworldrandomiser
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Groups
 import androidx.compose.material.icons.filled.Home
@@ -16,6 +18,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -76,6 +82,14 @@ class MainActivity : ComponentActivity() {
                     }
                 }
             ) { padding ->
+
+                // Background image
+                Image(
+                    modifier = Modifier.fillMaxSize().alpha(0.7f),
+                    painter = painterResource(R.drawable.map),
+                    contentScale = ContentScale.Crop,
+                    contentDescription = "",
+                )
 
                 NavHost(navController, startDestination = "main") {
 
