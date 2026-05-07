@@ -57,7 +57,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.escatrag.mkworldrandomiser.backend.map
 import com.escatrag.mkworldrandomiser.backend.toTrackItem
-import com.escatrag.mkworldrandomiser.ui.composables.TestNewTrackSelectionConnectionUITile
+import com.escatrag.mkworldrandomiser.ui.composables.TrackSelectionConnectionTile
 import com.escatrag.mkworldrandomiser.viewmodels.TrackViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -261,7 +261,7 @@ fun TrackSelectionScreen(
                                         it.start == track.start && it.end == connectedTrackItem.map()
                                     }
 
-                                    TestNewTrackSelectionConnectionUITile(
+                                    TrackSelectionConnectionTile(
                                         title = "-> ${stringResource(connectedTrackItem.nameRes)}",
                                         isActive = isThisConnectionSelected,
                                         themeColor = randomPastel

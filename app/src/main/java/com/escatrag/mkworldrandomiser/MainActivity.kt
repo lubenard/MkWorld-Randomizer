@@ -21,7 +21,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.escatrag.mkworldrandomiser.ui.screens.MainScreen
-import com.escatrag.mkworldrandomiser.ui.screens.ManagePlayersScreen
 import com.escatrag.mkworldrandomiser.ui.screens.MonthlyScoreScreen
 import com.escatrag.mkworldrandomiser.ui.screens.RaceResultScreen
 import com.escatrag.mkworldrandomiser.ui.screens.SettingsScreen
@@ -108,11 +107,7 @@ class MainActivity : ComponentActivity() {
                     }
 
                     composable("score") {
-                        MonthlyScoreScreen(scoreVm, navController, padding)
-                    }
-
-                    composable("players") {
-                        ManagePlayersScreen(scoreVm, onBack = { navController.popBackStack() }, padding)
+                        MonthlyScoreScreen(scoreVm, navController)
                     }
                 }
             }

@@ -24,7 +24,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun TestNewTrackSelectionConnectionUITile(
+fun TrackSelectionConnectionTile(
     title: String,
     isActive: Boolean,
     themeColor: Color,
