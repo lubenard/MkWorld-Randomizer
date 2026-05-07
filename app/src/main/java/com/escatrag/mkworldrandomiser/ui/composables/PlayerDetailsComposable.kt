@@ -9,11 +9,11 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
@@ -198,23 +198,28 @@ fun MapCard(mapId: Top3Maps) {
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.width(100.dp)
     ) {
         Box(
             modifier = Modifier
-                .size(80.dp)
-                .clip(RoundedCornerShape(12.dp))
-                .background(MaterialTheme.colorScheme.surfaceVariant),
-            contentAlignment = Alignment.Center
+                .size(width = 200.dp, height = 112.5.dp)
+                .clip(RoundedCornerShape(8.dp)),
         ) {
-            Image(painter = painterResource(correctTrack!!.start.largeIcon), contentDescription = "")
+            Image(painter = painterResource(correctTrack!!.start.largeIcon), contentDescription = "", modifier = Modifier.fillMaxSize())
+            Text(
+                text = "${mapId.timeInTop3} x in Top3",
+                style = MaterialTheme.typography.labelSmall,
+                maxLines = 1,
+                color = Color.White,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(8.dp)
+                    .background(
+                        color = Color.Black.copy(alpha = 0.8f),
+                        shape = RoundedCornerShape(4.dp)
+                    )
+                    .padding(2.dp)
+            )
         }
-        Text(
-            text = mapId.timeInTop3.toString(), // Ou map.name
-            style = MaterialTheme.typography.labelSmall,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.padding(top = 4.dp)
-        )
     }
 }
