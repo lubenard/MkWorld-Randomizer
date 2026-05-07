@@ -35,8 +35,8 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             val navController = rememberNavController()
-            val vm: TrackViewModel = viewModel()
-            val scoreVm: ScoreViewModel = viewModel()
+            val trackViewModel: TrackViewModel = viewModel()
+            val scoreViewModel: ScoreViewModel = viewModel()
             val settingsVM: SettingsViewModel = viewModel()
 
             // État pour l'onglet sélectionné dans la barre du bas
@@ -81,13 +81,13 @@ class MainActivity : ComponentActivity() {
 
                     composable("main") {
                         MainScreen(
-                            viewModel = vm,
+                            viewModel = trackViewModel,
                             settingsViewModel = settingsVM,
-                            scoreViewModel = scoreVm,
+                            scoreViewModel = scoreViewModel,
                             padding = padding,
                             onGenerate = { _ ->
-                                vm.generateCourse()
-                                vm.pickRandomTeams()
+                                trackViewModel.generateCourse()
+                                trackViewModel.pickRandomTeams()
                             },
                             onSettings = { navController.navigate("settings") },
                             onScoreSelection = { navController.navigate("scoreSelection") },
@@ -95,19 +95,19 @@ class MainActivity : ComponentActivity() {
                     }
 
                     composable("selection") {
-                        TrackSelectionScreen(vm, padding)
+                        TrackSelectionScreen(trackViewModel, padding)
                     }
 
                     composable("settings") {
-                        SettingsScreen(vm, settingsVM, padding)
+                        SettingsScreen(trackViewModel, settingsVM, padding)
                     }
 
                     composable("scoreSelection") {
-                        RaceResultScreen(scoreVm, { navController.popBackStack() }, padding)
+                        RaceResultScreen(scoreViewModel, trackViewModel,{ navController.popBackStack() }, padding)
                     }
 
                     composable("score") {
-                        MonthlyScoreScreen(scoreVm, navController)
+                        MonthlyScoreScreen(scoreViewModel, navController)
                     }
                 }
             }

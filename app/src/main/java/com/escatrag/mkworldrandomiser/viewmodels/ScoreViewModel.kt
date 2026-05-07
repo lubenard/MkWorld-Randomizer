@@ -32,11 +32,17 @@ data class PlayerProfile(
     val currentMonthScore: Int = 0,
     val runNumbers: Int = 0,
     val victoryNumbers: Int = 0,
-    val timesInPodium: Int = 0
+    val timesInPodium: Int = 0,
+    val top3Maps: List<Top3Maps> = emptyList()
 ) {
     val composeColor: Color get() = Color(profileColor)
     val initials: String get() = if (name.isNotEmpty()) name.take(1).uppercase() else "?"
 }
+
+data class Top3Maps(
+    val mapId: Int,
+    val timeInTop3: Int
+)
 
 class ScoreViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -107,7 +113,7 @@ class ScoreViewModel(application: Application) : AndroidViewModel(application) {
         closeEditPopup()
     }
 
-    fun submitRaceResults(results: Map<String, Int>) {
+    fun submitRaceResults(results: Map<String, Int>, mapId: Int) {
         val newList = _players.value.map { player ->
             val position = results[player.id]
             if (position != null) {
@@ -129,13 +135,38 @@ class ScoreViewModel(application: Application) : AndroidViewModel(application) {
                 player.copy(
                     currentMonthScore = player.currentMonthScore + pointsGained,
                     runNumbers = player.runNumbers + 1,
-                    timesInPodium = if (position <= 3) player.timesInPodium + 1 else player.timesInPodium
+                    timesInPodium = if (position <= 3) player.timesInPodium + 1 else player.timesInPodium,
+                    victoryNumbers = if (position == 1) player.victoryNumbers + 1 else player.victoryNumbers,
+                    top3Maps = handleTop3Maps(position, player, mapId)
                 )
             } else {
                 player
             }
         }
         persistData(newList)
+    }
+
+    private fun handleTop3Maps(position: Int, player: PlayerProfile, currentMapId: Int): List<Top3Maps> {
+        // Si on n'est pas sur le podium, on renvoie la liste actuelle sans changement
+        if (position > 3) return player.top3Maps
+
+        val currentList = player.top3Maps.toMutableList()
+
+        // On cherche si la map est déjà présente dans les stats du joueur
+        val existingMapIndex = currentList.indexOfFirst { it.mapId == currentMapId }
+
+        if (existingMapIndex != -1) {
+            // La map existe : on remplace l'ancien objet par un nouveau avec le compteur +1
+            val existingMap = currentList[existingMapIndex]
+            currentList[existingMapIndex] = existingMap.copy(
+                timeInTop3 = existingMap.timeInTop3 + 1
+            )
+        } else {
+            // La map n'existe pas : on l'ajoute avec un compteur initial de 1
+            currentList.add(Top3Maps(mapId = currentMapId, timeInTop3 = 1))
+        }
+
+        return currentList
     }
 
     fun resetUsers() {

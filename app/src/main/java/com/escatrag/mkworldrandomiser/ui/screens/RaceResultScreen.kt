@@ -41,6 +41,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.escatrag.mkworldrandomiser.viewmodels.PlayerProfile
 import com.escatrag.mkworldrandomiser.viewmodels.ScoreViewModel
+import com.escatrag.mkworldrandomiser.viewmodels.TrackViewModel
 
 @Composable
 fun PlayerAvatar(
@@ -72,6 +73,7 @@ fun PlayerAvatar(
 @Composable
 fun RaceResultScreen(
     viewModel: ScoreViewModel,
+    trackViewModel: TrackViewModel,
     onResultsSubmitted: () -> Unit,
     padding: PaddingValues
 ) {
@@ -153,7 +155,7 @@ fun RaceResultScreen(
             modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp),
             enabled = participants.isNotEmpty() && rankings.size == participants.size,
             onClick = {
-                viewModel.submitRaceResults(rankings)
+                viewModel.submitRaceResults(rankings, trackViewModel.selectedTrack.value?.start?.text ?: 0)
                 onResultsSubmitted()
             }
         ) {
