@@ -54,7 +54,6 @@ fun MainScreen(
     val deleteTrackAfterCompletion by viewModel.deleteTrackAfterCompletion.collectAsState()
 
     val selectedItem = viewModel.selectedTrack.collectAsState().value
-    val selectedTeams = viewModel.selectedRandomTeams.collectAsState().value
     val selectedTrackIndex = viewModel.selectedTrackIndex.collectAsState().value
     val players = scoreViewModel.players.collectAsState().value
 
@@ -148,7 +147,6 @@ fun MainScreen(
                 selectedItem = selectedItem,
                 playersSize = players.size,
                 onFinished = {
-                    viewModel.setResultPopupDisplay(true)
                     showConfetti = true
                 },
                 onRetry = {

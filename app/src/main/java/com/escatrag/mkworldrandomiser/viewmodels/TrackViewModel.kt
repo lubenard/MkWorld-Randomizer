@@ -39,10 +39,6 @@ class TrackViewModel : ViewModel() {
     private val _deleteTrackAfterCompletion = MutableStateFlow(false)
     val deleteTrackAfterCompletion: StateFlow<Boolean> = _deleteTrackAfterCompletion
 
-    // Show the result popup.... or not !
-    private val _showResultPopup = MutableStateFlow(false)
-    val showResultPopup: StateFlow<Boolean> = _showResultPopup
-
     // Set the selected track or trajet
     private val _selectedTrack = MutableStateFlow<TrackCombo?>(null)
     val selectedTrack:MutableStateFlow<TrackCombo?> = _selectedTrack
@@ -50,17 +46,6 @@ class TrackViewModel : ViewModel() {
     // generation bias: 0 for only tracks, 50 for random between tracks & connection, 100 for connections only
     private val _generationBias = MutableStateFlow(0F)
     val generationBias: StateFlow<Float> = _generationBias
-
-    // Variables to manages teams
-    private val _groups = MutableStateFlow<List<Pair<String, String>>>(emptyList())
-    val groups: StateFlow<List<Pair<String, String>>> = _groups
-
-    // Randomly selected teams
-    private val _selectedRandomPlayers = MutableStateFlow<List<String>>(emptyList())
-    val selectedRandomTeams: StateFlow<List<String>> = _selectedRandomPlayers
-
-    private val _teamIndex = MutableStateFlow(false)
-    val teamIndex: StateFlow<Boolean> = _teamIndex
 
     fun toggleTrack(id: TrackCombo) {
         // 1. On cherche le vrai objet Track qui correspond à cet ID
@@ -162,12 +147,12 @@ class TrackViewModel : ViewModel() {
 
     fun selectAllTracks(includeRoutes: Boolean) {
         _selectedTracks.value = emptyList()
-        Log.d("escatrag", "test $includeRoutes")
+        Log.d("lubenard", "test $includeRoutes")
         if (includeRoutes) {
             val test = _allTracksAvailable.value.toMutableList()
-            Log.d("escatrag", "test before ${test.size}")
+            Log.d("lubenard", "test before ${test.size}")
             test.addAll(transformConnectionsToList(TrackRepository.connections))
-            Log.d("escatrag", "test after ${test.size}")
+            Log.d("lubenard", "test after ${test.size}")
             _selectedTracks.value = test
         } else {
             _selectedTracks.value = TrackRepository.trackItems
@@ -210,33 +195,8 @@ class TrackViewModel : ViewModel() {
         _deleteTrackAfterCompletion.value = it
     }
 
-    fun setResultPopupDisplay(newValue: Boolean) {
-        _showResultPopup.value = newValue
-    }
-
     fun updateGenerationBias(newValue: Float) {
         _generationBias.value = newValue
     }
 
-    fun addGroup(pair: Pair<String, String>) {
-        _groups.update { it + pair }
-    }
-
-    fun removeGroup(pair: Pair<String, String>) {
-        _groups.update { it - pair }
-    }
-
-    fun pickRandomTeams() {
-        val allTeams = _groups.value
-
-        if (allTeams.size > 2) {
-            val randomTeams = allTeams.shuffled().take(4)
-            _selectedRandomPlayers.value = randomTeams.map { item ->
-                if (!_teamIndex.value) item.first else item.second
-            }
-        } else {
-            _selectedRandomPlayers.value = allTeams.flatMap { listOf(it.first, it.second) }
-        }
-        _teamIndex.value = !_teamIndex.value
-    }
 }

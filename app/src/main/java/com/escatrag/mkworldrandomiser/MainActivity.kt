@@ -101,7 +101,6 @@ class MainActivity : ComponentActivity() {
                             padding = padding,
                             onGenerate = { _ ->
                                 trackViewModel.generateCourse()
-                                trackViewModel.pickRandomTeams()
                             },
                             onSettings = { navController.navigate("settings") },
                             onScoreSelection = { navController.navigate("scoreSelection") },
