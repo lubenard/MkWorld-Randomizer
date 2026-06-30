@@ -55,7 +55,8 @@ fun SpinWheel(
     onRetry: () -> Unit,
     selectedItem: TrackCombo?,
     onScoreSelection: () -> Unit,
-    playersSize: Int
+    playersSize: Int,
+    showResultUI: Boolean = true
 ) {
     // 1. État du Pager (on met un grand nombre pour simuler un défilement infini)
     val pageCount = 500
@@ -180,16 +181,42 @@ fun SpinWheel(
             }
         }
         val context = LocalContext.current
-        if (showRestartButton) {
+        if (showRestartButton && showResultUI) {
             Spacer(modifier = Modifier.height(50.dp))
 
-            Text(
-                text = if (selectedItem?.start?.text == null || selectedItem.start.text <= 0) "Unknown" else context.getString(selectedItem?.start?.text!!),
-                fontWeight = FontWeight.Bold,
-                fontFamily = MinecraftFontFamily,
-                fontSize = 35.sp,
-                textAlign = TextAlign.Center
-            )
+            if (selectedItem?.end != null) {
+                Text(
+                    text = context.getString(selectedItem.start.text),
+                    fontWeight = FontWeight.Bold,
+                    fontFamily = MinecraftFontFamily,
+                    fontSize = 35.sp,
+                    textAlign = TextAlign.Center
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+                Text(
+                    text = "vers",
+                    fontFamily = MinecraftFontFamily,
+                    fontSize = 22.sp,
+                    textAlign = TextAlign.Center,
+                    color = Color.Gray
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+                Text(
+                    text = context.getString(selectedItem.end.text),
+                    fontWeight = FontWeight.Bold,
+                    fontFamily = MinecraftFontFamily,
+                    fontSize = 35.sp,
+                    textAlign = TextAlign.Center
+                )
+            } else {
+                Text(
+                    text = if (selectedItem?.start?.text == null || selectedItem.start.text <= 0) "Unknown" else context.getString(selectedItem.start.text),
+                    fontWeight = FontWeight.Bold,
+                    fontFamily = MinecraftFontFamily,
+                    fontSize = 35.sp,
+                    textAlign = TextAlign.Center
+                )
+            }
 
             if (playersSize != 0) {
                 Spacer(modifier = Modifier.height(20.dp))

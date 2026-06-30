@@ -18,7 +18,7 @@ import kotlin.random.Random
 
 class TrackViewModel : ViewModel() {
 
-    // Selected tracks that will be used for random generation
+    // Liste des circuits sélectionnés (TRACK uniquement)
     private val _selectedTracks = MutableStateFlow(TrackRepository.trackItems)
     val selectedTracks: StateFlow<List<TrackCombo>> = _selectedTracks
 
@@ -35,10 +35,6 @@ class TrackViewModel : ViewModel() {
     // -1 is for infinite loop
     var selectedTrackIndex = MutableStateFlow(-1)
 
-    // Option to include routes between tracks
-    private val _includeRoutes = MutableStateFlow(false)
-    var includeRoutes: StateFlow<Boolean> = _includeRoutes
-
     // Option to delete One track from the selectedTracks after completion (after selecting a random track)
     private val _deleteTrackAfterCompletion = MutableStateFlow(false)
     val deleteTrackAfterCompletion: StateFlow<Boolean> = _deleteTrackAfterCompletion
@@ -51,14 +47,33 @@ class TrackViewModel : ViewModel() {
     private val _generationBias = MutableStateFlow(0F)
     val generationBias: StateFlow<Float> = _generationBias
 
-    fun toggleTrack(id: TrackCombo) {
-        // 1. On cherche le vrai objet Track qui correspond à cet ID
-        val trackItemsToToggle = _allTracksAvailable.value.find { it == id }
+    // Index de la destination dans TrackRepository.trackItems pour le second spinner
+    private val _destinationTargetIndex = MutableStateFlow(-1)
+    val destinationTargetIndex: StateFlow<Int> = _destinationTargetIndex
 
-        // Si on ne trouve pas le circuit (ID invalide), on arrête tout pour éviter un crash
+    // Indique si on doit afficher le double spinner (phase 2 pour la destination)
+    private val _showTwoPhaseSpinner = MutableStateFlow(false)
+    val showTwoPhaseSpinner: StateFlow<Boolean> = _showTwoPhaseSpinner
+
+    // Option to include routes between tracks (UI toggle state)
+    private val _includeRoutes = MutableStateFlow(false)
+    val includeRoutes: StateFlow<Boolean> = _includeRoutes
+
+    // Stocke les destinations éligibles pour la map choisie (utilisé entre pickRandomMap et pickRandomDestination)
+    private var pendingDestinations: List<TrackItems>? = null
+
+    // Indique si un trajet est en attente après pickRandomMap (pour afficher 2 spinners)
+    private val _hasPendingDestination = MutableStateFlow(false)
+    val hasPendingDestination: StateFlow<Boolean> = _hasPendingDestination
+
+    // Liste des destinations possibles formatées en TrackCombo pour le second spinner
+    private val _destinationItems = MutableStateFlow<List<TrackCombo>>(emptyList())
+    val destinationItems: StateFlow<List<TrackCombo>> = _destinationItems
+
+    fun toggleTrack(id: TrackCombo) {
+        val trackItemsToToggle = _allTracksAvailable.value.find { it == id }
         if (trackItemsToToggle == null) return
 
-        // 2. On met à jour la liste avec le VRAI objet Track
         _selectedTracks.update { current ->
             if (current.contains(trackItemsToToggle)) {
                 current - trackItemsToToggle
@@ -68,12 +83,12 @@ class TrackViewModel : ViewModel() {
         }
     }
 
-    fun setIncludeRoutes(value: Boolean) {
-        _includeRoutes.value = value
-    }
-
     fun getConnectionsForTrack(trackItem: TrackItems): List<TrackItems> {
         return TrackRepository.connections[trackItem] ?: emptyList()
+    }
+
+    fun setIncludeRoutes(value: Boolean) {
+        _includeRoutes.value = value
     }
 
     fun toggleConnection(parent: Track, childItem: TrackItems) {
@@ -83,88 +98,113 @@ class TrackViewModel : ViewModel() {
             type = TrackComboType.CONNECTION
         )
 
-        // Si ce trajet existe déjà dans les sélectionnés, on l'enlève, sinon on l'ajoute
-        if (_selectedTracks.value.contains(combo)) {
-            _selectedTracks.value = _selectedTracks.value.minus(combo)
+        if (_selectedConnections.value.contains(combo)) {
+            _selectedConnections.value = _selectedConnections.value.minus(combo)
         } else {
-            _selectedTracks.value = _selectedTracks.value.plus(combo)
+            _selectedConnections.value = _selectedConnections.value.plus(combo)
         }
     }
 
-    // Generate a route based on selectedTracks
-    fun generateCourse() {
+    // Étape 1 : choisir une map aléatoire et vérifier si un trajet est possible
+    fun pickRandomMap() {
         val currentSelectedTracks = _selectedTracks.value
+        if (currentSelectedTracks.isEmpty()) return
 
-        if (currentSelectedTracks.isNotEmpty()) {
-            // 1. Tirage au sort de l'index
-            val randomIndex = Random.nextInt(currentSelectedTracks.size)
-            val selectedCombo = currentSelectedTracks[randomIndex]
+        val uniqueStarts = currentSelectedTracks.map { it.start }.distinct()
+        if (uniqueStarts.isEmpty()) return
+        val randomTrack = uniqueStarts.random()
 
-            // 2. Détermination du type de course (Bias)
-            val shouldIncludeRoute = when (_generationBias.value) {
-                0f -> false
-                100f -> true
-                else -> Random.nextBoolean()
-            }
+        val shouldIncludeRoute = when (_generationBias.value) {
+            0f -> false
+            100f -> true
+            else -> Random.nextBoolean()
+        }
 
-            // 3. Construction du résultat final
-            var finalResult = selectedCombo // Par défaut, on garde le combo tel quel
-
-            if (shouldIncludeRoute) {
-                // Matching : Track -> TrackItems (Enum)
-                val startEnum = TrackItems.entries.find { it.nameRes == selectedCombo.start.text }
-                val possibleDestinations = startEnum?.let { TrackRepository.connections[it] }
-
-                if (!possibleDestinations.isNullOrEmpty()) {
-                    val randomDestEnum = possibleDestinations.random()
-
-                    // Création du combo avec la destination
-                    finalResult = TrackCombo(
-                        start = selectedCombo.start,
-                        end = randomDestEnum.map(),
-                        type = TrackComboType.CONNECTION
-                    )
-                    _includeRoutes.value = true
-                } else {
-                    // Pas de connexions trouvées, on force le type TRACK
-                    finalResult = selectedCombo.copy(type = TrackComboType.TRACK)
-                    _includeRoutes.value = false
+        pendingDestinations = null
+        _hasPendingDestination.value = false
+        if (shouldIncludeRoute) {
+            val startEnum = TrackItems.entries.find { it.nameRes == randomTrack.text }
+            val allPossible = startEnum?.let { TrackRepository.connections[it] } ?: emptyList()
+            val enabled = allPossible.filter { dest ->
+                _selectedConnections.value.any { c ->
+                    c.start == randomTrack && c.end == dest.map()
                 }
-            } else {
-                // Simple circuit
-                finalResult = selectedCombo.copy(type = TrackComboType.TRACK)
-                _includeRoutes.value = false
             }
+            if (enabled.isNotEmpty()) {
+                pendingDestinations = enabled
+                _hasPendingDestination.value = true
+            }
+        }
 
-            // 4. Mise à jour des StateFlow pour l'UI
-            selectedTrackIndex.value = randomIndex
-            _selectedTrack.value = finalResult
+        val displayIndex = currentSelectedTracks.indexOfFirst {
+            it.start == randomTrack && it.type == TrackComboType.TRACK
+        }.let { if (it >= 0) it else currentSelectedTracks.indexOfFirst { c -> c.start == randomTrack } }
 
+        selectedTrackIndex.value = displayIndex
+        _selectedTrack.value = TrackCombo(start = randomTrack, type = TrackComboType.TRACK)
+        _destinationTargetIndex.value = -1
+        _showTwoPhaseSpinner.value = false
 
-            Log.d("lubenard", "Course générée à l'index $randomIndex : ${finalResult.start.text}")
+        Log.d("lubenard", "Map sélectionnée : ${randomTrack.text}")
+    }
+
+    // Étape 2 : choisir une destination aléatoire pour le trajet (appelé après la Phase 1 du spinner)
+    fun pickRandomDestination(): Boolean {
+        val dests = pendingDestinations ?: emptyList()
+        pendingDestinations = null
+        _hasPendingDestination.value = false
+
+        if (dests.isEmpty()) return false
+
+        val startTrack = _selectedTrack.value?.start ?: return false
+        val randomDest = dests.random()
+
+        _selectedTrack.value = TrackCombo(
+            start = startTrack,
+            end = randomDest.map(),
+            type = TrackComboType.CONNECTION
+        )
+        _destinationTargetIndex.value = _destinationItems.value.indexOfFirst {
+            it.start == randomDest.map()
+        }
+        _showTwoPhaseSpinner.value = true
+
+        Log.d("lubenard", "Destination sélectionnée : ${randomDest.nameRes}")
+        return true
+    }
+
+    fun generateCourse() {
+        pickRandomMap()
+        if (_hasPendingDestination.value) {
+            _destinationItems.value = pendingDestinations?.map { dest ->
+                TrackCombo(start = dest.map(), type = TrackComboType.TRACK)
+            } ?: emptyList()
+        } else {
+            _destinationItems.value = emptyList()
         }
     }
 
     fun resetCourse() {
         selectedTrackIndex.value = -1
+        _destinationTargetIndex.value = -1
+        _showTwoPhaseSpinner.value = false
+        pendingDestinations = null
+        _hasPendingDestination.value = false
+        _destinationItems.value = emptyList()
     }
 
     fun selectAllTracks(includeRoutes: Boolean) {
-        _selectedTracks.value = emptyList()
-        Log.d("lubenard", "test $includeRoutes")
+        _selectedTracks.value = TrackRepository.trackItems
         if (includeRoutes) {
-            val test = _allTracksAvailable.value.toMutableList()
-            Log.d("lubenard", "test before ${test.size}")
-            test.addAll(transformConnectionsToList(TrackRepository.connections))
-            Log.d("lubenard", "test after ${test.size}")
-            _selectedTracks.value = test
+            _selectedConnections.value = transformConnectionsToList(TrackRepository.connections)
         } else {
-            _selectedTracks.value = TrackRepository.trackItems
+            _selectedConnections.value = emptyList()
         }
     }
 
     fun clearAllTracks() {
         _selectedTracks.value = emptyList()
+        _selectedConnections.value = emptyList()
     }
 
     fun transformConnectionsToList(connections: Map<TrackItems, List<TrackItems>>): List<TrackCombo> {
@@ -186,11 +226,12 @@ class TrackViewModel : ViewModel() {
         }
         viewModelScope.launch(Dispatchers.IO) {
             Log.d("lubenard", "Trying to delete track $circuit -> ${_deleteTrackAfterCompletion.value}")
-            if (_deleteTrackAfterCompletion.value && !_includeRoutes.value) {
-                Log.d("lubenard", "Deleting track $circuit}")
-                val tempValue = _selectedTracks.value.toMutableList()
-                Log.d("lubenard", "Updating selectedTracks without $circuit")
-                _selectedTracks.value = tempValue.filter { it != circuit }
+            if (_deleteTrackAfterCompletion.value && !_showTwoPhaseSpinner.value) {
+                if (circuit.type == TrackComboType.CONNECTION) {
+                    _selectedConnections.value = _selectedConnections.value.filter { it != circuit }
+                } else {
+                    _selectedTracks.value = _selectedTracks.value.filter { it != circuit }
+                }
             }
         }
     }
@@ -202,5 +243,4 @@ class TrackViewModel : ViewModel() {
     fun updateGenerationBias(newValue: Float) {
         _generationBias.value = newValue
     }
-
 }

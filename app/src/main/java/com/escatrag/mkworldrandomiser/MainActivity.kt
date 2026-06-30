@@ -99,9 +99,7 @@ class MainActivity : ComponentActivity() {
                             settingsViewModel = settingsVM,
                             scoreViewModel = scoreViewModel,
                             padding = padding,
-                            onGenerate = { _ ->
-                                trackViewModel.generateCourse()
-                            },
+                            onGenerate = {},
                             onSettings = { navController.navigate("settings") },
                             onScoreSelection = { navController.navigate("scoreSelection") },
                         )

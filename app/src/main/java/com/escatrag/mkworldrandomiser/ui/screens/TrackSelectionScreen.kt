@@ -151,7 +151,7 @@ fun TrackSelectionScreen(
         OutlinedTextField(
             value = searchQuery,
             onValueChange = { searchQuery = it },
-            modifier = Modifier.clip(RoundedCornerShape(12.dp)).background(Color.White).fillMaxWidth().padding(16.dp),
+            modifier = Modifier.clip(RoundedCornerShape(12.dp)).background(Color.White).fillMaxWidth(),
             placeholder = { Text("Rechercher un circuit") },
             leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
             shape = RoundedCornerShape(12.dp),
@@ -330,7 +330,7 @@ fun TrackSelectionScreen(
                                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                                     availableConnections.forEach { connectedTrackItem ->
                                         // On vérifie si CETTE connexion spécifique est sélectionnée
-                                        val isThisConnectionSelected = selectedTracks.any {
+                                        val isThisConnectionSelected = selectedConnections.any {
                                             it.start == track.start && it.end == connectedTrackItem.map()
                                         }
 
