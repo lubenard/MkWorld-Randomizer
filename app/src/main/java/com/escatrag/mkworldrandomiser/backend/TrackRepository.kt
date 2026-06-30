@@ -12,7 +12,7 @@ object TrackRepository {
         TrackItems.MONT_TCHOU_TCHOU to listOf(TrackItems.DESERT_SOLEIL, TrackItems.CIRCUIT_MARIO_BROS, TrackItems.MONTAGNE_CHOCO, TrackItems.TROPHEOPOLIS, TrackItems.PLAGE_KOOPA, TrackItems.SPATIOPORT_DK), // VERIFIED
         TrackItems.SPATIOPORT_DK to listOf(TrackItems.MONT_TCHOU_TCHOU, TrackItems.DESERT_SOLEIL, TrackItems.CIRCUIT_MARIO_BROS, TrackItems.TROPHEOPOLIS, TrackItems.STADE_PEACH, TrackItems.PLAGE_KOOPA), // VERIFIED
 
-        TrackItems.DESERT_SOLEIL to listOf(TrackItems.SOUK_MASKASS, TrackItems.SOUK_MASKASS, TrackItems.CIRCUIT_MARIO_BROS, TrackItems.TROPHEOPOLIS, TrackItems.PLAGE_KOOPA, TrackItems.MONT_TCHOU_TCHOU), // VERIFIED
+        TrackItems.DESERT_SOLEIL to listOf(TrackItems.SOUK_MASKASS, TrackItems.CIRCUIT_MARIO_BROS, TrackItems.TROPHEOPOLIS, TrackItems.PLAGE_KOOPA, TrackItems.MONT_TCHOU_TCHOU), // VERIFIED
         TrackItems.SOUK_MASKASS to listOf(TrackItems.BATEAU_VOLANT, TrackItems.STADE_WARIO, TrackItems.MONTAGNE_CHOCO, TrackItems.CIRCUIT_MARIO_BROS, TrackItems.DESERT_SOLEIL), // VERIFIED
         TrackItems.STADE_WARIO to listOf(TrackItems.CHATEAU_BOWSER, TrackItems.FOURNAISE_OSSEUSE, TrackItems.USINE_TOAD, TrackItems.MONTAGNE_CHOCO, TrackItems.TROPHEOPOLIS, TrackItems.CIRCUIT_MARIO_BROS, TrackItems.SOUK_MASKASS, TrackItems.BATEAU_VOLANT), // VERIFIED
         TrackItems.BATEAU_VOLANT to listOf(TrackItems.CHATEAU_BOWSER, TrackItems.CHATEAU_BOWSER, TrackItems.FOURNAISE_OSSEUSE, TrackItems.USINE_TOAD, TrackItems.STADE_WARIO, TrackItems.SOUK_MASKASS), // VERIFIED

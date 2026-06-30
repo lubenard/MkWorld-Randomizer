@@ -22,6 +22,10 @@ class TrackViewModel : ViewModel() {
     private val _selectedTracks = MutableStateFlow(TrackRepository.trackItems)
     val selectedTracks: StateFlow<List<TrackCombo>> = _selectedTracks
 
+    // Liste des trajets sélectionnés (CONNECTION uniquement)
+    private val _selectedConnections = MutableStateFlow<List<TrackCombo>>(emptyList())
+    val selectedConnections: StateFlow<List<TrackCombo>> = _selectedConnections
+
     // All tracks availables: Used for Selection tracks (will include routes if selected in SelectionScreen),
     // but they will not be selected (tho available for selection)
     private val _allTracksAvailable = MutableStateFlow(TrackRepository.trackItems)

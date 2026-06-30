@@ -74,6 +74,7 @@ fun TrackSelectionScreen(
     padding: PaddingValues
 ) {
     val selectedTracks by viewModel.selectedTracks.collectAsState()
+    val selectedConnections by viewModel.selectedConnections.collectAsState()
     val includeRoutes by viewModel.includeRoutes.collectAsState()
     val allTracksList by viewModel.allTracksAvailable.collectAsState()
 
@@ -150,7 +151,7 @@ fun TrackSelectionScreen(
         OutlinedTextField(
             value = searchQuery,
             onValueChange = { searchQuery = it },
-            modifier = Modifier.clip(RoundedCornerShape(12.dp)).background(Color.White).fillMaxWidth(),
+            modifier = Modifier.clip(RoundedCornerShape(12.dp)).background(Color.White).fillMaxWidth().padding(16.dp),
             placeholder = { Text("Rechercher un circuit") },
             leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
             shape = RoundedCornerShape(12.dp),
