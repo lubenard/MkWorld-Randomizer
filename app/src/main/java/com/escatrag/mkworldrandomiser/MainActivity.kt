@@ -14,6 +14,7 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
@@ -31,6 +32,7 @@ import com.escatrag.mkworldrandomiser.ui.screens.MonthlyScoreScreen
 import com.escatrag.mkworldrandomiser.ui.screens.RaceResultScreen
 import com.escatrag.mkworldrandomiser.ui.screens.SettingsScreen
 import com.escatrag.mkworldrandomiser.ui.screens.TrackSelectionScreen
+import com.escatrag.mkworldrandomiser.ui.theme.MkWorldRandomiserTheme
 import com.escatrag.mkworldrandomiser.viewmodels.ScoreViewModel
 import com.escatrag.mkworldrandomiser.viewmodels.SettingsViewModel
 import com.escatrag.mkworldrandomiser.viewmodels.TrackViewModel
@@ -40,15 +42,18 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            val navController = rememberNavController()
-            val trackViewModel: TrackViewModel = viewModel()
-            val scoreViewModel: ScoreViewModel = viewModel()
             val settingsVM: SettingsViewModel = viewModel()
+            val isDarkMode by settingsVM.darkModeEnabled.collectAsState()
 
-            // État pour l'onglet sélectionné dans la barre du bas
-            var selectedTab by remember { mutableIntStateOf(0) }
+            MkWorldRandomiserTheme(darkTheme = isDarkMode) {
+                val navController = rememberNavController()
+                val trackViewModel: TrackViewModel = viewModel()
+                val scoreViewModel: ScoreViewModel = viewModel()
 
-            Scaffold(
+                // État pour l'onglet sélectionné dans la barre du bas
+                var selectedTab by remember { mutableIntStateOf(0) }
+
+                Scaffold(
                 // --- AJOUT DE LA BARRE DE NAVIGATION ---
                 bottomBar = {
                     NavigationBar {
@@ -121,6 +126,7 @@ class MainActivity : ComponentActivity() {
                         MonthlyScoreScreen(scoreViewModel, navController)
                     }
                 }
+            }
             }
         }
     }

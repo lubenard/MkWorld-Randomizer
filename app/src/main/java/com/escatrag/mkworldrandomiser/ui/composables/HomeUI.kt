@@ -42,7 +42,7 @@ import com.escatrag.mkworldrandomiser.ui.theme.MinecraftFontFamily
 import kotlin.math.sin
 
 @Composable
-fun HomeUI(availableCoursesCount: Int = 48, onClick: () -> Unit) {
+fun HomeUI(availableCoursesCount: Int, onClick: () -> Unit) {
     // 1. Création du gestionnaire d'animations infinies
     val infiniteTransition = rememberInfiniteTransition(label = "homepage_animations")
 

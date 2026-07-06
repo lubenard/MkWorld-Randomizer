@@ -18,9 +18,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -32,7 +30,7 @@ import com.escatrag.mkworldrandomiser.viewmodels.TrackViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(vm: TrackViewModel, settingsViewModel: SettingsViewModel, padding: PaddingValues) {
-    var darkModeEnabled by remember { mutableStateOf(false) }
+    val darkModeEnabled by settingsViewModel.darkModeEnabled.collectAsState()
 
     Scaffold(
         topBar = {
@@ -57,7 +55,7 @@ fun SettingsScreen(vm: TrackViewModel, settingsViewModel: SettingsViewModel, pad
                 title = "Mode Sombre",
                 subtitle = "Activer le thème de la Route Arc-en-Ciel (Sombre)",
                 checked = darkModeEnabled,
-                onCheckedChange = { darkModeEnabled = it }
+                onCheckedChange = { settingsViewModel.setDarkModeEnabled(it) }
             )
 
             val bias = vm.generationBias.collectAsState()

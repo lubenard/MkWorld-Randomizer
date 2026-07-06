@@ -19,8 +19,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Badge
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
-import androidx.compose.material3.Divider
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -112,7 +112,7 @@ fun RaceResultScreen(
             }
         }
 
-        Divider(Modifier.padding(vertical = 16.dp))
+        HorizontalDivider(Modifier.padding(vertical = 16.dp))
 
         Text("2. Classement final", modifier = Modifier.padding(bottom = 8.dp))
 

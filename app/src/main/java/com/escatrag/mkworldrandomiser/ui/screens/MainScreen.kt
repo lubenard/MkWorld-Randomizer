@@ -56,6 +56,8 @@ fun MainScreen(
     padding: PaddingValues,
 ) {
     val selectedTracks by viewModel.selectedTracks.collectAsState()
+    val selectedConnections by viewModel.selectedConnections.collectAsState()
+    val includeRoutes by viewModel.includeRoutes.collectAsState()
     val deleteTrackAfterCompletion by viewModel.deleteTrackAfterCompletion.collectAsState()
 
     val selectedItem = viewModel.selectedTrack.collectAsState().value
@@ -129,7 +131,8 @@ fun MainScreen(
 
         when (phase) {
             Phase.SELECTION_CUBE -> {
-                HomeUI(selectedTracks.size, onClick = {
+                val totalPool = selectedTracks.size + (if (includeRoutes) selectedConnections.size else 0)
+                HomeUI(totalPool, onClick = {
                     viewModel.generateCourse()
                     phase = if (hasPendingDestination) Phase.DUAL_SPINNER else Phase.SPINNING_TRACK
                 })
