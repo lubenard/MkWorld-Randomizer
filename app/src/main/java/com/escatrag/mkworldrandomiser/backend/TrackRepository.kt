@@ -15,7 +15,7 @@ object TrackRepository {
         TrackItems.DESERT_SOLEIL to listOf(TrackItems.SOUK_MASKASS, TrackItems.CIRCUIT_MARIO_BROS, TrackItems.TROPHEOPOLIS, TrackItems.PLAGE_KOOPA, TrackItems.MONT_TCHOU_TCHOU), // VERIFIED
         TrackItems.SOUK_MASKASS to listOf(TrackItems.BATEAU_VOLANT, TrackItems.STADE_WARIO, TrackItems.MONTAGNE_CHOCO, TrackItems.CIRCUIT_MARIO_BROS, TrackItems.DESERT_SOLEIL), // VERIFIED
         TrackItems.STADE_WARIO to listOf(TrackItems.CHATEAU_BOWSER, TrackItems.FOURNAISE_OSSEUSE, TrackItems.USINE_TOAD, TrackItems.MONTAGNE_CHOCO, TrackItems.TROPHEOPOLIS, TrackItems.CIRCUIT_MARIO_BROS, TrackItems.SOUK_MASKASS, TrackItems.BATEAU_VOLANT), // VERIFIED
-        TrackItems.BATEAU_VOLANT to listOf(TrackItems.CHATEAU_BOWSER, TrackItems.CHATEAU_BOWSER, TrackItems.FOURNAISE_OSSEUSE, TrackItems.USINE_TOAD, TrackItems.STADE_WARIO, TrackItems.SOUK_MASKASS), // VERIFIED
+        TrackItems.BATEAU_VOLANT to listOf(TrackItems.CHATEAU_BOWSER, TrackItems.FOURNAISE_OSSEUSE, TrackItems.USINE_TOAD, TrackItems.STADE_WARIO, TrackItems.SOUK_MASKASS), // VERIFIED
 
         TrackItems.ALPES_DK to listOf(TrackItems.CITE_SORBET, TrackItems.PIC_OBSERVATOIRE, TrackItems.CITE_SORBET, TrackItems.GALION_WARIO, TrackItems.CITE_FLEUR_SEL, TrackItems.CHUTES_CHEEP_CHEEP, TrackItems.PRAIRIE_MEUH_MEUH, TrackItems.GOUFFRE_PISSENLIT), // VERIFIED
         TrackItems.PIC_OBSERVATOIRE to listOf(TrackItems.CITE_SORBET, TrackItems.GALION_WARIO, TrackItems.ALPES_DK, TrackItems.CHUTES_CHEEP_CHEEP, TrackItems.GOUFFRE_PISSENLIT, TrackItems.CIRCUIT_MARIO, TrackItems.CINEMA_BOO), // VERIFIED

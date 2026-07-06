@@ -76,6 +76,7 @@ class TrackViewModel : ViewModel() {
 
         _selectedTracks.update { current ->
             if (current.contains(trackItemsToToggle)) {
+                _selectedConnections.value = _selectedConnections.value.filter { it.start != trackItemsToToggle.start }
                 current - trackItemsToToggle
             } else {
                 current + trackItemsToToggle
@@ -105,7 +106,7 @@ class TrackViewModel : ViewModel() {
         }
     }
 
-    // Étape 1 : choisir une map aléatoire et vérifier si un trajet est possible
+    // Étape 1 : choisir une map aléatoire et vérifier si un trajet est possibleFiBetter handling of ci
     fun pickRandomMap() {
         val currentSelectedTracks = _selectedTracks.value
         if (currentSelectedTracks.isEmpty()) return
