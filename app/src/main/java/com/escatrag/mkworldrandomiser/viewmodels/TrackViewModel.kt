@@ -194,17 +194,17 @@ class TrackViewModel : ViewModel() {
     }
 
     fun selectAllTracks(includeRoutes: Boolean) {
-        _selectedTracks.value = TrackRepository.trackItems
         if (includeRoutes) {
             _selectedConnections.value = transformConnectionsToList(TrackRepository.connections)
         } else {
-            _selectedConnections.value = emptyList()
+            _selectedConnections.value = mutableListOf()
         }
+        _selectedTracks.value = TrackRepository.trackItems
     }
 
     fun clearAllTracks() {
-        _selectedTracks.value = emptyList()
-        _selectedConnections.value = emptyList()
+        _selectedTracks.value = mutableListOf()
+        _selectedConnections.value = mutableListOf()
     }
 
     fun transformConnectionsToList(connections: Map<TrackItems, List<TrackItems>>): List<TrackCombo> {

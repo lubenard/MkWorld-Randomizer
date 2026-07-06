@@ -42,6 +42,7 @@ import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -94,12 +95,18 @@ fun TrackSelectionScreen(
         TitleComposable(text = "CIRCUITS", fontSize = 40.sp, modifier = Modifier.padding(top = 70.dp, start = 25.dp))
         Spacer(Modifier.height(20.dp))
 
-        val hasConnections = includeRoutes || selectedConnections.isNotEmpty()
         val totalConnectionsCount = remember { TrackRepository.connections.values.sumOf { it.size } }
 
-        val selectedCount = if (hasConnections) selectedTracks.size + selectedConnections.size else selectedTracks.size
-        val totalPoolCount = if (hasConnections) allTracksList.size + totalConnectionsCount else allTracksList.size
-        val progress = if (totalPoolCount > 0) selectedCount.toFloat() / totalPoolCount else 0f
+        val hasConnections by remember { derivedStateOf { includeRoutes || selectedConnections.isNotEmpty() } }
+        val selectedCount by remember { derivedStateOf {
+            if (hasConnections) selectedTracks.size + selectedConnections.size else selectedTracks.size
+        } }
+        val totalPoolCount by remember { derivedStateOf {
+            if (hasConnections) allTracksList.size + totalConnectionsCount else allTracksList.size
+        } }
+        val progress by remember { derivedStateOf {
+            if (totalPoolCount > 0) selectedCount.toFloat() / totalPoolCount else 0f
+        } }
 
         Column(
             modifier = Modifier.fillMaxWidth().padding(16.dp),
