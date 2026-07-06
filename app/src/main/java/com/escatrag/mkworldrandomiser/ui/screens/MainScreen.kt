@@ -1,12 +1,6 @@
 package com.escatrag.mkworldrandomiser.ui.screens
 
 import android.util.Log
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -14,7 +8,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
@@ -32,10 +25,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.escatrag.mkworldrandomiser.ui.composables.HomeUI
@@ -44,7 +34,6 @@ import com.escatrag.mkworldrandomiser.ui.theme.MinecraftFontFamily
 import com.escatrag.mkworldrandomiser.viewmodels.ScoreViewModel
 import com.escatrag.mkworldrandomiser.viewmodels.SettingsViewModel
 import com.escatrag.mkworldrandomiser.viewmodels.TrackViewModel
-import kotlinx.coroutines.delay
 import nl.dionsegijn.konfetti.compose.KonfettiView
 import nl.dionsegijn.konfetti.compose.OnParticleSystemUpdateListener
 import nl.dionsegijn.konfetti.core.Party
@@ -53,7 +42,7 @@ import nl.dionsegijn.konfetti.core.Position
 import nl.dionsegijn.konfetti.core.emitter.Emitter
 import java.util.concurrent.TimeUnit
 
-private enum class Phase { SELECTION_CUBE, SPINNING_TRACK, INTERMISSION, SPINNING_DESTINATION }
+private enum class Phase { SELECTION_CUBE, SPINNING_TRACK, DUAL_SPINNER, SPINNING_DESTINATION }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -142,7 +131,7 @@ fun MainScreen(
             Phase.SELECTION_CUBE -> {
                 HomeUI(selectedTracks.size, onClick = {
                     viewModel.generateCourse()
-                    phase = Phase.SPINNING_TRACK
+                    phase = if (hasPendingDestination) Phase.DUAL_SPINNER else Phase.SPINNING_TRACK
                 })
 
                 Row(
@@ -160,7 +149,35 @@ fun MainScreen(
             }
 
             Phase.SPINNING_TRACK -> {
-                if (hasPendingDestination) {
+                SpinWheel(
+                    items = selectedTracks,
+                    targetIndex = selectedTrackIndex,
+                    selectedItem = selectedItem,
+                    playersSize = players.size,
+                    showResultUI = true,
+                    onFinished = {
+                        showConfetti = true
+                    },
+                    onRetry = {
+                        phase = Phase.SELECTION_CUBE
+                        if (deleteTrackAfterCompletion) {
+                            Log.d("lubenard", "${selectedItem}")
+                            viewModel.deleteCircuit(selectedItem)
+                        }
+                        viewModel.resetCourse()
+                    },
+                    onScoreSelection = onScoreSelection
+                )
+            }
+
+            Phase.DUAL_SPINNER -> {
+                var firstSpinnerDone by remember { mutableStateOf(false) }
+
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
                     SpinWheel(
                         items = selectedTracks,
                         targetIndex = selectedTrackIndex,
@@ -168,86 +185,48 @@ fun MainScreen(
                         playersSize = 0,
                         showResultUI = false,
                         onFinished = {
-                            phase = Phase.INTERMISSION
+                            viewModel.pickRandomDestination()
+                            firstSpinnerDone = true
                         },
                         onRetry = {
                             phase = Phase.SELECTION_CUBE
                             viewModel.resetCourse()
                         },
-                        onScoreSelection = { }
+                        onScoreSelection = { },
+                        modifier = Modifier.weight(1f)
                     )
-                } else {
-                    SpinWheel(
-                        items = selectedTracks,
-                        targetIndex = selectedTrackIndex,
-                        selectedItem = selectedItem,
-                        playersSize = players.size,
-                        showResultUI = true,
-                        onFinished = {
-                            showConfetti = true
-                        },
-                        onRetry = {
-                            phase = Phase.SELECTION_CUBE
-                            if (deleteTrackAfterCompletion) {
-                                Log.d("lubenard", "${selectedItem}")
-                                viewModel.deleteCircuit(selectedItem)
-                            }
-                            viewModel.resetCourse()
-                        },
-                        onScoreSelection = onScoreSelection
-                    )
-                }
-            }
 
-            Phase.INTERMISSION -> {
-                val context = androidx.compose.ui.platform.LocalContext.current
-
-                LaunchedEffect(Unit) {
-                    delay(2000)
-                    viewModel.pickRandomDestination()
-                    phase = Phase.SPINNING_DESTINATION
-                }
-
-                Column(
-                    modifier = Modifier.fillMaxSize(),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
-                ) {
-                    Text(
-                        text = context.getString(selectedItem?.start?.text ?: return@Column),
-                        fontWeight = FontWeight.Bold,
-                        fontFamily = MinecraftFontFamily,
-                        fontSize = 35.sp,
-                        textAlign = TextAlign.Center
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
                     Text(
                         text = "vers",
                         fontFamily = MinecraftFontFamily,
                         fontSize = 22.sp,
-                        textAlign = TextAlign.Center,
                         color = Color.Gray
                     )
-                    Spacer(modifier = Modifier.height(16.dp))
 
-                    val infiniteTransition = rememberInfiniteTransition(label = "intermissionBlink")
-                    val dotsAlpha by infiniteTransition.animateFloat(
-                        initialValue = 1f,
-                        targetValue = 0f,
-                        animationSpec = infiniteRepeatable(
-                            animation = tween(500, easing = LinearEasing),
-                            repeatMode = RepeatMode.Reverse
-                        ),
-                        label = "dotsAlpha"
-                    )
-                    Text(
-                        text = "...",
-                        fontFamily = MinecraftFontFamily,
-                        fontSize = 22.sp,
-                        textAlign = TextAlign.Center,
-                        color = Color.Gray,
-                        modifier = Modifier.alpha(dotsAlpha)
-                    )
+                    if (firstSpinnerDone) {
+                        SpinWheel(
+                            items = destinationItems,
+                            targetIndex = destinationTargetIndex,
+                            selectedItem = selectedItem,
+                            playersSize = players.size,
+                            showResultUI = true,
+                            onFinished = {
+                                showConfetti = true
+                            },
+                            onRetry = {
+                                phase = Phase.SELECTION_CUBE
+                                if (deleteTrackAfterCompletion) {
+                                    Log.d("lubenard", "${selectedItem}")
+                                    viewModel.deleteCircuit(selectedItem)
+                                }
+                                viewModel.resetCourse()
+                            },
+                            onScoreSelection = onScoreSelection,
+                            modifier = Modifier.weight(1f)
+                        )
+                    } else {
+                        Spacer(modifier = Modifier.weight(1f))
+                    }
                 }
             }
 

@@ -60,6 +60,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.escatrag.mkworldrandomiser.backend.TrackRepository
 import com.escatrag.mkworldrandomiser.backend.map
 import com.escatrag.mkworldrandomiser.backend.toTrackItem
 import com.escatrag.mkworldrandomiser.ui.composables.TitleComposable
@@ -93,15 +94,17 @@ fun TrackSelectionScreen(
         TitleComposable(text = "CIRCUITS", fontSize = 40.sp, modifier = Modifier.padding(top = 70.dp, start = 25.dp))
         Spacer(Modifier.height(20.dp))
 
-        val selectedCount = selectedTracks.size // Ton nombre de circuits sélectionnés
-        val totalPoolCount = allTracksList.size
+        val hasConnections = includeRoutes || selectedConnections.isNotEmpty()
+        val totalConnectionsCount = remember { TrackRepository.connections.values.sumOf { it.size } }
+
+        val selectedCount = if (hasConnections) selectedTracks.size + selectedConnections.size else selectedTracks.size
+        val totalPoolCount = if (hasConnections) allTracksList.size + totalConnectionsCount else allTracksList.size
         val progress = if (totalPoolCount > 0) selectedCount.toFloat() / totalPoolCount else 0f
 
         Column(
             modifier = Modifier.fillMaxWidth().padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Texte indicatif au-dessus
             Row(
                 modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -112,10 +115,9 @@ fun TrackSelectionScreen(
                     fontWeight = FontWeight.Bold
                 )
                 Text(
-                    text = "circuits dans le tirage",
+                    text = if (hasConnections) "circuits + trajets dans le tirage" else "circuits dans le tirage",
                     style = MaterialTheme.typography.labelMedium
                 )
-
             }
 
             val animatedProgress by animateFloatAsState(
@@ -124,13 +126,12 @@ fun TrackSelectionScreen(
                 label = "progressAnimation"
             )
 
-            // La barre de progression avec dégradé
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(12.dp)
-                    .clip(CircleShape) // Bords arrondis
-                    .background(MaterialTheme.colorScheme.surfaceVariant) // Couleur de fond (track)
+                    .clip(CircleShape)
+                    .background(MaterialTheme.colorScheme.surfaceVariant)
             ) {
                 Box(
                     modifier = Modifier
@@ -139,8 +140,8 @@ fun TrackSelectionScreen(
                         .background(
                             brush = Brush.horizontalGradient(
                                 colors = listOf(
-                                    Color(0xFFFF5100), // Jaune
-                                    Color(0xFFFCD676)  // Orange
+                                    Color(0xFFFF5100),
+                                    Color(0xFFFCD676)
                                 )
                             )
                         )

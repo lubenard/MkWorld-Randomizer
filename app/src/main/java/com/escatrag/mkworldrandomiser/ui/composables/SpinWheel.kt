@@ -56,7 +56,8 @@ fun SpinWheel(
     selectedItem: TrackCombo?,
     onScoreSelection: () -> Unit,
     playersSize: Int,
-    showResultUI: Boolean = true
+    showResultUI: Boolean = true,
+    modifier: Modifier = Modifier
 ) {
     // 1. État du Pager (on met un grand nombre pour simuler un défilement infini)
     val pageCount = 500
@@ -125,7 +126,7 @@ fun SpinWheel(
     }
 
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
