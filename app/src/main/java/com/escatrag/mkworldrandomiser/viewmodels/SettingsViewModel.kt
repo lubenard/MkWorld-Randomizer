@@ -2,11 +2,10 @@ package com.escatrag.mkworldrandomiser.viewmodels
 
 import android.app.Application
 import android.content.Context
-import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.application
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -14,29 +13,37 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
+enum class ThemeMode { SYSTEM, LIGHT, DARK }
+
 private val Context.dataStore by preferencesDataStore(name = "settings_prefs")
 
 class SettingsViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val _darkModeEnabled = MutableStateFlow(false)
-    val darkModeEnabled: StateFlow<Boolean> = _darkModeEnabled.asStateFlow()
+    private val context = application.applicationContext
+
+    private val _themeMode = MutableStateFlow(ThemeMode.SYSTEM)
+    val themeMode: StateFlow<ThemeMode> = _themeMode.asStateFlow()
 
     init {
         viewModelScope.launch {
-            application.dataStore.data.map { it[DARK_MODE_KEY] ?: false }.collect { value ->
-                _darkModeEnabled.value = value
+            context.dataStore.data.map { prefs ->
+                prefs[THEME_MODE_KEY]?.let { name ->
+                    try { ThemeMode.valueOf(name) } catch (_: IllegalArgumentException) { ThemeMode.SYSTEM }
+                } ?: ThemeMode.SYSTEM
+            }.collect { value ->
+                _themeMode.value = value
             }
         }
     }
 
-    fun setDarkModeEnabled(enabled: Boolean) {
-        _darkModeEnabled.value = enabled
+    fun setThemeMode(mode: ThemeMode) {
+        _themeMode.value = mode
         viewModelScope.launch {
-            application.dataStore.edit { it[DARK_MODE_KEY] = enabled }
+            context.dataStore.edit { it[THEME_MODE_KEY] = mode.name }
         }
     }
 
     companion object {
-        private val DARK_MODE_KEY = booleanPreferencesKey("dark_mode_enabled")
+        private val THEME_MODE_KEY = stringPreferencesKey("theme_mode")
     }
 }

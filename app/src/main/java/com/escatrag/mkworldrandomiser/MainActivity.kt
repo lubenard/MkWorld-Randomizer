@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Groups
@@ -35,6 +36,7 @@ import com.escatrag.mkworldrandomiser.ui.screens.TrackSelectionScreen
 import com.escatrag.mkworldrandomiser.ui.theme.MkWorldRandomiserTheme
 import com.escatrag.mkworldrandomiser.viewmodels.ScoreViewModel
 import com.escatrag.mkworldrandomiser.viewmodels.SettingsViewModel
+import com.escatrag.mkworldrandomiser.viewmodels.ThemeMode
 import com.escatrag.mkworldrandomiser.viewmodels.TrackViewModel
 
 class MainActivity : ComponentActivity() {
@@ -43,9 +45,14 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             val settingsVM: SettingsViewModel = viewModel()
-            val isDarkMode by settingsVM.darkModeEnabled.collectAsState()
+            val themeMode by settingsVM.themeMode.collectAsState()
+            val isDarkTheme = when (themeMode) {
+                ThemeMode.DARK -> true
+                ThemeMode.LIGHT -> false
+                ThemeMode.SYSTEM -> isSystemInDarkTheme()
+            }
 
-            MkWorldRandomiserTheme(darkTheme = isDarkMode) {
+            MkWorldRandomiserTheme(darkTheme = isDarkTheme) {
                 val navController = rememberNavController()
                 val trackViewModel: TrackViewModel = viewModel()
                 val scoreViewModel: ScoreViewModel = viewModel()
