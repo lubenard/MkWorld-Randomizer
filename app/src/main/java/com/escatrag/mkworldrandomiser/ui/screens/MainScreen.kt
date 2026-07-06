@@ -129,11 +129,13 @@ fun MainScreen(
                 }
         )
 
+        Log.d("lubenard" , "phase is $phase")
         when (phase) {
+
             Phase.SELECTION_CUBE -> {
                 val totalPool = selectedTracks.size + (if (includeRoutes) selectedConnections.size else 0)
                 HomeUI(totalPool, onClick = {
-                    viewModel.generateCourse()
+                    viewModel.pickRandomMap()
                     phase = if (hasPendingDestination) Phase.DUAL_SPINNER else Phase.SPINNING_TRACK
                 })
 

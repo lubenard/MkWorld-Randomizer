@@ -106,47 +106,70 @@ class TrackViewModel : ViewModel() {
         }
     }
 
-    // Étape 1 : choisir une map aléatoire et vérifier si un trajet est possibleFiBetter handling of ci
     fun pickRandomMap() {
+        Log.d("lubenard", "pickRandomMap: debut — bias=${_generationBias.value}, selectedTracks=${_selectedTracks.value.size}, selectedConnections=${_selectedConnections.value.size}")
         val currentSelectedTracks = _selectedTracks.value
-        if (currentSelectedTracks.isEmpty()) return
-
-        val uniqueStarts = currentSelectedTracks.map { it.start }.distinct()
-        if (uniqueStarts.isEmpty()) return
-        val randomTrack = uniqueStarts.random()
+        if (currentSelectedTracks.isEmpty()) {
+            Log.w("lubenard", "pickRandomMap: selectedTracks vide, abandon")
+            return
+        }
+        val randomTrack = currentSelectedTracks.random().start
+        Log.d("lubenard", "pickRandomMap: depart choisi — ${randomTrack.text}")
 
         val shouldIncludeRoute = when (_generationBias.value) {
             0f -> false
             100f -> true
             else -> Random.nextBoolean()
         }
+        Log.d("lubenard", "pickRandomMap: shouldIncludeRoute=$shouldIncludeRoute (bias=${_generationBias.value})")
 
         pendingDestinations = null
         _hasPendingDestination.value = false
         if (shouldIncludeRoute) {
             val startEnum = TrackItems.entries.find { it.nameRes == randomTrack.text }
             val allPossible = startEnum?.let { TrackRepository.connections[it] } ?: emptyList()
+            Log.d("lubenard", "pickRandomMap: startEnum=$startEnum, allPossible=${allPossible.size} connexions dans le graphe")
             val enabled = allPossible.filter { dest ->
                 _selectedConnections.value.any { c ->
                     c.start == randomTrack && c.end == dest.map()
                 }
             }
+            Log.d("lubenard", "pickRandomMap: trajets actives depuis ce depart=${enabled.size}")
             if (enabled.isNotEmpty()) {
                 pendingDestinations = enabled
                 _hasPendingDestination.value = true
+                Log.d("lubenard", "pickRandomMap: trajet possible — destinations en attente: ${enabled.size}")
+            } else {
+                Log.d("lubenard", "pickRandomMap: aucun trajet actif depuis ce depart, affichage circuit seul")
+                _showTwoPhaseSpinner.value = false
             }
+        } else {
+            Log.d("lubenard", "pickRandomMap: pas de trajet demande, affichage circuit seul")
+            _showTwoPhaseSpinner.value = false
         }
 
         val displayIndex = currentSelectedTracks.indexOfFirst {
             it.start == randomTrack && it.type == TrackComboType.TRACK
         }.let { if (it >= 0) it else currentSelectedTracks.indexOfFirst { c -> c.start == randomTrack } }
+        Log.d("lubenard", "pickRandomMap: displayIndex=$displayIndex")
 
         selectedTrackIndex.value = displayIndex
         _selectedTrack.value = TrackCombo(start = randomTrack, type = TrackComboType.TRACK)
         _destinationTargetIndex.value = -1
-        _showTwoPhaseSpinner.value = false
 
-        Log.d("lubenard", "Map sélectionnée : ${randomTrack.text}")
+        Log.d("lubenard", "pickRandomMap: selectedTrack mis a jour, showTwoPhaseSpinner=false")
+
+        if (_hasPendingDestination.value) {
+            _destinationItems.value = pendingDestinations?.map { dest ->
+                TrackCombo(start = dest.map(), type = TrackComboType.TRACK)
+            } ?: emptyList()
+            Log.d("lubenard", "pickRandomMap: destinationItems popule avec ${_destinationItems.value.size} entree(s)")
+        } else {
+            _destinationItems.value = emptyList()
+            Log.d("lubenard", "pickRandomMap: destinationItems vide (pas de trajet)")
+        }
+
+        Log.d("lubenard", "pickRandomMap: FIN — hasPendingDestination=${_hasPendingDestination.value}, selectedTrack=${_selectedTrack.value?.start?.text}")
     }
 
     // Étape 2 : choisir une destination aléatoire pour le trajet (appelé après la Phase 1 du spinner)
@@ -172,17 +195,6 @@ class TrackViewModel : ViewModel() {
 
         Log.d("lubenard", "Destination sélectionnée : ${randomDest.nameRes}")
         return true
-    }
-
-    fun generateCourse() {
-        pickRandomMap()
-        if (_hasPendingDestination.value) {
-            _destinationItems.value = pendingDestinations?.map { dest ->
-                TrackCombo(start = dest.map(), type = TrackComboType.TRACK)
-            } ?: emptyList()
-        } else {
-            _destinationItems.value = emptyList()
-        }
     }
 
     fun resetCourse() {
