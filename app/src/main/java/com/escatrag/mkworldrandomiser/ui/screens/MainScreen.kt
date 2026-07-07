@@ -26,6 +26,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.escatrag.mkworldrandomiser.ui.composables.HomeUI
@@ -122,6 +124,8 @@ fun MainScreen(
             modifier = Modifier
                 .align(Alignment.End)
                 .padding(top = 10.dp)
+                .semantics { testTagsAsResourceId = true }
+                .testTag("settingsIcon")
                 .clickable {
                     onSettings()
                 }

@@ -39,6 +39,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -88,7 +90,7 @@ fun ProfileCreationPopup(
                     onValueChange = { tempName = it },
                     label = { Text("Prénom") },
                     placeholder = { Text("Ex: Mario, Luig, Birdo..") },
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth().semantics { testTagsAsResourceId = true }.testTag("nameField"),
                     singleLine = true,
                     shape = RoundedCornerShape(12.dp)
                 )
@@ -103,6 +105,7 @@ fun ProfileCreationPopup(
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     items(availableAvatars) { avatarRes ->
+                        val avatarIndex = availableAvatars.indexOf(avatarRes)
                         val isSelected = tempAvatar == avatarRes
                         Image(
                             painter = painterResource(id = avatarRes),
@@ -120,6 +123,8 @@ fun ProfileCreationPopup(
                                 .background(if (isSelected) MaterialTheme.colorScheme.primaryContainer else Color.Transparent)
                                 .clickable { tempAvatar = avatarRes }
                                 .padding(if (isSelected) 4.dp else 0.dp)
+                                .semantics { testTagsAsResourceId = true }
+                                .testTag("avatar_$avatarIndex")
                         )
                     }
                 }
@@ -132,6 +137,7 @@ fun ProfileCreationPopup(
                     horizontalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
                     availableColors.forEach { color ->
+                        val colorIndex = availableColors.indexOf(color)
                         val isSelected = tempColor == color
                         Box(
                             modifier = Modifier
@@ -144,6 +150,8 @@ fun ProfileCreationPopup(
                                     shape = CircleShape
                                 )
                                 .clickable { tempColor = color }
+                                .semantics { testTagsAsResourceId = true }
+                                .testTag("color_$colorIndex")
                         )
                     }
                 }
@@ -167,7 +175,8 @@ fun ProfileCreationPopup(
                             ))
                         },
                         enabled = tempName.isNotBlank(), // Oblige à mettre un nom
-                        shape = RoundedCornerShape(12.dp)
+                        shape = RoundedCornerShape(12.dp),
+                        modifier = Modifier.semantics { testTagsAsResourceId = true }.testTag("saveButton")
                     ) {
                         Text("Sauvegarder")
                     }

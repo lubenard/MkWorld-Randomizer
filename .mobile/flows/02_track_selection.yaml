@@ -1,0 +1,11 @@
+appId: com.escatrag.mkworldrandomiser.dev
+---
+- launchApp
+- tapOn: "Circuits"
+- waitFor: "CIRCUITS"
+- assertVisible: "Tout activer"
+- assertVisible: "Tout désactiver"
+- tapOn: "Tout désactiver"
+- waitFor: "Tout activer"
+- tapOn: "Tout activer"
+- assertVisible: "circuits dans le tirage"

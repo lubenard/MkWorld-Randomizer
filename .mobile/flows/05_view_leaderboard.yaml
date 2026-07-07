@@ -1,0 +1,8 @@
+appId: com.escatrag.mkworldrandomiser.dev
+---
+- runFlow: 04_enter_scores.yaml
+- tapOn: "Scores"
+- waitFor: "CLASSEMENT"
+- assertVisible: "Mario"
+- tapOn: "Mario"                         # ouvre le bottom sheet
+- assertVisible: "pts"                   # stats visibles

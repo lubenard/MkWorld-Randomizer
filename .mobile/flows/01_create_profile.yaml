@@ -1,0 +1,13 @@
+appId: com.escatrag.mkworldrandomiser.dev
+---
+- launchApp
+- tapOn: "Scores"
+- waitFor: "Ajouter un pilote"
+- tapOn: "Ajouter un pilote"
+- waitFor: "Créer ton pilote"
+- tapOn: "nameField"
+- inputText: "Mario"
+- tapOn: "avatar_0"
+- tapOn: "color_0"
+- tapOn: "saveButton"
+- assertVisible: "Mario"

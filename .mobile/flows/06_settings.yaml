@@ -1,0 +1,11 @@
+appId: com.escatrag.mkworldrandomiser.dev
+---
+- launchApp
+- tapOn: "settingsIcon"
+- waitFor: "Paramètres"
+- assertVisible: "Système"
+- assertVisible: "Clair"
+- assertVisible: "Sombre"
+- tapOn: "Sombre"
+- tapOn: "Système"
+- assertVisible: "50 / 50"

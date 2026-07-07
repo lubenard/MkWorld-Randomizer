@@ -1,0 +1,34 @@
+appId: com.escatrag.mkworldrandomiser.dev
+---
+- launchApp
+# 1. Création d'un profil
+- tapOn: "Scores"
+- waitFor: "Ajouter un pilote"
+- tapOn: "Ajouter un pilote"
+- waitFor: "Créer ton pilote"
+- tapOn: "nameField"
+- inputText: "Luigi"
+- tapOn: "avatar_2"
+- tapOn: "color_3"
+- tapOn: "saveButton"
+- assertVisible: "Luigi"
+# 2. Ajustement des circuits
+- tapOn: "Circuits"
+- waitFor: "CIRCUITS"
+- tapOn: "Tout désactiver"
+- tapOn: "Tout activer"
+# 3. Tirage au sort
+- tapOn: "Aléatoire"
+- tapOn: "spinBlock"
+- waitFor: "Saisir les scores"
+- tapOn: "Saisir les scores"
+# 4. Saisie des résultats
+- waitFor: "Résultats de la course"
+- tapOn: "Luigi"
+- tapOn: "Cliquer pour classer"
+- assertVisible: "1er"
+- tapOn: "Enregistrer les scores"
+# 5. Vérification du classement
+- tapOn: "Scores"
+- assertVisible: "Luigi"
+- assertVisible: "pts"

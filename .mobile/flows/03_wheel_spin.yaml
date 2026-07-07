@@ -1,0 +1,11 @@
+appId: com.escatrag.mkworldrandomiser.dev
+---
+- runFlow: 01_create_profile.yaml
+- tapOn: "Aléatoire"
+- waitFor: "spinBlock"
+- tapOn: "spinBlock"
+- waitFor: "RECOMMENCER"     # la roue a fini de tourner
+- assertVisible: "RECOMMENCER"
+- assertVisible: "Saisir les scores"
+- tapOn: "RECOMMENCER"
+- waitFor: "spinBlock"

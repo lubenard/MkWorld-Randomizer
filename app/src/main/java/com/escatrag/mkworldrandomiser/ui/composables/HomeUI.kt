@@ -35,6 +35,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -133,6 +135,8 @@ fun HomeUI(availableCoursesCount: Int, onClick: () -> Unit) {
                 .offset(x = shakerOffsetX.dp, y = shakerOffsetY.dp) // Application de l'animation sur l'axe X
                 .size(200.dp)
                 .background(Color(0xFFFFC107), shape = RoundedCornerShape(16.dp))
+                .semantics { testTagsAsResourceId = true }
+                .testTag("spinBlock")
                 .clickable { onClick()}, // Jaune style bloc Mario
             contentAlignment = Alignment.Center,
         ) {

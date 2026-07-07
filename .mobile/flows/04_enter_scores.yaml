@@ -1,0 +1,13 @@
+appId: com.escatrag.mkworldrandomiser.dev
+---
+- runFlow: 01_create_profile.yaml
+- tapOn: "Aléatoire"
+- tapOn: "spinBlock"
+- waitFor: "Saisir les scores"   # la roue a fini de tourner
+- tapOn: "Saisir les scores"
+- waitFor: "Résultats de la course"
+- tapOn: "Mario"                  # selectionne le participant
+- tapOn: "Cliquer pour classer"   # classe Mario en 1er
+- assertVisible: "1er"
+- tapOn: "Enregistrer les scores"
+- waitFor: "courses disponibles"  # retour à l'écran d'accueil
