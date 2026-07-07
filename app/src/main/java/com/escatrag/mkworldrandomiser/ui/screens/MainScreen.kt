@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.sp
 import com.escatrag.mkworldrandomiser.ui.composables.HomeUI
 import com.escatrag.mkworldrandomiser.ui.composables.SpinWheel
 import com.escatrag.mkworldrandomiser.ui.theme.MinecraftFontFamily
+import com.escatrag.mkworldrandomiser.viewmodels.Phase
 import com.escatrag.mkworldrandomiser.viewmodels.ScoreViewModel
 import com.escatrag.mkworldrandomiser.viewmodels.SettingsViewModel
 import com.escatrag.mkworldrandomiser.viewmodels.TrackViewModel
@@ -41,8 +42,6 @@ import nl.dionsegijn.konfetti.core.PartySystem
 import nl.dionsegijn.konfetti.core.Position
 import nl.dionsegijn.konfetti.core.emitter.Emitter
 import java.util.concurrent.TimeUnit
-
-private enum class Phase { SELECTION_CUBE, SPINNING_TRACK, DUAL_SPINNER, SPINNING_DESTINATION }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -63,7 +62,8 @@ fun MainScreen(
     val selectedItem = viewModel.selectedTrack.collectAsState().value
     val selectedTrackIndex = viewModel.selectedTrackIndex.collectAsState().value
     val players = scoreViewModel.players.collectAsState().value
-    val hasPendingDestination by viewModel.hasPendingDestination.collectAsState()
+    val phase by viewModel.phase.collectAsState()
+    val isSecondSpinnerReady by viewModel.isSecondSpinnerReady.collectAsState()
     val destinationItems by viewModel.destinationItems.collectAsState()
     val destinationTargetIndex by viewModel.destinationTargetIndex.collectAsState()
 
@@ -90,8 +90,6 @@ fun MainScreen(
     )
 
     var showConfetti by remember { mutableStateOf(false) }
-
-    var phase by remember { mutableStateOf(Phase.SELECTION_CUBE) }
 
     LaunchedEffect(Unit) {
         viewModel.resetCourse()
@@ -136,8 +134,6 @@ fun MainScreen(
                 val totalPool = selectedTracks.size + (if (includeRoutes) selectedConnections.size else 0)
                 HomeUI(totalPool, onClick = {
                     viewModel.pickRandomMap()
-                    Log.d("lubenard", "hasPendingDestination ?? -> $hasPendingDestination")
-                    phase = if (hasPendingDestination) Phase.DUAL_SPINNER else Phase.SPINNING_TRACK
                 })
 
                 Row(
@@ -166,7 +162,6 @@ fun MainScreen(
                         showConfetti = true
                     },
                     onRetry = {
-                        phase = Phase.SELECTION_CUBE
                         if (deleteTrackAfterCompletion) {
                             Log.d("lubenard", "${selectedItem}")
                             viewModel.deleteCircuit(selectedItem)
@@ -178,8 +173,6 @@ fun MainScreen(
             }
 
             Phase.DUAL_SPINNER -> {
-                var firstSpinnerDone by remember { mutableStateOf(false) }
-
                 Column(
                     modifier = Modifier.fillMaxSize(),
                     horizontalAlignment = Alignment.CenterHorizontally,
@@ -193,10 +186,8 @@ fun MainScreen(
                         showResultUI = false,
                         onFinished = {
                             viewModel.pickRandomDestination()
-                            firstSpinnerDone = true
                         },
                         onRetry = {
-                            phase = Phase.SELECTION_CUBE
                             viewModel.resetCourse()
                         },
                         onScoreSelection = { },
@@ -210,7 +201,7 @@ fun MainScreen(
                         color = Color.Gray
                     )
 
-                    if (firstSpinnerDone) {
+                    if (isSecondSpinnerReady) {
                         SpinWheel(
                             items = destinationItems,
                             targetIndex = destinationTargetIndex,
@@ -222,7 +213,6 @@ fun MainScreen(
                                 showConfetti = true
                             },
                             onRetry = {
-                                phase = Phase.SELECTION_CUBE
                                 if (deleteTrackAfterCompletion) {
                                     Log.d("lubenard", "${selectedItem}")
                                     viewModel.deleteCircuit(selectedItem)
@@ -236,28 +226,6 @@ fun MainScreen(
                         Spacer(modifier = Modifier.weight(1f))
                     }
                 }
-            }
-
-            Phase.SPINNING_DESTINATION -> {
-                SpinWheel(
-                    items = destinationItems,
-                    targetIndex = destinationTargetIndex,
-                    selectedItem = selectedItem,
-                    playersSize = players.size,
-                    showResultUI = true,
-                    onFinished = {
-                        showConfetti = true
-                    },
-                    onRetry = {
-                        phase = Phase.SELECTION_CUBE
-                        if (deleteTrackAfterCompletion) {
-                            Log.d("lubenard", "${selectedItem}")
-                            viewModel.deleteCircuit(selectedItem)
-                        }
-                        viewModel.resetCourse()
-                    },
-                    onScoreSelection = onScoreSelection
-                )
             }
 
         }

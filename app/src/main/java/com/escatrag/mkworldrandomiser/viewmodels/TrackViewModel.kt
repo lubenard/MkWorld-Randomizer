@@ -2,7 +2,6 @@ package com.escatrag.mkworldrandomiser.viewmodels
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.escatrag.mkworldrandomiser.backend.Track
 import com.escatrag.mkworldrandomiser.backend.TrackCombo
 import com.escatrag.mkworldrandomiser.backend.TrackComboType
@@ -10,12 +9,12 @@ import com.escatrag.mkworldrandomiser.backend.TrackItems
 import com.escatrag.mkworldrandomiser.backend.TrackRepository
 import com.escatrag.mkworldrandomiser.backend.map
 import com.escatrag.mkworldrandomiser.backend.toTrackItem
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 import kotlin.random.Random
+
+enum class Phase { SELECTION_CUBE, SPINNING_TRACK, DUAL_SPINNER }
 
 class TrackViewModel : ViewModel() {
 
@@ -56,9 +55,9 @@ class TrackViewModel : ViewModel() {
     private val _destinationTargetIndex = MutableStateFlow(-1)
     val destinationTargetIndex: StateFlow<Int> = _destinationTargetIndex
 
-    // Indique si on doit afficher le double spinner (phase 2 pour la destination)
-    private val _showTwoPhaseSpinner = MutableStateFlow(false)
-    val showTwoPhaseSpinner: StateFlow<Boolean> = _showTwoPhaseSpinner
+    // Phase actuelle de l'écran
+    private val _phase = MutableStateFlow(Phase.SELECTION_CUBE)
+    val phase: StateFlow<Phase> = _phase
 
     // Option to include routes between tracks (UI toggle state)
     private val _includeRoutes = MutableStateFlow(false)
@@ -67,13 +66,13 @@ class TrackViewModel : ViewModel() {
     // Stocke les destinations éligibles pour la map choisie (utilisé entre pickRandomMap et pickRandomDestination)
     private var pendingDestinations: List<TrackItems>? = null
 
-    // Indique si un trajet est en attente après pickRandomMap (pour afficher 2 spinners)
-    private val _hasPendingDestination = MutableStateFlow(false)
-    val hasPendingDestination: StateFlow<Boolean> = _hasPendingDestination
-
     // Liste des destinations possibles formatées en TrackCombo pour le second spinner
     private val _destinationItems = MutableStateFlow<List<TrackCombo>>(emptyList())
     val destinationItems: StateFlow<List<TrackCombo>> = _destinationItems
+
+    // Indique si le second spinner est prêt (phase 2 du double spinner)
+    private val _isSecondSpinnerReady = MutableStateFlow(false)
+    val isSecondSpinnerReady: StateFlow<Boolean> = _isSecondSpinnerReady
 
     fun toggleTrack(id: TrackCombo) {
         val trackItemsToToggle = _allTracksAvailable.value.find { it == id }
@@ -107,6 +106,7 @@ class TrackViewModel : ViewModel() {
                 _usedCircuits.value = _usedCircuits.value + item
             }
             _selectedTracks.value = _selectedTracks.value.filter { it != result }
+            _selectedConnections.value = _selectedConnections.value.filter { it.start != result.start }
             Log.d("lubenard", "completeRace: circuit retire de _selectedTracks — ${result.start.text}")
         }
     }
@@ -141,8 +141,6 @@ class TrackViewModel : ViewModel() {
         Log.d("lubenard", "pickRandomMap: shouldAttemptRoute=$shouldAttemptRoute (bias=${_generationBias.value})")
 
         pendingDestinations = null
-        _hasPendingDestination.value = false
-        _showTwoPhaseSpinner.value = false
 
         // Toujours tirer une map depuis la pool des circuits (filtrée par _usedCircuits)
         val available = currentSelectedTracks.filter {
@@ -166,7 +164,6 @@ class TrackViewModel : ViewModel() {
             }
             if (enabled.isNotEmpty()) {
                 pendingDestinations = enabled
-                _hasPendingDestination.value = true
                 Log.d("lubenard", "pickRandomMap: ${enabled.size} destination(s) disponible(s) pour ${randomTrack.text}")
 
             } else {
@@ -183,24 +180,23 @@ class TrackViewModel : ViewModel() {
         _selectedTrack.value = TrackCombo(start = randomTrack, type = TrackComboType.TRACK)
         _destinationTargetIndex.value = -1
 
-        if (_hasPendingDestination.value) {
-            _destinationItems.value = pendingDestinations?.map { dest ->
+        if (pendingDestinations != null) {
+            _destinationItems.value = pendingDestinations!!.map { dest ->
                 TrackCombo(start = dest.map(), type = TrackComboType.TRACK)
-            } ?: emptyList()
+            }
             Log.d("lubenard", "pickRandomMap: destinationItems popule avec ${_destinationItems.value.size} entree(s)")
         } else {
             _destinationItems.value = emptyList()
             Log.d("lubenard", "pickRandomMap: destinationItems vide (pas de trajet)")
         }
 
-        Log.d("lubenard", "pickRandomMap: FIN — hasPendingDestination=${_hasPendingDestination.value}, selectedTrack=${_selectedTrack.value?.start?.text}")
+        _phase.value = if (pendingDestinations != null) Phase.DUAL_SPINNER else Phase.SPINNING_TRACK
+        Log.d("lubenard", "pickRandomMap: FIN — phase=${_phase.value}, selectedTrack=${_selectedTrack.value?.start?.text}")
     }
 
-    // Étape 2 : choisir une destination aléatoire pour le trajet (appelé après la Phase 1 du spinner)
     fun pickRandomDestination(): Boolean {
         val dests = pendingDestinations ?: emptyList()
         pendingDestinations = null
-        _hasPendingDestination.value = false
 
         if (dests.isEmpty()) return false
 
@@ -215,7 +211,7 @@ class TrackViewModel : ViewModel() {
         _destinationTargetIndex.value = _destinationItems.value.indexOfFirst {
             it.start == randomDest.map()
         }
-        _showTwoPhaseSpinner.value = true
+        _isSecondSpinnerReady.value = true
 
         Log.d("lubenard", "Destination sélectionnée : ${randomDest.nameRes}")
         return true
@@ -224,10 +220,10 @@ class TrackViewModel : ViewModel() {
     fun resetCourse() {
         selectedTrackIndex.value = -1
         _destinationTargetIndex.value = -1
-        _showTwoPhaseSpinner.value = false
         pendingDestinations = null
-        _hasPendingDestination.value = false
         _destinationItems.value = emptyList()
+        _isSecondSpinnerReady.value = false
+        _phase.value = Phase.SELECTION_CUBE
     }
 
     fun selectAllTracks(includeRoutes: Boolean) {
@@ -262,14 +258,13 @@ class TrackViewModel : ViewModel() {
             Log.e("lubenard", "circuit is null !!")
             return
         }
-        viewModelScope.launch(Dispatchers.IO) {
-            Log.d("lubenard", "Trying to delete track $circuit -> ${_deleteTrackAfterCompletion.value}")
-            if (_deleteTrackAfterCompletion.value && !_showTwoPhaseSpinner.value) {
-                if (circuit.type == TrackComboType.CONNECTION) {
-                    _selectedConnections.value = _selectedConnections.value.filter { it != circuit }
-                } else {
-                    _selectedTracks.value = _selectedTracks.value.filter { it != circuit }
-                }
+        Log.d("lubenard", "Trying to delete track $circuit -> ${_deleteTrackAfterCompletion.value}")
+        if (_deleteTrackAfterCompletion.value) {
+            if (circuit.type == TrackComboType.CONNECTION) {
+                _selectedConnections.value = _selectedConnections.value.filter { it != circuit }
+            } else {
+                _selectedTracks.value = _selectedTracks.value.filter { it != circuit }
+                _selectedConnections.value = _selectedConnections.value.filter { it.start != circuit.start }
             }
         }
     }
