@@ -2,6 +2,7 @@ package com.escatrag.mkworldrandomiser.viewmodels
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.escatrag.mkworldrandomiser.backend.Track
 import com.escatrag.mkworldrandomiser.backend.TrackCombo
 import com.escatrag.mkworldrandomiser.backend.TrackComboType
@@ -9,9 +10,11 @@ import com.escatrag.mkworldrandomiser.backend.TrackItems
 import com.escatrag.mkworldrandomiser.backend.TrackRepository
 import com.escatrag.mkworldrandomiser.backend.map
 import com.escatrag.mkworldrandomiser.backend.toTrackItem
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import kotlin.random.Random
 
 enum class Phase { SELECTION_CUBE, SPINNING_TRACK, DUAL_SPINNER }
@@ -97,17 +100,20 @@ class TrackViewModel : ViewModel() {
     }
 
     fun completeRace(result: TrackCombo) {
-        if (result.type == TrackComboType.CONNECTION) {
-            _selectedConnections.value = _selectedConnections.value.filter { it != result }
-            Log.d("lubenard", "completeRace: trajet retire de _selectedConnections — ${result.start.text} -> ${result.end?.text}")
-        } else {
-            val item = result.start.toTrackItem()
-            if (item != null) {
-                _usedCircuits.value = _usedCircuits.value + item
+        viewModelScope.launch {
+            delay(3000L)
+            if (result.type == TrackComboType.CONNECTION) {
+                _selectedConnections.value = _selectedConnections.value.filter { it != result }
+                Log.d("lubenard", "completeRace: trajet retire de _selectedConnections — ${result.start.text} -> ${result.end?.text}")
+            } else {
+                val item = result.start.toTrackItem()
+                if (item != null) {
+                    _usedCircuits.value = _usedCircuits.value + item
+                }
+                _selectedTracks.value = _selectedTracks.value.filter { it != result }
+                _selectedConnections.value = _selectedConnections.value.filter { it.start != result.start }
+                Log.d("lubenard", "completeRace: circuit retire de _selectedTracks — ${result.start.text}")
             }
-            _selectedTracks.value = _selectedTracks.value.filter { it != result }
-            _selectedConnections.value = _selectedConnections.value.filter { it.start != result.start }
-            Log.d("lubenard", "completeRace: circuit retire de _selectedTracks — ${result.start.text}")
         }
     }
 
