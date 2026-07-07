@@ -41,7 +41,7 @@ class TrackViewModel : ViewModel() {
     var selectedTrackIndex = MutableStateFlow(-1)
 
     // Option to delete One track from the selectedTracks after completion (after selecting a random track)
-    private val _deleteTrackAfterCompletion = MutableStateFlow(false)
+    private val _deleteTrackAfterCompletion = MutableStateFlow(true)
     val deleteTrackAfterCompletion: StateFlow<Boolean> = _deleteTrackAfterCompletion
 
     // Set the selected track or trajet
@@ -97,10 +97,18 @@ class TrackViewModel : ViewModel() {
         _includeRoutes.value = value
     }
 
-    fun markCircuitAsUsed(track: Track) {
-        val item = track.toTrackItem() ?: return
-        _usedCircuits.value = _usedCircuits.value + item
-        Log.d("lubenard", "markCircuitAsUsed: ${track.text} ajoute — total used=${_usedCircuits.value.size}")
+    fun completeRace(result: TrackCombo) {
+        if (result.type == TrackComboType.CONNECTION) {
+            _selectedConnections.value = _selectedConnections.value.filter { it != result }
+            Log.d("lubenard", "completeRace: trajet retire de _selectedConnections — ${result.start.text} -> ${result.end?.text}")
+        } else {
+            val item = result.start.toTrackItem()
+            if (item != null) {
+                _usedCircuits.value = _usedCircuits.value + item
+            }
+            _selectedTracks.value = _selectedTracks.value.filter { it != result }
+            Log.d("lubenard", "completeRace: circuit retire de _selectedTracks — ${result.start.text}")
+        }
     }
 
     fun toggleConnection(parent: Track, childItem: TrackItems) {
@@ -134,64 +142,35 @@ class TrackViewModel : ViewModel() {
 
         pendingDestinations = null
         _hasPendingDestination.value = false
-        val randomTrack: Track
+        _showTwoPhaseSpinner.value = false
 
+        // Toujours tirer une map depuis la pool des circuits (filtrée par _usedCircuits)
+        val available = currentSelectedTracks.filter {
+            it.start.toTrackItem() !in _usedCircuits.value
+        }
+        if (available.isEmpty()) {
+            Log.w("lubenard", "pickRandomMap: tous les circuits deja joues, abandon")
+            return
+        }
+        val randomTrack = available.random().start
+        Log.d("lubenard", "pickRandomMap: depart choisi — ${randomTrack.text}")
+
+        // Si mode trajet, vérifier si cette map a des trajets activés
         if (shouldAttemptRoute) {
-            // Trajet : on cherche un départ (même déjà utilisé) qui a des connexions éligibles
-            val shuffled = currentSelectedTracks.shuffled()
-            var routeFound = false
-            var chosenTrack: Track? = null
-
-            for (candidate in shuffled) {
-                val startEnum = TrackItems.entries.find { it.nameRes == candidate.start.text }
-                val allPossible = startEnum?.let { TrackRepository.connections[it] } ?: emptyList()
-                val enabled = allPossible.filter { dest ->
-                    _selectedConnections.value.any { c ->
-                        c.start == candidate.start && c.end == dest.map()
-                    }
-                }
-                if (enabled.isNotEmpty()) {
-                    chosenTrack = candidate.start
-                    pendingDestinations = enabled
-                    _hasPendingDestination.value = true
-                    routeFound = true
-                    Log.d("lubenard", "pickRandomMap: trajet trouve — depart=${candidate.start.text}, ${enabled.size} destination(s)")
-                    break
+            val trackEnum = randomTrack.toTrackItem()
+            val allPossible = trackEnum?.let { TrackRepository.connections[it] } ?: emptyList()
+            val enabled = allPossible.filter { dest ->
+                _selectedConnections.value.any { c ->
+                    c.start == randomTrack && c.end == dest.map()
                 }
             }
-
-            if (routeFound) {
-                randomTrack = chosenTrack!!
-                Log.d("lubenard", "pickRandomMap: depart choisi (trajet) — ${randomTrack.text}")
+            if (enabled.isNotEmpty()) {
+                pendingDestinations = enabled
+                _hasPendingDestination.value = true
+                Log.d("lubenard", "pickRandomMap: ${enabled.size} destination(s) disponible(s) pour ${randomTrack.text}")
             } else {
-                Log.d("lubenard", "pickRandomMap: aucun trajet possible, fallback circuit avec filtre usedCircuits (taille=${_usedCircuits.value.size})")
-                _showTwoPhaseSpinner.value = false
-                val available = currentSelectedTracks.filter {
-                    it.start.toTrackItem() !in _usedCircuits.value
-                }
-                randomTrack = if (available.isEmpty()) {
-                    Log.d("lubenard", "pickRandomMap: tous les circuits utilises, reset usedCircuits")
-                    _usedCircuits.value = emptySet()
-                    currentSelectedTracks.random().start
-                } else {
-                    available.random().start
-                }
-                Log.d("lubenard", "pickRandomMap: depart choisi (circuit/fallback) — ${randomTrack.text}")
+                Log.d("lubenard", "pickRandomMap: aucun trajet active pour ${randomTrack.text}, course simple")
             }
-        } else {
-            Log.d("lubenard", "pickRandomMap: circuit seul, filtre usedCircuits (taille=${_usedCircuits.value.size})")
-            _showTwoPhaseSpinner.value = false
-            val available = currentSelectedTracks.filter {
-                it.start.toTrackItem() !in _usedCircuits.value
-            }
-            randomTrack = if (available.isEmpty()) {
-                Log.d("lubenard", "pickRandomMap: tous les circuits utilises, reset usedCircuits")
-                _usedCircuits.value = emptySet()
-                currentSelectedTracks.random().start
-            } else {
-                available.random().start
-            }
-            Log.d("lubenard", "pickRandomMap: depart choisi (circuit) — ${randomTrack.text}")
         }
 
         val displayIndex = currentSelectedTracks.indexOfFirst {
@@ -202,8 +181,6 @@ class TrackViewModel : ViewModel() {
         selectedTrackIndex.value = displayIndex
         _selectedTrack.value = TrackCombo(start = randomTrack, type = TrackComboType.TRACK)
         _destinationTargetIndex.value = -1
-
-        Log.d("lubenard", "pickRandomMap: selectedTrack mis a jour")
 
         if (_hasPendingDestination.value) {
             _destinationItems.value = pendingDestinations?.map { dest ->

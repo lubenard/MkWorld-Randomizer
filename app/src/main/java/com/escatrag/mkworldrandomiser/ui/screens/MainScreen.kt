@@ -161,7 +161,7 @@ fun MainScreen(
                     playersSize = players.size,
                     showResultUI = true,
                     onFinished = {
-                        selectedItem?.let { viewModel.markCircuitAsUsed(it.start) }
+                        selectedItem?.let { viewModel.completeRace(it) }
                         showConfetti = true
                     },
                     onRetry = {
@@ -217,6 +217,7 @@ fun MainScreen(
                             playersSize = players.size,
                             showResultUI = true,
                             onFinished = {
+                                selectedItem?.let { viewModel.completeRace(it) }
                                 showConfetti = true
                             },
                             onRetry = {
