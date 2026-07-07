@@ -161,6 +161,7 @@ fun MainScreen(
                     playersSize = players.size,
                     showResultUI = true,
                     onFinished = {
+                        selectedItem?.let { viewModel.markCircuitAsUsed(it.start) }
                         showConfetti = true
                     },
                     onRetry = {
