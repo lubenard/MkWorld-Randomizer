@@ -136,6 +136,7 @@ fun MainScreen(
                 val totalPool = selectedTracks.size + (if (includeRoutes) selectedConnections.size else 0)
                 HomeUI(totalPool, onClick = {
                     viewModel.pickRandomMap()
+                    Log.d("lubenard", "hasPendingDestination ?? -> $hasPendingDestination")
                     phase = if (hasPendingDestination) Phase.DUAL_SPINNER else Phase.SPINNING_TRACK
                 })
 

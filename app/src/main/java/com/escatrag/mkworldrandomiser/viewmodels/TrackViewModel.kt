@@ -168,6 +168,7 @@ class TrackViewModel : ViewModel() {
                 pendingDestinations = enabled
                 _hasPendingDestination.value = true
                 Log.d("lubenard", "pickRandomMap: ${enabled.size} destination(s) disponible(s) pour ${randomTrack.text}")
+
             } else {
                 Log.d("lubenard", "pickRandomMap: aucun trajet active pour ${randomTrack.text}, course simple")
             }
