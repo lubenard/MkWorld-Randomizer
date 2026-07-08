@@ -126,7 +126,7 @@ fun PodiumBar(
             style = if (rank == 1) MaterialTheme.typography.titleMedium else MaterialTheme.typography.bodyMedium
         )
         Text(
-            text = "${player.currentMonthScore} pts",
+            text = "${player.currentMonthScore}",
             style = MaterialTheme.typography.bodySmall,
             fontFamily = MinecraftFontFamily,
             color = Color.Gray

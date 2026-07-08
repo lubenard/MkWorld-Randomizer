@@ -19,6 +19,8 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.util.UUID
+import kotlin.math.pow
+import kotlin.math.roundToInt
 
 
 // Extension pour le DataStore
@@ -29,7 +31,7 @@ data class PlayerProfile(
     val name: String = "",
     val avatarRes: Int? = null, // Mis en optionnel pour gérer les initiales
     val profileColor: Int = Color.Gray.toArgb(),
-    val currentMonthScore: Int = 0,
+    val currentMonthScore: Int = 3000,
     val runNumbers: Int = 0,
     val victoryNumbers: Int = 0,
     val timesInPodium: Int = 0,
@@ -89,7 +91,7 @@ class ScoreViewModel(application: Application) : AndroidViewModel(application) {
     fun resetMonthlyScores() {
         val currentList = _players.value
         // On recrée la liste en mettant le score de tout le monde à 0
-        val resetList = currentList.map { it.copy(currentMonthScore = 0) }
+        val resetList = currentList.map { it.copy(currentMonthScore = 3000) }
         persistData(resetList)
     }
 
@@ -113,27 +115,46 @@ class ScoreViewModel(application: Application) : AndroidViewModel(application) {
         closeEditPopup()
     }
 
-    fun submitRaceResults(results: Map<String, Int>, mapId: Int) {
-        val newList = _players.value.map { player ->
-            val position = results[player.id]
-            if (position != null) {
-                val pointsGained = when (position) {
-                    1 -> 15
-                    2 -> 12
-                    3 -> 10
-                    4, 5 -> 9
-                    6, 7 -> 8
-                    8, 9 -> 7
-                    10, 11, 12 -> 6
-                    13, 14, 15 -> 5
-                    16, 17, 18 -> 4
-                    19, 20, 21 -> 3
-                    22, 23 -> 2
-                    24 -> 1
-                    else -> 0
+    fun submitRaceResults(rankings: Map<String, Int>, mapId: Int) {
+        val players = _players.value
+        val n = rankings.size
+        if (n < 2) return
+
+        val scaledK = 32.0 / (n - 1)
+        val eloDeltas = mutableMapOf<String, Double>()
+
+        val rankedPlayers = players.filter { it.id in rankings }
+
+        for (i in rankedPlayers.indices) {
+            for (j in i + 1 until rankedPlayers.size) {
+                val a = rankedPlayers[i]
+                val b = rankedPlayers[j]
+
+                val ratingA = a.currentMonthScore.toDouble()
+                val ratingB = b.currentMonthScore.toDouble()
+                val posA = rankings[a.id]!!
+                val posB = rankings[b.id]!!
+
+                val expectedA = 1.0 / (1.0 + 10.0.pow((ratingB - ratingA) / 400.0))
+                val expectedB = 1.0 - expectedA
+
+                val (actualA, actualB) = when {
+                    posA < posB -> Pair(1.0, 0.0)
+                    posA > posB -> Pair(0.0, 1.0)
+                    else -> Pair(0.5, 0.5)
                 }
+
+                eloDeltas[a.id] = (eloDeltas[a.id] ?: 0.0) + scaledK * (actualA - expectedA)
+                eloDeltas[b.id] = (eloDeltas[b.id] ?: 0.0) + scaledK * (actualB - expectedB)
+            }
+        }
+
+        val newList = players.map { player ->
+            val position = rankings[player.id]
+            if (position != null) {
+                val delta = (eloDeltas[player.id] ?: 0.0).roundToInt()
                 player.copy(
-                    currentMonthScore = player.currentMonthScore + pointsGained,
+                    currentMonthScore = maxOf(0, player.currentMonthScore + delta),
                     runNumbers = player.runNumbers + 1,
                     timesInPodium = if (position <= 3) player.timesInPodium + 1 else player.timesInPodium,
                     victoryNumbers = if (position == 1) player.victoryNumbers + 1 else player.victoryNumbers,

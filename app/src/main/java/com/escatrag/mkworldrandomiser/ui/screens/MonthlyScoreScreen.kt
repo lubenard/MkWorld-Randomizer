@@ -216,9 +216,9 @@ fun MonthlyScoreScreen(
                 }
             } else {
                 // Vérifier si tous les scores sont à zéro
-                val allScoresAreZero = players.all { it.currentMonthScore == 0 }
+                val allScoresAreDefault = players.all { it.currentMonthScore == 3000 }
 
-                if (allScoresAreZero) {
+                if (allScoresAreDefault) {
                     // --- MODE LISTE UNIQUEMENT (Début de mois / Reset) ---
                     LazyColumn(
                         modifier = Modifier.fillMaxSize(),
@@ -332,7 +332,7 @@ fun ScoreRow(
                 fontWeight = FontWeight.Medium
             )
             Text(
-                text = "${player.currentMonthScore} pts",
+                text = "${player.currentMonthScore}",
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.primary,
                 style = MaterialTheme.typography.titleMedium

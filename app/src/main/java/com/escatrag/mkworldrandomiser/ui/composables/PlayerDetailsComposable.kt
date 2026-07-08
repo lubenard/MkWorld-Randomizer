@@ -87,7 +87,7 @@ fun PlayersDetailsComposable(selectedPlayerForDetails: PlayerProfile, onDismiss:
             Spacer(modifier = Modifier.height(16.dp))
 
             // Affichage des infos du joueur
-            Text("${selectedPlayerForDetails.currentMonthScore} pts")
+            Text("${selectedPlayerForDetails.currentMonthScore}")
 
             Row(
                 modifier = Modifier

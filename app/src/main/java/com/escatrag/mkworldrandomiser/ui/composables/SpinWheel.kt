@@ -195,7 +195,7 @@ fun SpinWheel(
 
 
 @Composable
-fun RecommencerButton(onClick: () -> Unit) {
+fun RecommencerButton(modifier: Modifier = Modifier, onClick: () -> Unit) {
     // 1. Création de la transition infinie
     val infiniteTransition = rememberInfiniteTransition(label = "BlinkTransition")
 
@@ -213,9 +213,9 @@ fun RecommencerButton(onClick: () -> Unit) {
 
     Button(
         onClick = onClick,
-        modifier = Modifier
+        modifier = modifier
             .graphicsLayer(alpha = alpha)
-            .height(70.dp), // On donne une hauteur fixe pour stabiliser le rendu
+            .height(70.dp),
         colors = ButtonDefaults.buttonColors(
             containerColor = Color(0xFFFFE401),
             contentColor = Color.Black

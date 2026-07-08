@@ -42,8 +42,7 @@ import androidx.compose.ui.unit.sp
 import com.escatrag.mkworldrandomiser.viewmodels.PlayerProfile
 import com.escatrag.mkworldrandomiser.viewmodels.ScoreViewModel
 import com.escatrag.mkworldrandomiser.viewmodels.TrackViewModel
-import kotlin.math.pow
-import kotlin.math.roundToInt
+
 
 @Composable
 fun PlayerAvatar(
@@ -169,15 +168,7 @@ fun RaceResultScreen(
             modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp),
             enabled = participants.isNotEmpty() && rankings.size == participants.size,
             onClick = {
-                // 1. On récupère la liste des profils mis à jour (Elo + Stats)
-                val updatedProfiles = calculateLobbyEloAndStats(participants, rankings)
-
-                val eloMap = updatedProfiles.associate { it.id to it.currentMonthScore }
-                
-                // 2. On envoie cette liste au ViewModel
-                // Ton ViewModel n'a plus qu'à boucler dessus pour écraser/sauvegarder les profils en BDD
-                viewModel.submitRaceResults(eloMap, trackViewModel.selectedTrack.value?.start?.text ?: 0)
-
+                viewModel.submitRaceResults(rankings, trackViewModel.selectedTrack.value?.start?.text ?: 0)
                 onResultsSubmitted()
             }
         ) {
@@ -186,66 +177,3 @@ fun RaceResultScreen(
     }
 }
 
-/**
- * Calcule l'Elo et met à jour les statistiques des profils de joueurs.
- *
- * @return Une liste de PlayerProfile mis à jour, prête à être envoyée au ViewModel / DB.
- */
-private fun calculateLobbyEloAndStats(
-    participants: List<PlayerProfile>,
-    rankings: Map<String, Int>,
-    baseKFactor: Int = 32
-): List<PlayerProfile> {
-    val n = participants.size
-    val scaledK = baseKFactor.toDouble() / (n - 1)
-    val eloVariations = participants.associate { it.id to 0.0 }.toMutableMap()
-
-    // 1. Calcul de la "Dictature du Salon" (Calcul Elo par paires)
-    for (i in 0 until n) {
-        for (j in i + 1 until n) {
-            val playerA = participants[i]
-            val playerB = participants[j]
-
-            // Utilisation de currentMonthScore comme Score Elo
-            val ratingA = playerA.currentMonthScore.toDouble()
-            val ratingB = playerB.currentMonthScore.toDouble()
-
-            val positionA = rankings[playerA.id] ?: 1
-            val positionB = rankings[playerB.id] ?: 1
-
-            // Score attendu
-            val expectedA = 1.0 / (1.0 + 10.0.pow((ratingB - ratingA) / 400.0))
-            val expectedB = 1.0 - expectedA
-
-            // Score réel
-            val (actualA, actualB) = when {
-                positionA < positionB -> Pair(1.0, 0.0)
-                positionA > positionB -> Pair(0.0, 1.0)
-                else -> Pair(0.5, 0.5)
-            }
-
-            eloVariations[playerA.id] = eloVariations[playerA.id]!! + (scaledK * (actualA - expectedA))
-            eloVariations[playerB.id] = eloVariations[playerB.id]!! + (scaledK * (actualB - expectedB))
-        }
-    }
-
-    // 2. Génération des nouveaux profils mis à jour (Score Elo + Statistiques de course)
-    return participants.map { player ->
-        val totalChange = eloVariations[player.id]!!.roundToInt()
-
-        // Calcul du nouvel Elo (sans descendre sous 0)
-        val newElo = maxOf(0, player.currentMonthScore + totalChange)
-
-        // Récupération de la position du joueur pour les statistiques
-        val position = rankings[player.id] ?: 4
-
-        // Copie du profil avec ses nouvelles valeurs
-        player.copy(
-            currentMonthScore = newElo,
-            runNumbers = player.runNumbers + 1, // Une course de plus au compteur
-            victoryNumbers = if (position == 1) player.victoryNumbers + 1 else player.victoryNumbers,
-            timesInPodium = if (position in 1..3) player.timesInPodium + 1 else player.timesInPodium
-            // Note: top3Maps devra être géré séparément dans ton ViewModel car il dépend de la map jouée !
-        )
-    }
-}

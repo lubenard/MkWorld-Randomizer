@@ -1,8 +1,11 @@
 package com.escatrag.mkworldrandomiser.ui.composables
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
@@ -27,29 +30,36 @@ fun RaceResultActions(
 ) {
     if (showResultActions) {
         Spacer(modifier = Modifier.height(20.dp))
-        if (hasPlayers) {
-            Button(
-                onClick = onScoreSelection,
-                modifier = Modifier.height(48.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFFFFE401),
-                    contentColor = Color.Black
-                ),
-                shape = RoundedCornerShape(4.dp),
-                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 0.dp)
-            ) {
-                Box(contentAlignment = Alignment.Center) {
-                    Text(
-                        text = "Saisir les scores",
-                        fontWeight = FontWeight.Bold,
-                        fontFamily = MinecraftFontFamily,
-                        fontSize = 20.sp,
-                        textAlign = TextAlign.Center
-                    )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            if (hasPlayers) {
+                Button(
+                    onClick = onScoreSelection,
+                    modifier = Modifier.weight(1f).height(48.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFFFFE401),
+                        contentColor = Color.Black
+                    ),
+                    shape = RoundedCornerShape(4.dp),
+                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 0.dp)
+                ) {
+                    Box(contentAlignment = Alignment.Center) {
+                        Text(
+                            text = "Saisir les scores",
+                            fontWeight = FontWeight.Bold,
+                            fontFamily = MinecraftFontFamily,
+                            fontSize = 20.sp,
+                            textAlign = TextAlign.Center
+                        )
+                    }
                 }
             }
+            RecommencerButton(
+                onClick = onRecommencer,
+                modifier = Modifier.weight(1f)
+            )
         }
-        Spacer(modifier = Modifier.height(50.dp))
-        RecommencerButton(onClick = onRecommencer)
     }
 }
