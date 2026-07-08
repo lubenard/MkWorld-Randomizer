@@ -29,10 +29,6 @@ class TrackViewModel : ViewModel() {
     private val _selectedConnections = MutableStateFlow<List<TrackCombo>>(emptyList())
     val selectedConnections: StateFlow<List<TrackCombo>> = _selectedConnections
 
-    // Ensemble des circuits déjà tombés — ne peuvent plus réapparaître en tant que circuit seul
-    private val _usedCircuits = MutableStateFlow<Set<TrackItems>>(emptySet())
-    val usedCircuits: StateFlow<Set<TrackItems>> = _usedCircuits
-
     // All tracks availables: Used for Selection tracks (will include routes if selected in SelectionScreen),
     // but they will not be selected (tho available for selection)
     private val _allTracksAvailable = MutableStateFlow(TrackRepository.trackItems)
@@ -107,9 +103,6 @@ class TrackViewModel : ViewModel() {
                 Log.d("lubenard", "completeRace: trajet retire de _selectedConnections — ${result.start.text} -> ${result.end?.text}")
             } else {
                 val item = result.start.toTrackItem()
-                if (item != null) {
-                    _usedCircuits.value = _usedCircuits.value + item
-                }
                 _selectedTracks.value = _selectedTracks.value.filter { it != result }
                 _selectedConnections.value = _selectedConnections.value.filter { it.start != result.start }
                 Log.d("lubenard", "completeRace: circuit retire de _selectedTracks — ${result.start.text}")
@@ -148,10 +141,7 @@ class TrackViewModel : ViewModel() {
 
         pendingDestinations = null
 
-        // Toujours tirer une map depuis la pool des circuits (filtrée par _usedCircuits)
-        val available = currentSelectedTracks.filter {
-            it.start.toTrackItem() !in _usedCircuits.value
-        }
+        val available = currentSelectedTracks
         if (available.isEmpty()) {
             Log.w("lubenard", "pickRandomMap: tous les circuits deja joues, abandon")
             return
@@ -233,13 +223,13 @@ class TrackViewModel : ViewModel() {
     }
 
     fun selectAllTracks(includeRoutes: Boolean) {
-        _usedCircuits.value = emptySet()
         if (includeRoutes) {
+            val tracksInPool = _selectedTracks.value.map { it.start }
             _selectedConnections.value = transformConnectionsToList(TrackRepository.connections)
+                .filter { it.start in tracksInPool }
         } else {
             _selectedConnections.value = mutableListOf()
         }
-        _selectedTracks.value = TrackRepository.trackItems
     }
 
     fun clearAllTracks() {
