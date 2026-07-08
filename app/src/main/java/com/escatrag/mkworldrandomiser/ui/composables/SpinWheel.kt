@@ -30,7 +30,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -52,17 +51,12 @@ fun SpinWheel(
     items: List<TrackCombo>,
     targetIndex: Int,
     onFinished: (Int) -> Unit,
-    onRetry: () -> Unit,
     selectedItem: TrackCombo?,
-    onScoreSelection: () -> Unit,
-    playersSize: Int,
-    showResultUI: Boolean = true,
     modifier: Modifier = Modifier
 ) {
     // 1. État du Pager (on met un grand nombre pour simuler un défilement infini)
     val pageCount = 500
     val pagerState = rememberPagerState(pageCount = { pageCount })
-    val scope = rememberCoroutineScope()
 
     var showRestartButton by remember { mutableStateOf(false) }
 
@@ -143,14 +137,6 @@ fun SpinWheel(
                 color = MaterialTheme.colorScheme.error,
                 fontWeight = FontWeight.Black
             )
-        } else if (showRestartButton && selectedItem != null) {
-            Text(
-                text = context.getString(selectedItem.start.text),
-                fontWeight = FontWeight.Bold,
-                fontFamily = MinecraftFontFamily,
-                fontSize = 35.sp,
-                textAlign = TextAlign.Center
-            )
         }
 
         Spacer(modifier = Modifier.height(32.dp))
@@ -192,7 +178,7 @@ fun SpinWheel(
             }
         }
 
-        if (showResultUI) {
+        if (showRestartButton && selectedItem != null) {
             Spacer(modifier = Modifier.height(50.dp))
 
             if (selectedItem?.end != null) {
@@ -212,39 +198,6 @@ fun SpinWheel(
                     textAlign = TextAlign.Center
                 )
             }
-
-            if (playersSize != 0) {
-                Spacer(modifier = Modifier.height(20.dp))
-
-                Button(
-                    onClick = onScoreSelection,
-                    modifier = Modifier
-                        .height(48.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFFFFE401),
-                        contentColor = Color.Black
-                    ),
-                    shape = RoundedCornerShape(4.dp),
-                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 0.dp)
-                ) {
-                    Box(
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = "Saisir les scores",
-                            fontWeight = FontWeight.Bold,
-                            fontFamily = MinecraftFontFamily,
-                            fontSize = 20.sp,
-                            textAlign = TextAlign.Center
-                        )
-                    }
-                }
-            }
-            Spacer(modifier = Modifier.height(50.dp))
-            RecommencerButton(onClick = {
-                showRestartButton = false
-                onRetry()
-            })
         }
     }
 }
