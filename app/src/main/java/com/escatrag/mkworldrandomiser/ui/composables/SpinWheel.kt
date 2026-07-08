@@ -126,11 +126,13 @@ fun SpinWheel(
     }
 
     Column(
-        modifier = modifier.fillMaxSize(),
+        modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
         Log.d("lubenard", "$targetIndex -> $showRestartButton")
+
+        val context = LocalContext.current
 
         if (!showRestartButton) {
             // --- TEXTE CLIGNOTANT ---
@@ -140,6 +142,14 @@ fun SpinWheel(
                 style = MaterialTheme.typography.labelLarge,
                 color = MaterialTheme.colorScheme.error,
                 fontWeight = FontWeight.Black
+            )
+        } else if (showRestartButton && selectedItem != null) {
+            Text(
+                text = context.getString(selectedItem.start.text),
+                fontWeight = FontWeight.Bold,
+                fontFamily = MinecraftFontFamily,
+                fontSize = 35.sp,
+                textAlign = TextAlign.Center
             )
         }
 
@@ -181,27 +191,11 @@ fun SpinWheel(
                 }
             }
         }
-        val context = LocalContext.current
-        if (showRestartButton && showResultUI) {
+
+        if (showResultUI) {
             Spacer(modifier = Modifier.height(50.dp))
 
             if (selectedItem?.end != null) {
-                Text(
-                    text = context.getString(selectedItem.start.text),
-                    fontWeight = FontWeight.Bold,
-                    fontFamily = MinecraftFontFamily,
-                    fontSize = 35.sp,
-                    textAlign = TextAlign.Center
-                )
-                Spacer(modifier = Modifier.height(12.dp))
-                Text(
-                    text = "vers",
-                    fontFamily = MinecraftFontFamily,
-                    fontSize = 22.sp,
-                    textAlign = TextAlign.Center,
-                    color = Color.Gray
-                )
-                Spacer(modifier = Modifier.height(12.dp))
                 Text(
                     text = context.getString(selectedItem.end.text),
                     fontWeight = FontWeight.Bold,

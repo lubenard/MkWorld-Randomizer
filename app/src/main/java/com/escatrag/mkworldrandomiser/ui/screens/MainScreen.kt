@@ -181,7 +181,7 @@ fun MainScreen(
                     SpinWheel(
                         items = selectedTracks,
                         targetIndex = selectedTrackIndex,
-                        selectedItem = null,
+                        selectedItem = selectedItem,
                         playersSize = 0,
                         showResultUI = false,
                         onFinished = {
