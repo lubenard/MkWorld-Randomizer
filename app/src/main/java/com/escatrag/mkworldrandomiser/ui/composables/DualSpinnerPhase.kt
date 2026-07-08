@@ -30,18 +30,17 @@ fun DualSpinnerPhase(
 ) {
     Column(Modifier.fillMaxSize()) {
         Column(
-            modifier = Modifier.weight(1f),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
             if (selectedItem != null) {
-                SpinWheel(
-                    items = selectedTracks,
-                    targetIndex = selectedTrackIndex,
-                    selectedItem = selectedItem.start,
-                    onFinished = { onFirstSpinFinished() },
-                    modifier = Modifier.weight(1f)
-                )
+                    SpinWheel(
+                        items = selectedTracks,
+                        targetIndex = selectedTrackIndex,
+                        selectedItem = selectedItem.start,
+                        onFinished = { onFirstSpinFinished() },
+                        modifier = Modifier
+                    )
 
                 Text(
                     text = "vers",
@@ -56,10 +55,10 @@ fun DualSpinnerPhase(
                         targetIndex = destinationTargetIndex,
                         selectedItem = selectedItem.end,
                         onFinished = { onSecondSpinFinished() },
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier
                     )
                 } else {
-                    Spacer(modifier = Modifier.weight(1f))
+                    Spacer(modifier = Modifier)
                 }
             }
         }
