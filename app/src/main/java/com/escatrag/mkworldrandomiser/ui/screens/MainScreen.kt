@@ -166,48 +166,50 @@ fun MainScreen(
             }
 
             Phase.SPINNING_TRACK -> {
-                SpinWheel(
-                    items = selectedTracks,
-                    targetIndex = selectedTrackIndex,
-                    selectedItem = selectedItem,
-                    onFinished = {
-                        showResultActions = true
-                        selectedItem?.let { viewModel.completeRace(it) }
-                        showConfetti = true
-                    }
-                )
-                if (showResultActions) {
-                    Spacer(modifier = Modifier.height(20.dp))
-                    if (players.isNotEmpty()) {
-                        Button(
-                            onClick = onScoreSelection,
-                            modifier = Modifier.height(48.dp),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = Color(0xFFFFE401),
-                                contentColor = Color.Black
-                            ),
-                            shape = RoundedCornerShape(4.dp),
-                            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 0.dp)
-                        ) {
-                            Box(contentAlignment = Alignment.Center) {
-                                Text(
-                                    text = "Saisir les scores",
-                                    fontWeight = FontWeight.Bold,
-                                    fontFamily = MinecraftFontFamily,
-                                    fontSize = 20.sp,
-                                    textAlign = TextAlign.Center
-                                )
+                if (selectedItem != null) {
+                    SpinWheel(
+                        items = selectedTracks,
+                        targetIndex = selectedTrackIndex,
+                        selectedItem = selectedItem.start,
+                        onFinished = {
+                            showResultActions = true
+                            selectedItem.let { viewModel.completeRace(it) }
+                            showConfetti = true
+                        }
+                    )
+                    if (showResultActions) {
+                        Spacer(modifier = Modifier.height(20.dp))
+                        if (players.isNotEmpty()) {
+                            Button(
+                                onClick = onScoreSelection,
+                                modifier = Modifier.height(48.dp),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = Color(0xFFFFE401),
+                                    contentColor = Color.Black
+                                ),
+                                shape = RoundedCornerShape(4.dp),
+                                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 0.dp)
+                            ) {
+                                Box(contentAlignment = Alignment.Center) {
+                                    Text(
+                                        text = "Saisir les scores",
+                                        fontWeight = FontWeight.Bold,
+                                        fontFamily = MinecraftFontFamily,
+                                        fontSize = 20.sp,
+                                        textAlign = TextAlign.Center
+                                    )
+                                }
                             }
                         }
+                        Spacer(modifier = Modifier.height(50.dp))
+                        RecommencerButton(onClick = {
+                            if (deleteTrackAfterCompletion) {
+                                Log.d("lubenard", "$selectedItem")
+                                viewModel.deleteCircuit(selectedItem)
+                            }
+                            viewModel.resetCourse()
+                        })
                     }
-                    Spacer(modifier = Modifier.height(50.dp))
-                    RecommencerButton(onClick = {
-                        if (deleteTrackAfterCompletion) {
-                            Log.d("lubenard", "${selectedItem}")
-                            viewModel.deleteCircuit(selectedItem)
-                        }
-                        viewModel.resetCourse()
-                    })
                 }
             }
 
@@ -218,37 +220,39 @@ fun MainScreen(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center
                     ) {
-                        SpinWheel(
-                            items = selectedTracks,
-                            targetIndex = selectedTrackIndex,
-                            selectedItem = selectedItem,
-                            onFinished = {
-                                viewModel.pickRandomDestination()
-                            },
-                            modifier = Modifier.weight(1f)
-                        )
-
-                        Text(
-                            text = "vers",
-                            fontFamily = MinecraftFontFamily,
-                            fontSize = 22.sp,
-                            color = Color.Gray
-                        )
-
-                        if (isSecondSpinnerReady) {
+                        if (selectedItem != null) {
                             SpinWheel(
-                                items = destinationItems,
-                                targetIndex = destinationTargetIndex,
-                                selectedItem = selectedItem,
+                                items = selectedTracks,
+                                targetIndex = selectedTrackIndex,
+                                selectedItem = selectedItem.start,
                                 onFinished = {
-                                    showResultActions = true
-                                    selectedItem?.let { viewModel.completeRace(it) }
-                                    showConfetti = true
+                                    viewModel.pickRandomDestination()
                                 },
                                 modifier = Modifier.weight(1f)
                             )
-                        } else {
-                            Spacer(modifier = Modifier.weight(1f))
+
+                            Text(
+                                text = "vers",
+                                fontFamily = MinecraftFontFamily,
+                                fontSize = 22.sp,
+                                color = Color.Gray
+                            )
+
+                            if (isSecondSpinnerReady) {
+                                SpinWheel(
+                                    items = destinationItems,
+                                    targetIndex = destinationTargetIndex,
+                                    selectedItem = selectedItem.end,
+                                    onFinished = {
+                                        showResultActions = true
+                                        selectedItem.let { viewModel.completeRace(it) }
+                                        showConfetti = true
+                                    },
+                                    modifier = Modifier.weight(1f)
+                                )
+                            } else {
+                                Spacer(modifier = Modifier.weight(1f))
+                            }
                         }
                     }
                     if (showResultActions) {

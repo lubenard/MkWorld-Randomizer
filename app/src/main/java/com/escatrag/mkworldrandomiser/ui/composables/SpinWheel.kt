@@ -42,6 +42,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.escatrag.mkworldrandomiser.backend.Track
 import com.escatrag.mkworldrandomiser.backend.TrackCombo
 import com.escatrag.mkworldrandomiser.ui.theme.MinecraftFontFamily
 import kotlinx.coroutines.delay
@@ -51,7 +52,7 @@ fun SpinWheel(
     items: List<TrackCombo>,
     targetIndex: Int,
     onFinished: (Int) -> Unit,
-    selectedItem: TrackCombo?,
+    selectedItem: Track?,
     modifier: Modifier = Modifier
 ) {
     // 1. État du Pager (on met un grand nombre pour simuler un défilement infini)
@@ -179,25 +180,15 @@ fun SpinWheel(
         }
 
         if (showRestartButton && selectedItem != null) {
-            Spacer(modifier = Modifier.height(50.dp))
+            Spacer(modifier = Modifier.height(20.dp))
 
-            if (selectedItem?.end != null) {
-                Text(
-                    text = context.getString(selectedItem.end.text),
-                    fontWeight = FontWeight.Bold,
-                    fontFamily = MinecraftFontFamily,
-                    fontSize = 35.sp,
-                    textAlign = TextAlign.Center
-                )
-            } else {
-                Text(
-                    text = if (selectedItem?.start?.text == null || selectedItem.start.text <= 0) "Unknown" else context.getString(selectedItem.start.text),
-                    fontWeight = FontWeight.Bold,
-                    fontFamily = MinecraftFontFamily,
-                    fontSize = 35.sp,
-                    textAlign = TextAlign.Center
-                )
-            }
+            Text(
+                text = context.getString(selectedItem.text),
+                fontWeight = FontWeight.Bold,
+                fontFamily = MinecraftFontFamily,
+                fontSize = 35.sp,
+                textAlign = TextAlign.Center
+            )
         }
     }
 }
