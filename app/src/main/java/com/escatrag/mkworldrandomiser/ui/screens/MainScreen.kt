@@ -2,25 +2,14 @@ package com.escatrag.mkworldrandomiser.ui.screens
 
 import android.util.Log
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Switch
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -30,15 +19,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.escatrag.mkworldrandomiser.ui.composables.HomeUI
-import com.escatrag.mkworldrandomiser.ui.composables.RecommencerButton
-import com.escatrag.mkworldrandomiser.ui.composables.SpinWheel
-import com.escatrag.mkworldrandomiser.ui.theme.MinecraftFontFamily
+import com.escatrag.mkworldrandomiser.ui.composables.DualSpinnerPhase
+import com.escatrag.mkworldrandomiser.ui.composables.SelectionCubePhase
+import com.escatrag.mkworldrandomiser.ui.composables.SpinningTrackPhase
 import com.escatrag.mkworldrandomiser.viewmodels.Phase
 import com.escatrag.mkworldrandomiser.viewmodels.ScoreViewModel
 import com.escatrag.mkworldrandomiser.viewmodels.SettingsViewModel
@@ -147,148 +131,62 @@ fun MainScreen(
 
             Phase.SELECTION_CUBE -> {
                 val totalPool = selectedTracks.size + (if (includeRoutes) selectedConnections.size else 0)
-                HomeUI(totalPool, onClick = {
-                    viewModel.pickRandomMap()
-                })
-
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Switch(
-                        checked = deleteTrackAfterCompletion,
-                        onCheckedChange = {
-                            viewModel.updateDeleteTrackAfterCompletion(it)
-                        }
-                    )
-                    Spacer(Modifier.width(8.dp))
-                    Text("Supp. les trajets faits")
-                }
+                SelectionCubePhase(
+                    totalPool = totalPool,
+                    deleteTrackAfterCompletion = deleteTrackAfterCompletion,
+                    onPickRandomMap = { viewModel.pickRandomMap() },
+                    onToggleDeleteTrack = { viewModel.updateDeleteTrackAfterCompletion(it) },
+                )
             }
 
             Phase.SPINNING_TRACK -> {
-                if (selectedItem != null) {
-                    SpinWheel(
-                        items = selectedTracks,
-                        targetIndex = selectedTrackIndex,
-                        selectedItem = selectedItem.start,
-                        onFinished = {
-                            showResultActions = true
-                            selectedItem.let { viewModel.completeRace(it) }
-                            showConfetti = true
+                SpinningTrackPhase(
+                    selectedTracks = selectedTracks,
+                    selectedTrackIndex = selectedTrackIndex,
+                    selectedItem = selectedItem,
+                    showResultActions = showResultActions,
+                    hasPlayers = players.isNotEmpty(),
+                    onSpinFinished = {
+                        showResultActions = true
+                        selectedItem?.let { viewModel.completeRace(it) }
+                        showConfetti = true
+                    },
+                    onScoreSelection = onScoreSelection,
+                    onRecommencer = {
+                        if (deleteTrackAfterCompletion) {
+                            Log.d("lubenard", "$selectedItem")
+                            viewModel.deleteCircuit(selectedItem)
                         }
-                    )
-                    if (showResultActions) {
-                        Spacer(modifier = Modifier.height(20.dp))
-                        if (players.isNotEmpty()) {
-                            Button(
-                                onClick = onScoreSelection,
-                                modifier = Modifier.height(48.dp),
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = Color(0xFFFFE401),
-                                    contentColor = Color.Black
-                                ),
-                                shape = RoundedCornerShape(4.dp),
-                                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 0.dp)
-                            ) {
-                                Box(contentAlignment = Alignment.Center) {
-                                    Text(
-                                        text = "Saisir les scores",
-                                        fontWeight = FontWeight.Bold,
-                                        fontFamily = MinecraftFontFamily,
-                                        fontSize = 20.sp,
-                                        textAlign = TextAlign.Center
-                                    )
-                                }
-                            }
-                        }
-                        Spacer(modifier = Modifier.height(50.dp))
-                        RecommencerButton(onClick = {
-                            if (deleteTrackAfterCompletion) {
-                                Log.d("lubenard", "$selectedItem")
-                                viewModel.deleteCircuit(selectedItem)
-                            }
-                            viewModel.resetCourse()
-                        })
-                    }
-                }
+                        viewModel.resetCourse()
+                    },
+                )
             }
 
             Phase.DUAL_SPINNER -> {
-                Column(Modifier.fillMaxSize()) {
-                    Column(
-                        modifier = Modifier.weight(1f),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
-                    ) {
-                        if (selectedItem != null) {
-                            SpinWheel(
-                                items = selectedTracks,
-                                targetIndex = selectedTrackIndex,
-                                selectedItem = selectedItem.start,
-                                onFinished = {
-                                    viewModel.pickRandomDestination()
-                                },
-                                modifier = Modifier.weight(1f)
-                            )
-
-                            Text(
-                                text = "vers",
-                                fontFamily = MinecraftFontFamily,
-                                fontSize = 22.sp,
-                                color = Color.Gray
-                            )
-
-                            if (isSecondSpinnerReady) {
-                                SpinWheel(
-                                    items = destinationItems,
-                                    targetIndex = destinationTargetIndex,
-                                    selectedItem = selectedItem.end,
-                                    onFinished = {
-                                        showResultActions = true
-                                        selectedItem.let { viewModel.completeRace(it) }
-                                        showConfetti = true
-                                    },
-                                    modifier = Modifier.weight(1f)
-                                )
-                            } else {
-                                Spacer(modifier = Modifier.weight(1f))
-                            }
+                DualSpinnerPhase(
+                    selectedTracks = selectedTracks,
+                    selectedTrackIndex = selectedTrackIndex,
+                    selectedItem = selectedItem,
+                    destinationItems = destinationItems,
+                    destinationTargetIndex = destinationTargetIndex,
+                    isSecondSpinnerReady = isSecondSpinnerReady,
+                    showResultActions = showResultActions,
+                    hasPlayers = players.isNotEmpty(),
+                    onFirstSpinFinished = { viewModel.pickRandomDestination() },
+                    onSecondSpinFinished = {
+                        showResultActions = true
+                        selectedItem?.let { viewModel.completeRace(it) }
+                        showConfetti = true
+                    },
+                    onScoreSelection = onScoreSelection,
+                    onRecommencer = {
+                        if (deleteTrackAfterCompletion) {
+                            Log.d("lubenard", "$selectedItem")
+                            viewModel.deleteCircuit(selectedItem)
                         }
-                    }
-                    if (showResultActions) {
-                        Spacer(modifier = Modifier.height(20.dp))
-                        if (players.isNotEmpty()) {
-                            Button(
-                                onClick = onScoreSelection,
-                                modifier = Modifier.height(48.dp),
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = Color(0xFFFFE401),
-                                    contentColor = Color.Black
-                                ),
-                                shape = RoundedCornerShape(4.dp),
-                                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 0.dp)
-                            ) {
-                                Box(contentAlignment = Alignment.Center) {
-                                    Text(
-                                        text = "Saisir les scores",
-                                        fontWeight = FontWeight.Bold,
-                                        fontFamily = MinecraftFontFamily,
-                                        fontSize = 20.sp,
-                                        textAlign = TextAlign.Center
-                                    )
-                                }
-                            }
-                        }
-                        Spacer(modifier = Modifier.height(50.dp))
-                        RecommencerButton(onClick = {
-                            if (deleteTrackAfterCompletion) {
-                                Log.d("lubenard", "${selectedItem}")
-                                viewModel.deleteCircuit(selectedItem)
-                            }
-                            viewModel.resetCourse()
-                        })
-                    }
-                }
+                        viewModel.resetCourse()
+                    },
+                )
             }
 
         }
