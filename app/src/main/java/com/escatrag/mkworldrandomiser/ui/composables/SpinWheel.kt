@@ -118,7 +118,6 @@ fun SpinWheel(
                     )
                 )
             }
-            pagerState.scrollToPage(finalPage)
         } else {
             var currentDelay = 30L
             for (page in (currentPage + 1)..finalPage) {
@@ -169,37 +168,42 @@ fun SpinWheel(
 
         val fallbackEmptyText = if (items.isEmpty()) "Merci de choisir au moins une carte" else null
 
-        // --- LE PAGER (ROULETTE) ---
         Box(
             modifier = Modifier
-                .height(150.dp) // Hauteur pour voir un seul item à la fois ou un peu des voisins
+                .height(150.dp)
                 .fillMaxWidth(),
             contentAlignment = Alignment.Center
         ) {
-            val context = LocalContext.current
-
-            VerticalPager(
-                state = pagerState,
-                modifier = Modifier.fillMaxSize(),
-                userScrollEnabled = false, // On désactive le swipe manuel pendant le random
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) { page ->
-                val itemIndex = if (items.isEmpty()) 1 else page % items.size
-                if (fallbackEmptyText == null) {
-                    Image(
-                        modifier = Modifier.size(width = 1200.dp, height = 600.dp),
-                        painter = painterResource(items[itemIndex].start.largeIcon),
-                        contentDescription = context.getString(items[itemIndex].start.text)
-                    )
-                } else {
-                    Text(
-                        text = fallbackEmptyText,
-                        style = MaterialTheme.typography.headlineLarge.copy(
-                            fontSize = 32.sp,
-                            fontWeight = FontWeight.Bold
-                        ),
-                        color = MaterialTheme.colorScheme.primary
-                    )
+            if (showRestartButton && simpleAnimation && selectedItem != null) {
+                Image(
+                    modifier = Modifier.size(width = 1200.dp, height = 600.dp),
+                    painter = painterResource(selectedItem.largeIcon),
+                    contentDescription = context.getString(selectedItem.text)
+                )
+            } else {
+                VerticalPager(
+                    state = pagerState,
+                    modifier = Modifier.fillMaxSize(),
+                    userScrollEnabled = false,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) { page ->
+                    val itemIndex = if (items.isEmpty()) 1 else page % items.size
+                    if (fallbackEmptyText == null) {
+                        Image(
+                            modifier = Modifier.size(width = 1200.dp, height = 600.dp),
+                            painter = painterResource(items[itemIndex].start.largeIcon),
+                            contentDescription = context.getString(items[itemIndex].start.text)
+                        )
+                    } else {
+                        Text(
+                            text = fallbackEmptyText,
+                            style = MaterialTheme.typography.headlineLarge.copy(
+                                fontSize = 32.sp,
+                                fontWeight = FontWeight.Bold
+                            ),
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
                 }
             }
         }
