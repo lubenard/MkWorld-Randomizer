@@ -130,7 +130,7 @@ class MainActivity : ComponentActivity() {
                     }
 
                     composable("score") {
-                        MonthlyScoreScreen(scoreViewModel, navController)
+                        MonthlyScoreScreen(scoreViewModel, navController, padding)
                     }
                 }
             }

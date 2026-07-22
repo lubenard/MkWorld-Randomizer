@@ -62,6 +62,7 @@ import com.escatrag.mkworldrandomiser.viewmodels.ScoreViewModel
 fun MonthlyScoreScreen(
     viewModel: ScoreViewModel,
     navController: NavHostController,
+    padding: PaddingValues = PaddingValues(0.dp),
 ) {
     // Liste triée des joueurs
     val players by viewModel.sortedPlayers.collectAsState()
@@ -173,6 +174,7 @@ fun MonthlyScoreScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
+            .padding(padding)
     ) {
         Column(
             modifier = Modifier.fillMaxSize()
