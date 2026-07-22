@@ -100,8 +100,15 @@ fun SpinWheel(
             var currentDelay = 25L
             for (page in scrollStart..finalPage) {
                 val stepsLeft = finalPage - page
-                if (stepsLeft < 7) {
-                    currentDelay += 15L
+                currentDelay = when (stepsLeft) {
+                    7 -> 25L
+                    6 -> 40L
+                    5 -> 60L
+                    4 -> 90L
+                    3 -> 140L
+                    2 -> 220L
+                    1 -> 340L
+                    else -> currentDelay
                 }
                 pagerState.animateScrollToPage(
                     page = page,
@@ -111,6 +118,7 @@ fun SpinWheel(
                     )
                 )
             }
+            pagerState.scrollToPage(finalPage)
         } else {
             var currentDelay = 30L
             for (page in (currentPage + 1)..finalPage) {
