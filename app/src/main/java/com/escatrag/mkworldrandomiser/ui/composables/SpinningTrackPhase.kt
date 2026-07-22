@@ -1,6 +1,11 @@
 package com.escatrag.mkworldrandomiser.ui.composables
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import com.escatrag.mkworldrandomiser.backend.TrackCombo
 
 @Composable
@@ -14,13 +19,21 @@ fun SpinningTrackPhase(
     onScoreSelection: () -> Unit,
     onRecommencer: () -> Unit,
 ) {
-    if (selectedItem != null) {
-        SpinWheel(
-            items = selectedTracks,
-            targetIndex = selectedTrackIndex,
-            selectedItem = selectedItem.start,
-            onFinished = { onSpinFinished() },
-        )
+    Column(Modifier.fillMaxSize()) {
+        Column(
+            modifier = Modifier.weight(1f),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            if (selectedItem != null) {
+                SpinWheel(
+                    items = selectedTracks,
+                    targetIndex = selectedTrackIndex,
+                    selectedItem = selectedItem.start,
+                    onFinished = { onSpinFinished() },
+                )
+            }
+        }
 
         RaceResultActions(
             showResultActions = showResultActions,
