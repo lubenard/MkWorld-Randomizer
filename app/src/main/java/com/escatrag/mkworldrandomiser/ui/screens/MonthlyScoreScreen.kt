@@ -310,7 +310,7 @@ fun ScoreRow(
                 onClick = onClick,
                 onLongClick = onLongClick
             ),
-        colors = CardDefaults.cardColors(containerColor = player.composeColor.copy(alpha = 0.2f)), // Utilise la couleur choisie
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         shape = RoundedCornerShape(12.dp)
     ) {
         Row(
@@ -321,7 +321,7 @@ fun ScoreRow(
                 text = "#$rank",
                 modifier = Modifier.width(40.dp),
                 fontWeight = FontWeight.Bold,
-                color = Color.Gray,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 style = MaterialTheme.typography.titleMedium
             )
 
@@ -330,7 +330,7 @@ fun ScoreRow(
                 painter = painterResource(id = player.avatarRes ?: R.drawable.mont_tchou_tchou),
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
-                modifier = Modifier.size(45.dp).clip(CircleShape).border(1.dp, Color.LightGray, CircleShape)
+                modifier = Modifier.size(45.dp).clip(CircleShape).border(2.dp, player.composeColor, CircleShape)
             )
 
             Spacer(Modifier.width(12.dp))
@@ -344,7 +344,7 @@ fun ScoreRow(
             Text(
                 text = "${player.currentMonthScore}",
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary,
+                color = MaterialTheme.colorScheme.onSurface,
                 style = MaterialTheme.typography.titleMedium
             )
         }

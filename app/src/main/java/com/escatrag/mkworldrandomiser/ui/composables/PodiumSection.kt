@@ -158,7 +158,7 @@ fun PodiumBar(
                 )
                 .border(
                     width = 2.dp,
-                    color = player.composeColor.copy(alpha = 0.5f),
+                    color = Color.White.copy(alpha = 0.5f),
                     shape = RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp)
                 ),
             contentAlignment = Alignment.TopCenter

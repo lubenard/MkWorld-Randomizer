@@ -253,17 +253,13 @@ fun RecommencerButton(modifier: Modifier = Modifier, onClick: () -> Unit) {
         // ON FORCE LE PADDING À 0 pour que le bouton ne décale pas le texte
         contentPadding = PaddingValues(0.dp)
     ) {
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center // CENTRAGE TOTAL DANS LA BOX
-        ) {
-            Text(
-                text = "RECOMMENCER",
-                fontWeight = FontWeight.Bold,
-                fontFamily = MinecraftFontFamily,
-                fontSize = 35.sp,
-                textAlign = TextAlign.Center // Centrage interne du texte
-            )
-        }
+        Text(
+            modifier = Modifier.fillMaxWidth(),
+            text = "RECOMMENCER",
+            fontWeight = FontWeight.Bold,
+            fontFamily = MinecraftFontFamily,
+            fontSize = 35.sp,
+            textAlign = TextAlign.Center
+        )
     }
 }

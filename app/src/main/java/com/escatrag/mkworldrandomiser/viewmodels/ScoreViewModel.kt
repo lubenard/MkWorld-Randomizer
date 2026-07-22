@@ -30,7 +30,7 @@ data class PlayerProfile(
     val id: String = UUID.randomUUID().toString(),
     val name: String = "",
     val avatarRes: Int? = null, // Mis en optionnel pour gérer les initiales
-    val profileColor: Int = Color.Gray.toArgb(),
+    val profileColor: Int = Color(0xFF42A5F5).toArgb(),
     val currentMonthScore: Int = 3000,
     val runNumbers: Int = 0,
     val victoryNumbers: Int = 0,
