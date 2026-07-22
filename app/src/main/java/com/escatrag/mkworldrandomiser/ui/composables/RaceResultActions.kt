@@ -2,9 +2,8 @@ package com.escatrag.mkworldrandomiser.ui.composables
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -29,15 +28,14 @@ fun RaceResultActions(
     onRecommencer: () -> Unit,
 ) {
     if (showResultActions) {
-        Spacer(modifier = Modifier.height(20.dp))
-        Row(
+        Column(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             if (hasPlayers) {
                 Button(
                     onClick = onScoreSelection,
-                    modifier = Modifier.weight(1f).height(48.dp),
+                    modifier = Modifier.fillMaxWidth().height(48.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color(0xFFFFE401),
                         contentColor = Color.Black
@@ -58,7 +56,7 @@ fun RaceResultActions(
             }
             RecommencerButton(
                 onClick = onRecommencer,
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.fillMaxWidth()
             )
         }
     }

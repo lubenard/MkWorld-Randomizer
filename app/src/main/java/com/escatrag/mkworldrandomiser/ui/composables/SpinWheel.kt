@@ -84,8 +84,7 @@ fun SpinWheel(
         // 1. On calcule combien de pages il reste pour finir le tour actuel
         val offsetInRound = currentPage % itemsSize
 
-        // 2. On définit combien de tours complets on veut faire avant de s'arrêter (ex: 3 tours)
-        val fullSpins = 2
+        val fullSpins = 1
 
         // 3. LA FORMULE MAGIQUE :
         // On calcule le nombre de pas nécessaires pour atteindre le targetIndex
@@ -95,15 +94,14 @@ fun SpinWheel(
         val finalPage = currentPage + stepsToTarget
 
         // 4. Animation avec ralentissement
-        var currentDelay = 50L
+        var currentDelay = 30L
         for (page in (currentPage + 1)..finalPage) {
 
-            // On ralentit sur les 15 derniers pas
             val stepsLeft = finalPage - page
-            if (stepsLeft < 15) {
-                currentDelay += 30L // Décélération progressive
-            } else if (stepsLeft < 5) {
-                currentDelay += 80L // Gros coup de frein final
+            if (stepsLeft < 5) {
+                currentDelay += 80L
+            } else if (stepsLeft < 8) {
+                currentDelay += 30L
             }
 
             pagerState.animateScrollToPage(
@@ -115,7 +113,7 @@ fun SpinWheel(
             )
         }
         Log.d("lubenard", "$targetIndex ->  ${if (targetIndex <= 0|| targetIndex > items.size -1 ) "<= 0" else ctc.getString(items[targetIndex].start.text)}/ $finalPage -> ${if (finalPage <= 0 || finalPage > items.size -1 ) "null" else items[finalPage]}")
-        delay(1000L)
+        delay(400L)
         showRestartButton = true
         onFinished(finalPage)
     }
