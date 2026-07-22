@@ -177,9 +177,17 @@ fun MonthlyScoreScreen(
             .padding(padding)
     ) {
         Column(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(bottom = 16.dp)
         ) {
-            Row() {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 TitleComposable(text = "CLASSEMENT", fontSize = 30.sp)
                 Log.d("escatrag", "${players.isNotEmpty()} || ${unsortedPlayers.isNotEmpty()}")
                 if (players.isNotEmpty() || unsortedPlayers.isNotEmpty()) {
