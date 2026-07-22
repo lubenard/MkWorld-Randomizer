@@ -53,7 +53,8 @@ fun SpinWheel(
     targetIndex: Int,
     onFinished: (Int) -> Unit,
     selectedItem: Track?,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    simpleAnimation: Boolean = false
 ) {
     // 1. État du Pager (on met un grand nombre pour simuler un défilement infini)
     val pageCount = 500
@@ -93,27 +94,45 @@ fun SpinWheel(
 
         val finalPage = currentPage + stepsToTarget
 
-        // 4. Animation avec ralentissement
-        var currentDelay = 30L
-        for (page in (currentPage + 1)..finalPage) {
-
-            val stepsLeft = finalPage - page
-            if (stepsLeft < 5) {
-                currentDelay += 80L
-            } else if (stepsLeft < 8) {
-                currentDelay += 30L
-            }
-
-            pagerState.animateScrollToPage(
-                page = page, // On ne fait plus de modulo ici pour l'animation
-                animationSpec = tween(
-                    durationMillis = currentDelay.toInt(),
-                    easing = LinearOutSlowInEasing
+        if (simpleAnimation) {
+            val scrollPages = minOf(stepsToTarget, 15)
+            val scrollStart = finalPage - scrollPages
+            var currentDelay = 25L
+            for (page in scrollStart..finalPage) {
+                val stepsLeft = finalPage - page
+                if (stepsLeft < 7) {
+                    currentDelay += 15L
+                }
+                pagerState.animateScrollToPage(
+                    page = page,
+                    animationSpec = tween(
+                        durationMillis = currentDelay.toInt(),
+                        easing = LinearOutSlowInEasing
+                    )
                 )
-            )
+            }
+        } else {
+            var currentDelay = 30L
+            for (page in (currentPage + 1)..finalPage) {
+                val stepsLeft = finalPage - page
+                if (stepsLeft < 5) {
+                    currentDelay += 80L
+                } else if (stepsLeft < 8) {
+                    currentDelay += 30L
+                }
+                pagerState.animateScrollToPage(
+                    page = page,
+                    animationSpec = tween(
+                        durationMillis = currentDelay.toInt(),
+                        easing = LinearOutSlowInEasing
+                    )
+                )
+            }
         }
         Log.d("lubenard", "$targetIndex ->  ${if (targetIndex <= 0|| targetIndex > items.size -1 ) "<= 0" else ctc.getString(items[targetIndex].start.text)}/ $finalPage -> ${if (finalPage <= 0 || finalPage > items.size -1 ) "null" else items[finalPage]}")
-        delay(400L)
+        if (!simpleAnimation) {
+            delay(400L)
+        }
         showRestartButton = true
         onFinished(finalPage)
     }

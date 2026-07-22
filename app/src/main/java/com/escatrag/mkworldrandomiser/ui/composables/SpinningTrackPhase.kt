@@ -31,6 +31,7 @@ fun SpinningTrackPhase(
                     targetIndex = selectedTrackIndex,
                     selectedItem = selectedItem.start,
                     onFinished = { onSpinFinished() },
+                    simpleAnimation = true,
                 )
             }
         }
