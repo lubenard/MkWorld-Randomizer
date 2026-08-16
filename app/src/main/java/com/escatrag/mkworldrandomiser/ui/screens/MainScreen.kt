@@ -51,8 +51,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.escatrag.mkworldrandomiser.R
 import com.escatrag.mkworldrandomiser.backend.SettingsViewModel
-import com.escatrag.mkworldrandomiser.ui.composables.SpinningWheel
 import com.escatrag.mkworldrandomiser.backend.TrackViewModel
+import com.escatrag.mkworldrandomiser.ui.composables.SpinningWheel
 import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -163,11 +163,11 @@ fun MainScreen(
                             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                                 Image(
                                     modifier = Modifier.size(if (dialogString.value?.end != null) 120.dp else 240.dp),
-                                    painter = painterResource(dialogString.value?.start!!.icon),
-                                    contentDescription = context.getString(dialogString.value?.start!!.text),
+                                    painter = painterResource(dialogString.value?.start!!.imgRes),
+                                    contentDescription = context.getString(dialogString.value?.start!!.nameRes),
                                 )
                                 Text(
-                                    text = context.getString(dialogString.value?.start!!.text),
+                                    text = context.getString(dialogString.value?.start!!.nameRes),
                                     fontSize = if (dialogString.value?.end != null) 15.sp else 25.sp
                                 )
                             }
@@ -177,11 +177,11 @@ fun MainScreen(
                                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                                     Image(
                                         modifier = Modifier.size(120.dp),
-                                        painter = painterResource(dialogString.value!!.end?.icon!!),
-                                        contentDescription = context.getString(dialogString.value!!.end?.text!!),
+                                        painter = painterResource(dialogString.value!!.end?.imgRes!!),
+                                        contentDescription = context.getString(dialogString.value!!.end?.nameRes!!),
                                     )
                                     Text(
-                                        text = context.getString(dialogString.value!!.end?.text!!),
+                                        text = context.getString(dialogString.value!!.end?.nameRes!!),
                                         fontSize = 15.sp
                                     )
                                 }
@@ -230,9 +230,9 @@ fun MainScreen(
                 targetIndex = selectedItem,
                 placeholder = "Merci de choisir au moins une carte",
                 onItemSelected = {
-                    viewModel.setPopupDisplay(viewModel.selectedTracks.value[it])
-                    if (viewModel.deleteTrackAfterCompletion.value)
-                        viewModel.deleteCircuit(viewModel.selectedTracks.value[it])
+                    val result = viewModel.showResultPopup.value
+                    if (result != null && viewModel.deleteTrackAfterCompletion.value)
+                        viewModel.deleteCircuit(result)
                 }
             )
 

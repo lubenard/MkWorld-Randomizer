@@ -17,8 +17,7 @@ class TrackViewModel : ViewModel() {
     private val _selectedTracks = MutableStateFlow(TrackRepository.trackItems)
     val selectedTracks: StateFlow<List<TrackCombo>> = _selectedTracks
 
-    // All tracks availables: Used for Selection tracks (will include routes if selected in SelectionScreen),
-    // but they will not be selected (tho available for selection)
+    // All tracks available for selection (tracks + connections if includeRoutes is on)
     private val _allTracksAvailable = MutableStateFlow(TrackRepository.trackItems)
     val allTracksAvailable: StateFlow<List<TrackCombo>> = _allTracksAvailable
 
@@ -72,7 +71,7 @@ class TrackViewModel : ViewModel() {
 
     fun setIncludeRoutes(value: Boolean) {
         _includeRoutes.value = value
-        _allTracksAvailable.value = _allTracksAvailable.value.plus(transformConnectionsToList(TrackRepository.connections))
+        _allTracksAvailable.value = TrackRepository.allCombos(value)
     }
 
     // Generate a route based on selectedTracks
@@ -95,9 +94,7 @@ class TrackViewModel : ViewModel() {
             var finalResult = selectedCombo // Par défaut, on garde le combo tel quel
 
             if (shouldIncludeRoute) {
-                // Matching : Track -> TrackItems (Enum)
-                val startEnum = TrackItems.entries.find { it.nameRes == selectedCombo.start.text }
-                val possibleDestinations = startEnum?.let { TrackRepository.connections[it] }
+                val possibleDestinations = TrackRepository.connections[selectedCombo.start]
 
                 if (!possibleDestinations.isNullOrEmpty()) {
                     val randomDestEnum = possibleDestinations.random()
@@ -105,18 +102,17 @@ class TrackViewModel : ViewModel() {
                     // Création du combo avec la destination
                     finalResult = TrackCombo(
                         start = selectedCombo.start,
-                        end = randomDestEnum.map(),
-                        type = TrackComboType.CONNECTION
+                        end = randomDestEnum
                     )
                     _includeRoutes.value = true
                 } else {
                     // Pas de connexions trouvées, on force le type TRACK
-                    finalResult = selectedCombo.copy(type = TrackComboType.TRACK)
+                    finalResult = selectedCombo.copy(end = null)
                     _includeRoutes.value = false
                 }
             } else {
                 // Simple circuit
-                finalResult = selectedCombo.copy(type = TrackComboType.TRACK)
+                finalResult = selectedCombo.copy(end = null)
                 _includeRoutes.value = false
             }
 
@@ -133,40 +129,32 @@ class TrackViewModel : ViewModel() {
     }
 
     fun selectAllTracks(includeRoutes: Boolean) {
-        if (includeRoutes) {
-            _selectedTracks.value = _allTracksAvailable.value
-        } else {
-            _selectedTracks.value = TrackRepository.trackItems
-        }
+        _selectedTracks.value = TrackRepository.allCombos(includeRoutes)
     }
 
     fun clearAllTracks() {
         _selectedTracks.value = emptyList()
     }
 
-    fun transformConnectionsToList(connections: Map<TrackItems, List<TrackItems>>): List<TrackCombo> {
-        return connections.flatMap { (parent, children) ->
-            children.map { child ->
-                TrackCombo(
-                    start = parent.map(),
-                    end = child.map(),
-                    type = TrackComboType.CONNECTION,
-                )
+    fun deleteCircuit(result: TrackCombo, skipScrollDelay: Long = 3500) {
+        viewModelScope.launch(Dispatchers.IO) {
+            if (_deleteTrackAfterCompletion.value) {
+                Log.d("lubenard", "Deleting ${result.type} starting at ${result.start}")
+                delay(skipScrollDelay)
+                _selectedTracks.value = removeUsedCombo(_selectedTracks.value, result)
             }
         }
     }
 
-    fun deleteCircuit(circuit: TrackCombo, skipScrollDelay: Long = 3500) {
-        viewModelScope.launch(Dispatchers.IO) {
-            Log.d("lubenard", "Trying to delete track $circuit -> ${_deleteTrackAfterCompletion.value}")
-            if (_deleteTrackAfterCompletion.value && !_includeRoutes.value) {
-                Log.d("lubenard", "Deleting track $circuit}")
-                val tempValue = _selectedTracks.value.toMutableList()
-                delay(skipScrollDelay)
-                Log.d("lubenard", "Updating selectedTracks without $circuit")
-                _selectedTracks.value = tempValue.filter { it != circuit }
-            }
+    // Retire le combo "joué" : la connexion exacte (start+end) si présente, sinon le circuit de départ
+    private fun removeUsedCombo(pool: List<TrackCombo>, result: TrackCombo): List<TrackCombo> {
+        val toRemove = if (result.end != null) {
+            pool.firstOrNull { it.start == result.start && it.end == result.end }
+                ?: pool.firstOrNull { it.start == result.start }
+        } else {
+            pool.firstOrNull { it.start == result.start }
         }
+        return toRemove?.let { pool - it } ?: pool
     }
 
     fun updateDeleteTrackAfterCompletion(it: Boolean) {

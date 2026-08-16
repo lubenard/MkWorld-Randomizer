@@ -26,7 +26,6 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.escatrag.mkworldrandomiser.backend.TrackCombo
-import com.escatrag.mkworldrandomiser.backend.TrackItems
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
@@ -90,7 +89,7 @@ fun SpinningWheel(
                     contentAlignment = Alignment.Center
                 ) {
                     Row() {
-                        val text = if (items.isEmpty()) placeholder else stringResource(items[index % items.size].start.text)
+                        val text = if (items.isEmpty()) placeholder else stringResource(items[index % items.size].start.nameRes)
 
                         //TODO ? Possibility to add icon to the list
                         /*val img = if (items.isEmpty()) null else painterResource(items[index % items.size].imgRes)

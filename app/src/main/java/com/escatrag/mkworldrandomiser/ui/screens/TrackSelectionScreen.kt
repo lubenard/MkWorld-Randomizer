@@ -76,11 +76,11 @@ fun TrackSelectionScreen(viewModel: TrackViewModel, navController: NavController
                             onCheckedChange = null
                         )
 
-                        Text(stringResource(track.start.text), modifier = Modifier.padding(start = 8.dp))
+                        Text(stringResource(track.start.nameRes), modifier = Modifier.padding(start = 8.dp))
 
                         if (track.end != null) {
                             Text("> ", modifier = Modifier.padding(start = 8.dp))
-                            Text(stringResource(track.end.text), modifier = Modifier.padding(start = 8.dp))
+                            Text(stringResource(track.end.nameRes), modifier = Modifier.padding(start = 8.dp))
                         }
                     }
                 }

@@ -2,8 +2,18 @@ package com.escatrag.mkworldrandomiser.backend
 
 object TrackRepository {
 
-    val trackItems
-        get() = TrackItems.entries.toList().map()
+    val trackItems: List<TrackCombo>
+        get() = TrackItems.entries.map { TrackCombo(start = it) }
+
+    // Toutes les connexions possibles, sans doublons
+    fun connectionCombos(): List<TrackCombo> =
+        connections.flatMap { (parent, children) ->
+            children.map { child -> TrackCombo(start = parent, end = child) }
+        }.distinct()
+
+    // Pool complet selon l'option "Inclure les trajets"
+    fun allCombos(includeRoutes: Boolean): List<TrackCombo> =
+        if (includeRoutes) (trackItems + connectionCombos()).distinct() else trackItems
 
     // Graph des connexions
     val connections = mapOf(
@@ -12,7 +22,7 @@ object TrackRepository {
         TrackItems.MONT_TCHOU_TCHOU to listOf(TrackItems.DESERT_SOLEIL, TrackItems.CIRCUIT_MARIO_BROS, TrackItems.MONTAGNE_CHOCO, TrackItems.TROPHEOPOLIS, TrackItems.PLAGE_KOOPA, TrackItems.SPATIOPORT_DK), // VERIFIED
         TrackItems.SPATIOPORT_DK to listOf(TrackItems.MONT_TCHOU_TCHOU, TrackItems.DESERT_SOLEIL, TrackItems.CIRCUIT_MARIO_BROS, TrackItems.TROPHEOPOLIS, TrackItems.STADE_PEACH, TrackItems.PLAGE_KOOPA), // VERIFIED
 
-        TrackItems.DESERT_SOLEIL to listOf(TrackItems.SOUK_MASKASS, TrackItems.SOUK_MASKASS, TrackItems.CIRCUIT_MARIO_BROS, TrackItems.TROPHEOPOLIS, TrackItems.PLAGE_KOOPA, TrackItems.MONT_TCHOU_TCHOU), // VERIFIED
+        TrackItems.DESERT_SOLEIL to listOf(TrackItems.SOUK_MASKASS, TrackItems.CIRCUIT_MARIO_BROS, TrackItems.TROPHEOPOLIS, TrackItems.PLAGE_KOOPA, TrackItems.MONT_TCHOU_TCHOU), // VERIFIED
         TrackItems.SOUK_MASKASS to listOf(TrackItems.BATEAU_VOLANT, TrackItems.STADE_WARIO, TrackItems.MONTAGNE_CHOCO, TrackItems.CIRCUIT_MARIO_BROS, TrackItems.DESERT_SOLEIL), // VERIFIED
         TrackItems.STADE_WARIO to listOf(TrackItems.CHATEAU_BOWSER, TrackItems.FOURNAISE_OSSEUSE, TrackItems.USINE_TOAD, TrackItems.MONTAGNE_CHOCO, TrackItems.TROPHEOPOLIS, TrackItems.CIRCUIT_MARIO_BROS, TrackItems.SOUK_MASKASS, TrackItems.BATEAU_VOLANT), // VERIFIED
         TrackItems.BATEAU_VOLANT to listOf(TrackItems.CHATEAU_BOWSER, TrackItems.CHATEAU_BOWSER, TrackItems.FOURNAISE_OSSEUSE, TrackItems.USINE_TOAD, TrackItems.STADE_WARIO, TrackItems.SOUK_MASKASS), // VERIFIED
@@ -22,7 +32,7 @@ object TrackRepository {
         TrackItems.CITE_SORBET to listOf(TrackItems.GALION_WARIO, TrackItems.CITE_FLEUR_SEL, TrackItems.ALPES_DK, TrackItems.CHUTES_CHEEP_CHEEP, TrackItems.GOUFFRE_PISSENLIT, TrackItems.PIC_OBSERVATOIRE), // VERIFIED
         TrackItems.GALION_WARIO to listOf(TrackItems.PLAGE_PEACH, TrackItems.CITE_FLEUR_SEL, TrackItems.CHUTES_CHEEP_CHEEP, TrackItems.ALPES_DK, TrackItems.PIC_OBSERVATOIRE, TrackItems.CITE_SORBET), // VERIFIED
 
-        TrackItems.PLAGE_KOOPA to listOf(TrackItems.SPATIOPORT_DK, TrackItems.SPATIOPORT_DK, TrackItems.TROPHEOPOLIS, TrackItems.STADE_PEACH, TrackItems.SAVANE_SAUVAGE, TrackItems.JUNGLE_DINO_DINO), // VERIFIED
+        TrackItems.PLAGE_KOOPA to listOf(TrackItems.SPATIOPORT_DK, TrackItems.TROPHEOPOLIS, TrackItems.STADE_PEACH, TrackItems.SAVANE_SAUVAGE, TrackItems.JUNGLE_DINO_DINO), // VERIFIED
         TrackItems.SAVANE_SAUVAGE to listOf(TrackItems.CHUTES_CHEEP_CHEEP, TrackItems.CITE_FLEUR_SEL, TrackItems.PLAGE_PEACH, TrackItems.BLOC_ANTIQUE, TrackItems.JUNGLE_DINO_DINO, TrackItems.PLAGE_KOOPA, TrackItems.TROPHEOPOLIS, TrackItems.STADE_PEACH), // VERIFIED
 
         TrackItems.PLAGE_PEACH to listOf(TrackItems.BLOC_ANTIQUE, TrackItems.JUNGLE_DINO_DINO, TrackItems.SAVANE_SAUVAGE, TrackItems.CITE_FLEUR_SEL, TrackItems.GALION_WARIO), // VERIFIED
