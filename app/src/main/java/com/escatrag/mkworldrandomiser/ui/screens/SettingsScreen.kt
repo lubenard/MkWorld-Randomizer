@@ -34,7 +34,8 @@ fun SettingsScreen(vm: TrackViewModel, settingsViewModel: SettingsViewModel) {
     var darkModeEnabled by remember { mutableStateOf(false) }
     var showMirroredTracks by remember { mutableStateOf(false) }
     var showTrackPopup by remember { mutableStateOf(true) }
-    var deleteFinishCircuit by remember { mutableStateOf(false) }
+
+    val deleteFinishCircuit = vm.deleteFinishCircuit.collectAsState()
 
     val showPopup = settingsViewModel.isPopupEnabled.collectAsState()
 
@@ -82,8 +83,8 @@ fun SettingsScreen(vm: TrackViewModel, settingsViewModel: SettingsViewModel) {
             SettingSwitchRow(
                 title = "Supprimer circuit de fin",
                 subtitle = "Retirer le circuit de fin après son tirage",
-                checked = deleteFinishCircuit,
-                onCheckedChange = { deleteFinishCircuit = it }
+                checked = deleteFinishCircuit.value,
+                onCheckedChange = { vm.updateDeleteFinishCircuit(it) }
             )
 
             val bias = vm.generationBias.collectAsState()

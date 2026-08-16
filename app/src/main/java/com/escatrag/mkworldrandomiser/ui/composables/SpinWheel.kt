@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -89,7 +90,29 @@ fun SpinningWheel(
                     contentAlignment = Alignment.Center
                 ) {
                     Row() {
-                        val text = if (items.isEmpty()) placeholder else stringResource(items[index % items.size].start.nameRes)
+                        if (items.isEmpty()) {
+                            Text(
+                                text = placeholder,
+                                style = MaterialTheme.typography.titleLarge
+                            )
+                        } else {
+                            val combo = items[index % items.size]
+                            Text(
+                                text = stringResource(combo.start.nameRes),
+                                style = MaterialTheme.typography.titleLarge
+                            )
+                            if (combo.end != null) {
+                                Text(
+                                    text = ">",
+                                    style = MaterialTheme.typography.titleLarge,
+                                    modifier = Modifier.padding(horizontal = 8.dp)
+                                )
+                                Text(
+                                    text = stringResource(combo.end.nameRes),
+                                    style = MaterialTheme.typography.titleLarge
+                                )
+                            }
+                        }
 
                         //TODO ? Possibility to add icon to the list
                         /*val img = if (items.isEmpty()) null else painterResource(items[index % items.size].imgRes)
@@ -101,10 +124,6 @@ fun SpinningWheel(
                             )
                         }*/
 
-                        Text(
-                            text = text,
-                            style = MaterialTheme.typography.titleLarge
-                        )
                     }
                 }
             }

@@ -68,6 +68,7 @@ fun MainScreen(
 
     val selectedTracks by viewModel.selectedTracks.collectAsState()
     val deleteTrackAfterCompletion by viewModel.deleteTrackAfterCompletion.collectAsState()
+    val deleteFinishCircuit by viewModel.deleteFinishCircuit.collectAsState()
     val selectedItem by viewModel.selectedTrackIndex.collectAsState()
 
     var mexpanded by remember { mutableStateOf(false) }
@@ -231,7 +232,7 @@ fun MainScreen(
                 placeholder = "Merci de choisir au moins une carte",
                 onItemSelected = {
                     val result = viewModel.showResultPopup.value
-                    if (result != null && viewModel.deleteTrackAfterCompletion.value)
+                    if (result != null && (viewModel.deleteTrackAfterCompletion.value || viewModel.deleteFinishCircuit.value))
                         viewModel.deleteCircuit(result)
                 }
             )

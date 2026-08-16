@@ -30,8 +30,12 @@ class TrackViewModel : ViewModel() {
     var includeRoutes: StateFlow<Boolean> = _includeRoutes
 
     // Option to delete One track from the selectedTracks after completion (after selecting a random track)
-    private val _deleteTrackAfterCompletion = MutableStateFlow(false)
+    private val _deleteTrackAfterCompletion = MutableStateFlow(true)
     val deleteTrackAfterCompletion: StateFlow<Boolean> = _deleteTrackAfterCompletion
+
+    // Option to delete the finish circuit (end) after a connection draw
+    private val _deleteFinishCircuit = MutableStateFlow(false)
+    val deleteFinishCircuit: StateFlow<Boolean> = _deleteFinishCircuit
 
     // Show the result popup.... or not !
     private val _showResultPopup = MutableStateFlow<TrackCombo?>(null)
@@ -138,10 +142,15 @@ class TrackViewModel : ViewModel() {
 
     fun deleteCircuit(result: TrackCombo, skipScrollDelay: Long = 3500) {
         viewModelScope.launch(Dispatchers.IO) {
-            if (_deleteTrackAfterCompletion.value) {
+            if (_deleteTrackAfterCompletion.value || _deleteFinishCircuit.value) {
                 Log.d("lubenard", "Deleting ${result.type} starting at ${result.start}")
                 delay(skipScrollDelay)
-                _selectedTracks.value = removeUsedCombo(_selectedTracks.value, result)
+                if (_deleteTrackAfterCompletion.value) {
+                    _selectedTracks.value = removeUsedCombo(_selectedTracks.value, result)
+                }
+                if (_deleteFinishCircuit.value && result.end != null) {
+                    _selectedTracks.value = removeFinishCircuit(_selectedTracks.value, result.end)
+                }
             }
         }
     }
@@ -157,8 +166,18 @@ class TrackViewModel : ViewModel() {
         return toRemove?.let { pool - it } ?: pool
     }
 
+    // Retire le circuit d'arrivée d'une connexion
+    private fun removeFinishCircuit(pool: List<TrackCombo>, endTrack: TrackItems): List<TrackCombo> {
+        val toRemove = pool.firstOrNull { it.start == endTrack }
+        return toRemove?.let { pool - it } ?: pool
+    }
+
     fun updateDeleteTrackAfterCompletion(it: Boolean) {
         _deleteTrackAfterCompletion.value = it
+    }
+
+    fun updateDeleteFinishCircuit(it: Boolean) {
+        _deleteFinishCircuit.value = it
     }
 
     fun setPopupDisplay(newValue: TrackCombo?) {
