@@ -221,12 +221,12 @@ fun MonthlyScoreScreen(
                         Text(
                             stringResource(R.string.aucun_pilote),
                             style = MaterialTheme.typography.bodyLarge,
-                            color = Color.Gray
+                            color = Color.Black,
                         )
                         Text(
                             stringResource(R.string.clique_plus_profil),
                             style = MaterialTheme.typography.bodyMedium,
-                            color = Color.Gray
+                            color = Color.Black,
                         )
                     }
                 }
