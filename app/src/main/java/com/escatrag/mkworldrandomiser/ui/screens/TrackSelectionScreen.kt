@@ -58,6 +58,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -160,9 +161,25 @@ fun TrackSelectionScreen(
         OutlinedTextField(
             value = searchQuery,
             onValueChange = { searchQuery = it },
-            modifier = Modifier.clip(RoundedCornerShape(12.dp)).background(Color.White).fillMaxWidth(),
-            placeholder = { Text(stringResource(R.string.rechercher_circuit)) },
+            modifier = Modifier
+                .padding(16.dp)
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(12.dp))
+                .background(Color.White),
+            placeholder = { Text(stringResource(R.string.rechercher_circuit), color = Color.Gray) },
             leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
+            trailingIcon = {
+                if (searchQuery.isNotEmpty()) {
+                    IconButton(onClick = { searchQuery = "" }) {
+                        Icon(
+                            Icons.Default.Close,
+                            contentDescription = stringResource(R.string.rechercher_circuit),
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
+                }
+            },
+            textStyle = TextStyle(color = Color.Black),
             shape = RoundedCornerShape(12.dp),
             singleLine = true,
         )
