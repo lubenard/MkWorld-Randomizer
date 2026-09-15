@@ -1,15 +1,23 @@
 package com.escatrag.mkworldrandomiser.ui.screens
 
 import android.util.Log
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -19,8 +27,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.escatrag.mkworldrandomiser.R
 import com.escatrag.mkworldrandomiser.ui.composables.DualSpinnerPhase
 import com.escatrag.mkworldrandomiser.ui.composables.SelectionCubePhase
@@ -60,6 +72,8 @@ fun MainScreen(
     val isSecondSpinnerReady by viewModel.isSecondSpinnerReady.collectAsState()
     val destinationItems by viewModel.destinationItems.collectAsState()
     val destinationTargetIndex by viewModel.destinationTargetIndex.collectAsState()
+    val showResultPopup by viewModel.showResultPopup.collectAsState()
+    val popupEnabled by settingsViewModel.isPopupEnabled.collectAsState()
 
     val confettiColors = listOf(0xFFFF0000.toInt(), 0xFF00FF00.toInt(), 0xFF0000FF.toInt(), 0xFFFFFF00.toInt(), 0xFFFF00FF.toInt())
 
@@ -86,6 +100,8 @@ fun MainScreen(
     var showConfetti by remember { mutableStateOf(false) }
     var showResultActions by remember { mutableStateOf(false) }
 
+    val context = LocalContext.current
+
     LaunchedEffect(Unit) {
         viewModel.resetCourse()
     }
@@ -104,6 +120,66 @@ fun MainScreen(
                 override fun onParticleSystemEnded(system: PartySystem, activeSystems: Int) {
                     if (activeSystems == 0) {
                         showConfetti = false
+                    }
+                }
+            }
+        )
+    }
+
+    val popupResult = showResultPopup
+    if (popupResult != null && popupEnabled) {
+        AlertDialog(
+            onDismissRequest = { viewModel.setPopupDisplay(null) },
+            title = {
+                Text(
+                    modifier = Modifier.fillMaxWidth(),
+                    text = stringResource(R.string.selectionne),
+                    textAlign = TextAlign.Center
+                )
+            },
+            text = {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Image(
+                                modifier = Modifier.size(if (popupResult.end != null) 120.dp else 240.dp),
+                                painter = painterResource(popupResult.start.largeIcon),
+                                contentDescription = context.getString(popupResult.start.text),
+                            )
+                            Text(
+                                text = context.getString(popupResult.start.text),
+                                fontSize = if (popupResult.end != null) 15.sp else 25.sp
+                            )
+                        }
+
+                        if (popupResult.end != null) {
+                            Text(">", fontSize = 50.sp)
+                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                Image(
+                                    modifier = Modifier.size(120.dp),
+                                    painter = painterResource(popupResult.end.largeIcon),
+                                    contentDescription = context.getString(popupResult.end.text),
+                                )
+                                Text(
+                                    text = context.getString(popupResult.end.text),
+                                    fontSize = 15.sp
+                                )
+                            }
+                        }
+                    }
+                }
+            },
+            confirmButton = {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Button(onClick = { viewModel.setPopupDisplay(null) }) {
+                        Text(stringResource(R.string.fermer))
                     }
                 }
             }
@@ -150,7 +226,10 @@ fun MainScreen(
                     hasPlayers = players.isNotEmpty(),
                     onSpinFinished = {
                         showResultActions = true
-                        selectedItem?.let { viewModel.completeRace(it) }
+                        selectedItem?.let {
+                            viewModel.setPopupDisplay(it)
+                            viewModel.completeRace(it)
+                        }
                         showConfetti = true
                     },
                     onScoreSelection = onScoreSelection,
@@ -177,7 +256,10 @@ fun MainScreen(
                     onFirstSpinFinished = { viewModel.pickRandomDestination() },
                     onSecondSpinFinished = {
                         showResultActions = true
-                        selectedItem?.let { viewModel.completeRace(it) }
+                        selectedItem?.let {
+                            viewModel.setPopupDisplay(it)
+                            viewModel.completeRace(it)
+                        }
                         showConfetti = true
                     },
                     onScoreSelection = onScoreSelection,

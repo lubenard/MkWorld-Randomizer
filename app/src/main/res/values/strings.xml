@@ -122,4 +122,9 @@
     <string name="slider_circuits">Circuits</string>
     <string name="slider_50_50">50 / 50</string>
     <string name="slider_connexions">Connexions</string>
+
+    <string name="selectionne">Sélectionné !</string>
+    <string name="fermer">Fermer</string>
+    <string name="voir_popup_circuit">Voir la popup de circuit</string>
+    <string name="voir_popup_circuit_description">Afficher ou pas la popup de circuit</string>
 </resources>

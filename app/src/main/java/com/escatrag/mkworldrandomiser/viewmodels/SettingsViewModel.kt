@@ -2,6 +2,7 @@ package com.escatrag.mkworldrandomiser.viewmodels
 
 import android.app.Application
 import android.content.Context
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
@@ -24,7 +25,17 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
     private val _themeMode = MutableStateFlow(ThemeMode.SYSTEM)
     val themeMode: StateFlow<ThemeMode> = _themeMode.asStateFlow()
 
+    private val _isPopupEnabled = MutableStateFlow(true)
+    val isPopupEnabled: StateFlow<Boolean> = _isPopupEnabled.asStateFlow()
+
     init {
+        viewModelScope.launch {
+            context.dataStore.data.map { prefs ->
+                prefs[IS_POPUP_ENABLED_KEY] ?: true
+            }.collect { value ->
+                _isPopupEnabled.value = value
+            }
+        }
         viewModelScope.launch {
             context.dataStore.data.map { prefs ->
                 prefs[THEME_MODE_KEY]?.let { name ->
@@ -43,7 +54,15 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
         }
     }
 
+    fun setPopupEnabled(enabled: Boolean) {
+        _isPopupEnabled.value = enabled
+        viewModelScope.launch {
+            context.dataStore.edit { it[IS_POPUP_ENABLED_KEY] = enabled }
+        }
+    }
+
     companion object {
         private val THEME_MODE_KEY = stringPreferencesKey("theme_mode")
+        private val IS_POPUP_ENABLED_KEY = booleanPreferencesKey("is_popup_enabled")
     }
 }

@@ -73,6 +73,14 @@ class TrackViewModel : ViewModel() {
     private val _isSecondSpinnerReady = MutableStateFlow(false)
     val isSecondSpinnerReady: StateFlow<Boolean> = _isSecondSpinnerReady
 
+    // Popup de résultat affichant le circuit/trajet sélectionné (null = masquée)
+    private val _showResultPopup = MutableStateFlow<TrackCombo?>(null)
+    val showResultPopup: StateFlow<TrackCombo?> = _showResultPopup
+
+    fun setPopupDisplay(newValue: TrackCombo?) {
+        _showResultPopup.value = newValue
+    }
+
     fun toggleTrack(id: TrackCombo) {
         val trackItemsToToggle = _allTracksAvailable.value.find { it == id }
         if (trackItemsToToggle == null) return
@@ -223,6 +231,7 @@ class TrackViewModel : ViewModel() {
         pendingDestinations = null
         _destinationItems.value = emptyList()
         _isSecondSpinnerReady.value = false
+        _showResultPopup.value = null
         _phase.value = Phase.SELECTION_CUBE
     }
 
