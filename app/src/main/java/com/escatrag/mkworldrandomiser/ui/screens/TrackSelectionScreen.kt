@@ -162,7 +162,7 @@ fun TrackSelectionScreen(
             value = searchQuery,
             onValueChange = { searchQuery = it },
             modifier = Modifier
-                .padding(16.dp)
+                .padding(start = 16.dp, end = 16.dp, top = 0.dp, bottom = 0.dp)
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(12.dp))
                 .background(Color.White),
