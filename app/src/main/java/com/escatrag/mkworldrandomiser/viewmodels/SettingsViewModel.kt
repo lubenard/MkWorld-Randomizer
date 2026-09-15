@@ -25,7 +25,7 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
     private val _themeMode = MutableStateFlow(ThemeMode.SYSTEM)
     val themeMode: StateFlow<ThemeMode> = _themeMode.asStateFlow()
 
-    private val _isPopupEnabled = MutableStateFlow(true)
+    private val _isPopupEnabled = MutableStateFlow(false)
     val isPopupEnabled: StateFlow<Boolean> = _isPopupEnabled.asStateFlow()
 
     init {
@@ -33,7 +33,7 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
             context.dataStore.data.map { prefs ->
                 prefs[IS_POPUP_ENABLED_KEY] ?: true
             }.collect { value ->
-                _isPopupEnabled.value = value
+                //_isPopupEnabled.value = value
             }
         }
         viewModelScope.launch {
