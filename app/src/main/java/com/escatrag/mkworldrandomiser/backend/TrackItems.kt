@@ -33,5 +33,15 @@ enum class TrackItems(@StringRes val nameRes: Int, val imgRes: Int) {
     CHEMIN_CHENE(R.string.track_chemin_chene, R.drawable.chemin_du_chene),
     CIRCUIT_MARIO(R.string.track_circuit_mario, R.drawable.circuit_mario),
     STADE_PEACH(R.string.track_stade_peach, R.drawable.stade_peach),
-    ROUTE_ARC_EN_CIEL(R.string.track_route_arc_en_ciel, R.drawable.route_arcenciel)
+    ROUTE_ARC_EN_CIEL(R.string.track_route_arc_en_ciel, R.drawable.route_arcenciel),
+    SNES_Mario_Circuit_1(R.string.track_snes_mario_circuit_1, R.drawable.snes_mario_circuit_1),
+    SNES_Mario_Circuit_2(R.string.track_snes_mario_circuit_2, R.drawable.snes_mario_circuit_2),
+    SNES_Mario_Circuit_3(R.string.track_snes_mario_circuit_3, R.drawable.snes_mario_circuit_3),
+    SNES_Ghost_Valley_1(R.string.track_snes_ghost_valley_1, R.drawable.snes_ghost_valley_1),
+    SNES_Ghost_Valley_2(R.string.track_snes_ghost_valley_2, R.drawable.snes_ghost_valley_2),
+    SNES_Ghost_Valley_3(R.string.track_snes_ghost_valley_3, R.drawable.snes_ghost_valley_3),
+    SNES_Choco_Island_1(R.string.track_snes_choco_island_1, R.drawable.snes_choco_island_1),
+    SNES_Choco_Island_2(R.string.track_snes_choco_island_2, R.drawable.snes_choco_island_2),
+    SNES_Vanilla_Lake_1(R.string.track_snes_vanilla_lake_1, R.drawable.snes_vanilla_lake_1),
+    SNES_Koopa_Beach_1(R.string.track_snes_koopa_beach_1, R.drawable.snes_koopa_beach_1),
 }

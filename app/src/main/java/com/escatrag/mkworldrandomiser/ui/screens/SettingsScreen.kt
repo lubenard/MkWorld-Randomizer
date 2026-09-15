@@ -22,8 +22,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.escatrag.mkworldrandomiser.BuildConfig
+import com.escatrag.mkworldrandomiser.R
 import com.escatrag.mkworldrandomiser.backend.SettingsViewModel
 import com.escatrag.mkworldrandomiser.backend.TrackViewModel
 import com.escatrag.mkworldrandomiser.ui.composables.TestSlider
@@ -42,7 +44,7 @@ fun SettingsScreen(vm: TrackViewModel, settingsViewModel: SettingsViewModel) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Paramètres") },
+                title = { Text(stringResource(R.string.parametres)) },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
                     titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
@@ -59,30 +61,30 @@ fun SettingsScreen(vm: TrackViewModel, settingsViewModel: SettingsViewModel) {
         ) {
             // Option 1 : Mode Sombre
             SettingSwitchRow(
-                title = "Mode Sombre",
-                subtitle = "Activer le thème de la Route Arc-en-Ciel (Sombre)",
+                title = stringResource(R.string.mode_sombre),
+                subtitle = stringResource(R.string.mode_sombre_description),
                 checked = darkModeEnabled,
                 onCheckedChange = { darkModeEnabled = it }
             )
 
             // Option 3 : Circuits Miroir
             SettingSwitchRow(
-                title = "Mode Miroir - pas encore disponible",
-                subtitle = "Inclure les circuits inversés dans les choix",
+                title = stringResource(R.string.mode_miroir),
+                subtitle = stringResource(R.string.mode_miroir_description),
                 checked = showMirroredTracks,
                 onCheckedChange = { showMirroredTracks = it }
             )
 
             SettingSwitchRow(
-                title = "Voir la popup de circuit",
-                subtitle = "Afficher ou pas la popup de circuit",
+                title = stringResource(R.string.voir_popup_circuit),
+                subtitle = stringResource(R.string.voir_popup_circuit_description),
                 checked = showPopup.value,
                 onCheckedChange = { settingsViewModel.setPopupEnabled(it) }
             )
 
             SettingSwitchRow(
-                title = "Supprimer circuit de fin",
-                subtitle = "Retirer le circuit de fin après son tirage",
+                title = stringResource(R.string.supprimer_circuit_fin),
+                subtitle = stringResource(R.string.supprimer_circuit_fin_description),
                 checked = deleteFinishCircuit.value,
                 onCheckedChange = { vm.updateDeleteFinishCircuit(it) }
             )
@@ -96,7 +98,7 @@ fun SettingsScreen(vm: TrackViewModel, settingsViewModel: SettingsViewModel) {
 
             // Version de l'app en bas
             Text(
-                text = "Version 1.0 - Mario Kart World App - ${BuildConfig.COMMIT_SHA}",
+                text = stringResource(R.string.version_app, BuildConfig.COMMIT_SHA),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.align(Alignment.CenterHorizontally)

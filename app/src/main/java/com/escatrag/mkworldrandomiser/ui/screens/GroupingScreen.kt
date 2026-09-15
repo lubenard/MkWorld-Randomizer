@@ -32,8 +32,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.escatrag.mkworldrandomiser.R
 import com.escatrag.mkworldrandomiser.backend.TrackViewModel
 
 @Composable
@@ -45,7 +47,7 @@ fun PlayerGroupingScreen(viewModel: TrackViewModel) {
     var name2 by remember { mutableStateOf("") }
 
     Column(modifier = Modifier.fillMaxSize().padding(20.dp)) {
-        Text("Nouveau Binôme", style = MaterialTheme.typography.headlineSmall)
+        Text(stringResource(R.string.nouveau_binome), style = MaterialTheme.typography.headlineSmall)
 
         Spacer(modifier = Modifier.height(12.dp))
 
@@ -53,7 +55,7 @@ fun PlayerGroupingScreen(viewModel: TrackViewModel) {
         OutlinedTextField(
             value = name1,
             onValueChange = { name1 = it },
-            label = { Text("Joueur 1") },
+            label = { Text(stringResource(R.string.joueur_1)) },
             modifier = Modifier.fillMaxWidth(),
             singleLine = true
         )
@@ -63,7 +65,7 @@ fun PlayerGroupingScreen(viewModel: TrackViewModel) {
         OutlinedTextField(
             value = name2,
             onValueChange = { name2 = it },
-            label = { Text("Joueur 2") },
+            label = { Text(stringResource(R.string.joueur_2)) },
             modifier = Modifier.fillMaxWidth(),
             singleLine = true
         )
@@ -79,13 +81,13 @@ fun PlayerGroupingScreen(viewModel: TrackViewModel) {
         ) {
             Icon(Icons.Default.Add, contentDescription = null)
             Spacer(Modifier.width(8.dp))
-            Text("Former le groupe")
+            Text(stringResource(R.string.former_groupe))
         }
 
         HorizontalDivider(modifier = Modifier.padding(vertical = 24.dp))
 
         // --- LISTE DES GROUPES FORMÉS ---
-        Text("Groupes enregistrés", style = MaterialTheme.typography.titleMedium)
+        Text(stringResource(R.string.groupes_enregistres), style = MaterialTheme.typography.titleMedium)
 
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
@@ -111,11 +113,11 @@ fun PairCard(pair: Pair<String, String>, onRemove: () -> Unit) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column {
-                Text(text = "Équipe", style = MaterialTheme.typography.labelSmall)
+                Text(text = stringResource(R.string.equipe), style = MaterialTheme.typography.labelSmall)
                 Text(text = "${pair.first} & ${pair.second}", style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Bold)
             }
             IconButton(onClick = onRemove) {
-                Icon(Icons.Default.Delete, contentDescription = "Supprimer", tint = MaterialTheme.colorScheme.error)
+                Icon(Icons.Default.Delete, contentDescription = stringResource(R.string.supprimer), tint = MaterialTheme.colorScheme.error)
             }
         }
     }

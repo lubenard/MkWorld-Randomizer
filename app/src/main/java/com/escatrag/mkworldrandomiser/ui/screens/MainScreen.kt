@@ -46,6 +46,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -89,13 +90,13 @@ fun MainScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Sélection des circuits") },
+                title = { Text(stringResource(R.string.selection_circuits)) },
                 actions = {
                     // 2. L'icône des trois points
                     IconButton(onClick = { mexpanded = true }) {
                         Icon(
                             imageVector = Icons.Default.MoreVert,
-                            contentDescription = "Menu"
+                            contentDescription = stringResource(R.string.menu)
                         )
                     }
 
@@ -105,7 +106,7 @@ fun MainScreen(
                         onDismissRequest = { mexpanded = false }
                     ) {
                         DropdownMenuItem(
-                            text = { Text("Paramètres") },
+                            text = { Text(stringResource(R.string.parametres)) },
                             leadingIcon = {
                                 Icon(Icons.Default.Settings, contentDescription = null)
                             },
@@ -115,7 +116,7 @@ fun MainScreen(
                             }
                         )
                         DropdownMenuItem(
-                            text = { Text("Teams") },
+                            text = { Text(stringResource(R.string.teams)) },
                             leadingIcon = {
                                 Icon(Icons.Default.Boy, contentDescription = null)
                             },
@@ -150,7 +151,7 @@ fun MainScreen(
                 title = {
                     Text(
                         modifier = Modifier.fillMaxWidth(),
-                        text = "Sélectionné !",
+                        text = stringResource(R.string.selectionne),
                         textAlign = TextAlign.Center
                     )
                 },
@@ -189,7 +190,7 @@ fun MainScreen(
                             }
                         }
                         if (selectedTeams.value.isNotEmpty()) {
-                            Text("Joueurs")
+                            Text(stringResource(R.string.joueurs))
                             Row {
                                 // Max is 4 players
                                 repeat(selectedTeams.value.size) { index ->
@@ -205,7 +206,7 @@ fun MainScreen(
                         horizontalArrangement = Arrangement.Center
                     ) {
                         Button(onClick = { viewModel.setPopupDisplay(null) }) {
-                            Text("Fermer")
+                            Text(stringResource(R.string.fermer))
                         }
                     }
                 }
@@ -229,7 +230,7 @@ fun MainScreen(
             SpinningWheel(
                 items = selectedTracks,
                 targetIndex = selectedItem,
-                placeholder = "Merci de choisir au moins une carte",
+                placeholder = stringResource(R.string.merci_choisir_carte),
                 onItemSelected = {
                     val result = viewModel.showResultPopup.value
                     if (result != null && (viewModel.deleteTrackAfterCompletion.value || viewModel.deleteFinishCircuit.value))
@@ -247,14 +248,14 @@ fun MainScreen(
                     }
                 )
                 Spacer(Modifier.width(8.dp))
-                Text("Supp. les trajets faits")
+                Text(stringResource(R.string.supp_trajets_faits))
             }
 
             Button(
                 onClick = onNavigate,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("Séléctioner des trajet", color = Color.Black)
+                Text(stringResource(R.string.selectionner_trajet), color = Color.Black)
             }
 
             var lastClickTime by remember { mutableLongStateOf(0L) }
@@ -282,7 +283,7 @@ fun MainScreen(
                 onGenerate(currentTime - lastClickTime)
                 lastClickTime = currentTime
             }) {
-                Text("Choisir un trajet", color = Color.Black)
+                Text(stringResource(R.string.choisir_trajet), color = Color.Black)
             }
         }
     }

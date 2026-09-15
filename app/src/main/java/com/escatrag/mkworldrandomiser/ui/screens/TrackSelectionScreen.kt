@@ -27,6 +27,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.escatrag.mkworldrandomiser.R
 import com.escatrag.mkworldrandomiser.backend.TrackViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -40,10 +41,10 @@ fun TrackSelectionScreen(viewModel: TrackViewModel, navController: NavController
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Sélection des circuits") },
+                title = { Text(stringResource(R.string.selection_circuits)) },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Retour")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.retour))
                     }
                 },
                 actions = {
@@ -52,7 +53,10 @@ fun TrackSelectionScreen(viewModel: TrackViewModel, navController: NavController
                     TextButton(onClick = {
                         if (allSelected) viewModel.clearAllTracks() else viewModel.selectAllTracks(includeRoutes)
                     }) {
-                        Text(if (allSelected) "Désélectionner tout" else "Tout sélectionner")
+                        Text(
+                            if (allSelected) stringResource(R.string.deselectionner_tout)
+                            else stringResource(R.string.tout_selectionner)
+                        )
                     }
                 }
             )
@@ -93,7 +97,7 @@ fun TrackSelectionScreen(viewModel: TrackViewModel, navController: NavController
                     .padding(6.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text("Inclure les trajets", modifier = Modifier.weight(1f))
+                Text(stringResource(R.string.inclure_trajets), modifier = Modifier.weight(1f))
                 Switch(
                     checked = includeRoutes,
                     onCheckedChange = { state ->
