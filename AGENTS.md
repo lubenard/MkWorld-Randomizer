@@ -109,7 +109,7 @@ Toute la spec est dans `specs/`. Les fichiers sont la source de vérité :
 
 ### Priorité Basse (UI/Polish)
 7. **`SettingsViewModel` partiellement vide** — le Dark Mode est un état local dans `SettingsScreen.kt:35` non persisté, mais `SettingsViewModel` persiste déjà `themeMode`. La logique doit être unifiée dans le ViewModel.
-8. **`selectedTab` désynchronisé** — `MainActivity.kt:61` n'est pas synchronisé avec `navController.currentBackStackEntryAsState()` après navigation programmatique.
+8. ~~**`selectedTab` désynchronisé**~~ — ✅ **Corrigé** (`selectedTab` est désormais dérivé de `navController.currentBackStackEntryAsState()` dans `MainActivity.kt`).
 9. **Release signing** — utilise `signingConfigs.debug`. Configurer un vrai keystore avant publication.
 
 ---

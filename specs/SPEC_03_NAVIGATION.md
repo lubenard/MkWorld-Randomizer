@@ -49,7 +49,7 @@ Routes littérales (string), pas de sealed class.
 | 1 | Circuits | `Icons.Default.Map` | `"selection"` |
 | 2 | Scores | `Icons.Default.Groups` | `"score"` |
 
-L'état `selectedTab` est un `mutableIntStateOf(0)` local — il n'est pas synchronisé avec `navController` après une navigation programmatique.
+L'onglet sélectionné est dérivé de la route courante via `navController.currentBackStackEntryAsState()` (voir section 4) : plus d'état local.
 
 ## 3. Transitions Programmatiques
 
@@ -63,6 +63,12 @@ L'état `selectedTab` est un `mutableIntStateOf(0)` local — il n'est pas synch
 
 ## 4. État selectedTab
 
-Le `selectedTab` est mis à jour manuellement dans chaque `onClick` des `NavigationBarItem`. Si l'utilisateur navigue programmatiquement (ex: depuis Settings vers "main" via le bouton back), le `selectedTab` peut devenir désynchronisé du route actuelle.
+`selectedTab` est un `val` dérivé de `navController.currentBackStackEntryAsState()`, dans `MainActivity.kt` :
 
-**Comportement souhaitable (non implémenté) :** Synchroniser `selectedTab` avec `navController.currentBackStackEntryAsState()`.
+| Route | selectedTab |
+|---|---|
+| `"selection"` | 1 |
+| `"score"` | 2 |
+| `"main"`, `"settings"`, `"scoreSelection"` | 0 (défaut) |
+
+Il se re-synchronise automatiquement à chaque navigation (back système, `popBackStack()`, transitions programmatiques).

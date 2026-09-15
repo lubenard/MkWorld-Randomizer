@@ -98,6 +98,10 @@ class TrackViewModel : ViewModel() {
     fun completeRace(result: TrackCombo) {
         viewModelScope.launch {
             delay(3000L)
+            if (!_deleteTrackAfterCompletion.value) {
+                Log.d("lubenard", "completeRace: suppression annulee (switch off) — ${result.start.text}")
+                return@launch
+            }
             if (result.type == TrackComboType.CONNECTION) {
                 _selectedConnections.value = _selectedConnections.value.filter { it != result }
                 Log.d("lubenard", "completeRace: trajet retire de _selectedConnections — ${result.start.text} -> ${result.end?.text}")
@@ -223,6 +227,7 @@ class TrackViewModel : ViewModel() {
     }
 
     fun selectAllTracks(includeRoutes: Boolean) {
+        _selectedTracks.value = TrackRepository.trackItems
         if (includeRoutes) {
             val tracksInPool = _selectedTracks.value.map { it.start }
             _selectedConnections.value = transformConnectionsToList(TrackRepository.connections)

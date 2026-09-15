@@ -17,9 +17,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.layout.ContentScale
@@ -28,6 +25,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.escatrag.mkworldrandomiser.ui.screens.MainScreen
 import com.escatrag.mkworldrandomiser.ui.screens.MonthlyScoreScreen
@@ -58,8 +56,13 @@ class MainActivity : ComponentActivity() {
                 val trackViewModel: TrackViewModel = viewModel()
                 val scoreViewModel: ScoreViewModel = viewModel()
 
-                // État pour l'onglet sélectionné dans la barre du bas
-                var selectedTab by remember { mutableIntStateOf(0) }
+                // Onglet de la barre du bas synchronisé avec la route courante
+                val navBackStackEntry by navController.currentBackStackEntryAsState()
+                val selectedTab = when (navBackStackEntry?.destination?.route) {
+                    "selection" -> 1
+                    "score" -> 2
+                    else -> 0 // "main", "settings", "scoreSelection"
+                }
 
                 Scaffold(
                 // --- AJOUT DE LA BARRE DE NAVIGATION ---
@@ -68,7 +71,6 @@ class MainActivity : ComponentActivity() {
                         NavigationBarItem(
                             selected = selectedTab == 0,
                             onClick = {
-                                selectedTab = 0
                                 navController.navigate("main")
                             },
                             label = { Text(stringResource(R.string.aleatoire)) },
@@ -77,7 +79,6 @@ class MainActivity : ComponentActivity() {
                         NavigationBarItem(
                             selected = selectedTab == 1,
                             onClick = {
-                                selectedTab = 1
                                 navController.navigate("selection")
                             },
                             label = { Text(stringResource(R.string.circuits)) },
@@ -86,7 +87,6 @@ class MainActivity : ComponentActivity() {
                         NavigationBarItem(
                             selected = selectedTab == 2,
                             onClick = {
-                                selectedTab = 2
                                 navController.navigate("score")
                             },
                             label = { Text(stringResource(R.string.scores)) },

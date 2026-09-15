@@ -219,9 +219,8 @@ class ScoreViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun deletePlayer(player: PlayerProfile) {
-        // Si tu utilises une liste mutable ou une DB (Room), adapte ici
         val currentList = _players.value.toMutableList()
         currentList.remove(player)
-        _players.value = currentList
+        persistData(currentList)
     }
 }
