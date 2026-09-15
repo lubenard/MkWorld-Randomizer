@@ -3,6 +3,7 @@ package com.escatrag.mkworldrandomiser.ui.composables
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,6 +20,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.EmojiEvents
 import androidx.compose.material.icons.filled.Flag
 import androidx.compose.material.icons.filled.MilitaryTech
@@ -49,7 +51,11 @@ import com.escatrag.mkworldrandomiser.viewmodels.Top3Maps
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PlayersDetailsComposable(selectedPlayerForDetails: PlayerProfile, onDismiss: () -> Unit) {
+fun PlayersDetailsComposable(
+    selectedPlayerForDetails: PlayerProfile,
+    onDismiss: () -> Unit,
+    onEditProfile: (() -> Unit)? = null
+) {
     val sheetState = rememberModalBottomSheetState()
 
     ModalBottomSheet(
@@ -66,18 +72,39 @@ fun PlayersDetailsComposable(selectedPlayerForDetails: PlayerProfile, onDismiss:
                 .padding(bottom = 32.dp, start = 24.dp, end = 24.dp, top = 8.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Avatar
-            Image(
-                painter = painterResource(
-                    id = selectedPlayerForDetails.avatarRes ?: R.drawable.mario
-                ),
-                contentDescription = null,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .size(90.dp)
-                    .clip(CircleShape)
-                    .border(1.dp, Color.LightGray, CircleShape)
-            )
+            // Avatar + badge d'édition
+            Box {
+                Image(
+                    painter = painterResource(
+                        id = selectedPlayerForDetails.avatarRes ?: R.drawable.mario
+                    ),
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .size(90.dp)
+                        .clip(CircleShape)
+                        .border(1.dp, Color.LightGray, CircleShape)
+                )
+
+                if (onEditProfile != null) {
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.TopEnd)
+                            .size(28.dp)
+                            .background(MaterialTheme.colorScheme.surface, CircleShape)
+                            .border(1.dp, Color.LightGray, CircleShape)
+                            .clickable(onClick = onEditProfile),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Edit,
+                            contentDescription = stringResource(R.string.cd_modifier_profil),
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(16.dp)
+                        )
+                    }
+                }
+            }
 
             Text(
                 text = selectedPlayerForDetails.name,

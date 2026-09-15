@@ -118,6 +118,10 @@ class ScoreViewModel(application: Application) : AndroidViewModel(application) {
         _editingProfile.value = PlayerProfile()
     }
 
+    fun startEditingProfile(profile: PlayerProfile) {
+        _editingProfile.value = profile
+    }
+
     fun closeEditPopup() {
         _editingProfile.value = null
     }

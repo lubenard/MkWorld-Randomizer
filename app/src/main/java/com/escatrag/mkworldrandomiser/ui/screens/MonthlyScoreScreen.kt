@@ -108,9 +108,14 @@ fun MonthlyScoreScreen(
     }
 
     if (selectedPlayerForDetails != null) {
-        PlayersDetailsComposable(selectedPlayerForDetails!!) {
-            selectedPlayerForDetails = null
-        }
+        PlayersDetailsComposable(
+            selectedPlayerForDetails = selectedPlayerForDetails!!,
+            onDismiss = { selectedPlayerForDetails = null },
+            onEditProfile = {
+                viewModel.startEditingProfile(selectedPlayerForDetails!!)
+                selectedPlayerForDetails = null
+            }
+        )
     }
 
     // --- Supprimer tous les joueurs

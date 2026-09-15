@@ -206,16 +206,19 @@ Barre verticale avec gradient chromé :
 @Composable
 fun PlayersDetailsComposable(
     selectedPlayerForDetails: PlayerProfile,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
+    onEditProfile: (() -> Unit)? = null
 )
 ```
 
 `ModalBottomSheet` avec :
-- Avatar large (90dp, cercle)
+- Avatar large (90dp, cercle) + badge d'édition (crayon, 28dp, coin haut-droite) si `onEditProfile != null`
 - Nom
 - Score
 - 3 `StatTile` : Courses (🚩), Victoires (🏆), Podiums (🎖️)
 - Section « Circuits favoris » : `MapSwimlane` → `LazyRow` de `MapCard`
+
+Le clic sur le badge lance `ScoreViewModel.startEditingProfile(player)` → réutilise `ProfileCreationPopup` (nom + avatar, score conservé).
 
 ### MapCard — `ui/composables/PlayerDetailsComposable.kt:193`
 

@@ -66,6 +66,7 @@ private var pendingDestinations: List<TrackItems>? = null
 |---|---|
 | `resetMonthlyScores()` | Remet tous les `currentMonthScore` à 3000 + persist |
 | `startCreatingProfile()` | Set `_editingProfile` à un nouveau `PlayerProfile()` |
+| `startEditingProfile(profile)` | Set `_editingProfile` au joueur existant (édition nom + avatar, score conservé) |
 | `closeEditPopup()` | Set `_editingProfile` à null |
 | `saveProfile(profile)` | Upsert + persist (vérifie `name.isBlank()`) |
 | `submitRaceResults(rankings, mapId)` | Calcule ELO pairwise + stats + persist |
