@@ -37,6 +37,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -68,7 +69,7 @@ fun PlayersDetailsComposable(selectedPlayerForDetails: PlayerProfile, onDismiss:
             // Avatar
             Image(
                 painter = painterResource(
-                    id = selectedPlayerForDetails.avatarRes ?: R.drawable.mont_tchou_tchou
+                    id = selectedPlayerForDetails.avatarRes ?: R.drawable.mario
                 ),
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
@@ -100,7 +101,7 @@ fun PlayersDetailsComposable(selectedPlayerForDetails: PlayerProfile, onDismiss:
                     modifier = Modifier.weight(1f),
                     icon = Icons.Default.Flag,
                     value = selectedPlayerForDetails.runNumbers.toString(),
-                    label = "Courses",
+                    label = stringResource(R.string.stat_courses),
                     color = Color.Gray
                 )
 
@@ -109,7 +110,7 @@ fun PlayersDetailsComposable(selectedPlayerForDetails: PlayerProfile, onDismiss:
                     modifier = Modifier.weight(1f),
                     icon = Icons.Default.EmojiEvents, // Icône Coupe
                     value = selectedPlayerForDetails.victoryNumbers.toString(),
-                    label = "Victoires",
+                    label = stringResource(R.string.stat_victoires),
                     color = Color(0xFFFFD700) // Or
                 )
 
@@ -118,14 +119,14 @@ fun PlayersDetailsComposable(selectedPlayerForDetails: PlayerProfile, onDismiss:
                     modifier = Modifier.weight(1f),
                     icon = Icons.Default.MilitaryTech, // Icône Médaille
                     value = selectedPlayerForDetails.timesInPodium.toString(),
-                    label = "Podiums",
+                    label = stringResource(R.string.stat_podiums),
                     color = Color(0xFFC0C0C0) // Argent
                 )
             }
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            Text("Circuits favoris")
+            Text(stringResource(R.string.circuits_favoris))
             Spacer(modifier = Modifier.height(10.dp))
             val sortedMaps = selectedPlayerForDetails.top3Maps.sortedByDescending { it.timeInTop3 }
 
@@ -175,7 +176,7 @@ fun MapSwimlane(maps: List<Top3Maps>) {
     Column(modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)) {
 
         if (maps.isEmpty()) {
-            Text("Aucun podium pour le moment", color = Color.Gray, style = MaterialTheme.typography.bodySmall)
+            Text(stringResource(R.string.aucun_podium), color = Color.Gray, style = MaterialTheme.typography.bodySmall)
         } else {
             LazyRow(
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
@@ -206,7 +207,7 @@ fun MapCard(mapId: Top3Maps) {
         ) {
             Image(painter = painterResource(correctTrack!!.start.largeIcon), contentDescription = "", modifier = Modifier.fillMaxSize())
             Text(
-                text = "${mapId.timeInTop3} x in Top3",
+                text = stringResource(R.string.x_in_top3, mapId.timeInTop3),
                 style = MaterialTheme.typography.labelSmall,
                 maxLines = 1,
                 color = Color.White,

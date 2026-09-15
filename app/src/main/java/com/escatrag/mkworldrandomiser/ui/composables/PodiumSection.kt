@@ -102,7 +102,7 @@ fun PodiumBar(
     ) {
         // 1. Avatar du joueur au dessus de la barre
         Image(
-            painter = painterResource(id = player.avatarRes ?: R.drawable.mont_tchou_tchou),
+            painter = painterResource(id = player.avatarRes ?: R.drawable.mario),
             contentDescription = null,
             contentScale = ContentScale.Crop,
             modifier = Modifier

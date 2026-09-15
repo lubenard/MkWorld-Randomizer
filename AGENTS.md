@@ -104,7 +104,7 @@ Toute la spec est dans `specs/`. Les fichiers sont la source de vérité :
 
 ### Priorité Moyenne (Fonctionnalité incomplète/incohérente)
 4. **ELO code mort** — `RaceResultScreen` calcule l'ELO inline mais `submitRaceResults()` persiste un barème différent. Décider : soit supprimer l'ELO, soit l'intégrer dans `submitRaceResults()`.
-5. **`ProfileCreationPopup` overflow** — 12 avatars en `LazyVerticalGrid(columns=4)` > hauteur fixe 150dp. Passer en hauteur dynamique ou réduire à 8 items.
+5. ~~**`ProfileCreationPopup` overflow**~~ — ✅ **Corrigé** (FlowRow + Dialog scrollable, 24 persos). **Note :** les avatars sont désormais les 24 personnages principaux (`mario` … `bowser_jr`) ; les profils existants avec d'anciens `R.drawable` circuits sont migrés à la volée par `ScoreViewModel.migrateAvatarRes()`.
 6. **`deleteCircuit()` commentaire trompeur** — mentionne `Dispatchers.IO` mais opération synchrone en mémoire. Nettoyer le commentaire.
 
 ### Priorité Basse (UI/Polish)

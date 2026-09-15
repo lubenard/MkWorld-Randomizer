@@ -7,19 +7,19 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -39,12 +39,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.escatrag.mkworldrandomiser.R
 import com.escatrag.mkworldrandomiser.viewmodels.PlayerProfile
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun ProfileCreationPopup(
     profile: PlayerProfile,
@@ -56,11 +58,14 @@ fun ProfileCreationPopup(
     var tempAvatar by remember { mutableStateOf(profile.avatarRes) }
     var tempColor by remember { mutableStateOf(profile.composeColor) }
 
-    // Liste des avatars disponibles (À REMPLACER PAR TES DRAWABLES)
+    // Liste des avatars disponibles (24 personnages principaux de Mario Kart World)
     val availableAvatars = listOf(
-        R.drawable.circuit_mario, R.drawable.circuit_mario_bros, R.drawable.alpes_dk, R.drawable.cinema_boo,
-        R.drawable.bloc_antique, R.drawable.bateau_volant, R.drawable.chemin_du_chene, R.drawable.mont_tchou_tchou,
-        R.drawable.tropheopolis, R.drawable.galion_warion, R.drawable.gouffre_pissenlit, R.drawable.jungle_dino_dino
+        R.drawable.mario, R.drawable.luigi, R.drawable.peach, R.drawable.yoshi,
+        R.drawable.bowser, R.drawable.toad, R.drawable.toadette, R.drawable.koopa,
+        R.drawable.wario, R.drawable.waluigi, R.drawable.baby_mario, R.drawable.baby_luigi,
+        R.drawable.baby_peach, R.drawable.baby_daisy, R.drawable.baby_rosalina, R.drawable.pauline,
+        R.drawable.shy_guy, R.drawable.donkey_kong, R.drawable.daisy, R.drawable.rosalina,
+        R.drawable.lakitu, R.drawable.birdo, R.drawable.king_boo, R.drawable.bowser_jr
     )
 
     // Liste des couleurs de fond disponibles
@@ -76,41 +81,38 @@ fun ProfileCreationPopup(
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
         ) {
             Column(
-                modifier = Modifier.padding(24.dp).fillMaxWidth(),
+                modifier = Modifier.padding(24.dp).fillMaxWidth().verticalScroll(rememberScrollState()),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                Text("Créer ton pilote", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
+                Text(stringResource(R.string.creer_pilote), style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
 
                 // 1. Champ Nom
                 OutlinedTextField(
                     value = tempName,
                     onValueChange = { tempName = it },
-                    label = { Text("Prénom") },
-                    placeholder = { Text("Ex: Mario, Luig, Birdo..") },
+                    label = { Text(stringResource(R.string.prenom)) },
+                    placeholder = { Text(stringResource(R.string.ex_prenom)) },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
                     shape = RoundedCornerShape(12.dp)
                 )
 
-                Text("Choisis ton personnage", style = MaterialTheme.typography.titleMedium)
+                Text(stringResource(R.string.choisis_personnage), style = MaterialTheme.typography.titleMedium)
 
-                // 2. Grille d'Avatars (2 lignes complètes)
-                LazyVerticalGrid(
-                    columns = GridCells.Fixed(4), // 4 colonnes x 2 lignes = 8 items
-                    modifier = Modifier.height(150.dp),
+                // 2. Grille d'Avatars (s'adapte au contenu)
+                FlowRow(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    items(availableAvatars) { avatarRes ->
+                    availableAvatars.forEach { avatarRes ->
                         val isSelected = tempAvatar == avatarRes
                         Image(
                             painter = painterResource(id = avatarRes),
                             contentDescription = null,
                             contentScale = ContentScale.Crop,
                             modifier = Modifier
-                                .size(60.dp)
-                                .aspectRatio(1f)
+                                .size(56.dp)
                                 .clip(RoundedCornerShape(12.dp))
                                 .border(
                                     width = if (isSelected) 3.dp else 1.dp,
@@ -124,7 +126,7 @@ fun ProfileCreationPopup(
                     }
                 }
 
-                Text("Couleur de fond", style = MaterialTheme.typography.titleMedium)
+                Text(stringResource(R.string.couleur_fond), style = MaterialTheme.typography.titleMedium)
 
                 // 3. Choix de couleur
                 Row(
@@ -156,7 +158,7 @@ fun ProfileCreationPopup(
                     horizontalArrangement = Arrangement.End,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    TextButton(onClick = onDismiss) { Text("Annuler") }
+                    TextButton(onClick = onDismiss) { Text(stringResource(R.string.annuler)) }
                     Spacer(Modifier.width(8.dp))
                     Button(
                         onClick = {
@@ -169,7 +171,7 @@ fun ProfileCreationPopup(
                         enabled = tempName.isNotBlank(), // Oblige à mettre un nom
                         shape = RoundedCornerShape(12.dp)
                     ) {
-                        Text("Sauvegarder")
+                        Text(stringResource(R.string.sauvegarder))
                     }
                 }
             }

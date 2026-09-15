@@ -38,10 +38,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.escatrag.mkworldrandomiser.R
 import com.escatrag.mkworldrandomiser.backend.Track
 import com.escatrag.mkworldrandomiser.backend.TrackCombo
 import com.escatrag.mkworldrandomiser.ui.theme.MinecraftFontFamily
@@ -156,7 +158,7 @@ fun SpinWheel(
         if (!showRestartButton) {
             // --- TEXTE CLIGNOTANT ---
             Text(
-                text = "SÉLECTION EN COURS",
+                text = stringResource(R.string.selection_en_cours),
                 modifier = Modifier.alpha(textAlpha),
                 style = MaterialTheme.typography.labelLarge,
                 color = MaterialTheme.colorScheme.error,
@@ -166,7 +168,7 @@ fun SpinWheel(
 
         Spacer(modifier = Modifier.height(32.dp))
 
-        val fallbackEmptyText = if (items.isEmpty()) "Merci de choisir au moins une carte" else null
+        val fallbackEmptyText = if (items.isEmpty()) stringResource(R.string.merci_choisir_carte) else null
 
         Box(
             modifier = Modifier
@@ -255,7 +257,7 @@ fun RecommencerButton(modifier: Modifier = Modifier, onClick: () -> Unit) {
     ) {
         Text(
             modifier = Modifier.fillMaxWidth(),
-            text = "RECOMMENCER",
+            text = stringResource(R.string.recommencer),
             fontWeight = FontWeight.Bold,
             fontFamily = MinecraftFontFamily,
             fontSize = 35.sp,

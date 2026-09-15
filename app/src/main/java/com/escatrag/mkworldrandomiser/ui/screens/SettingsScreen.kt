@@ -19,8 +19,10 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.escatrag.mkworldrandomiser.BuildConfig
+import com.escatrag.mkworldrandomiser.R
 import com.escatrag.mkworldrandomiser.ui.composables.BiasSlider
 import com.escatrag.mkworldrandomiser.viewmodels.SettingsViewModel
 import com.escatrag.mkworldrandomiser.viewmodels.ThemeMode
@@ -34,7 +36,7 @@ fun SettingsScreen(vm: TrackViewModel, settingsViewModel: SettingsViewModel, pad
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Paramètres") },
+                title = { Text(stringResource(R.string.parametres)) },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
                     titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
@@ -49,13 +51,13 @@ fun SettingsScreen(vm: TrackViewModel, settingsViewModel: SettingsViewModel, pad
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Text("Thème", style = MaterialTheme.typography.titleMedium)
+            Text(stringResource(R.string.theme), style = MaterialTheme.typography.titleMedium)
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 ThemeMode.entries.forEach { mode ->
                     val label = when (mode) {
-                        ThemeMode.SYSTEM -> "Système"
-                        ThemeMode.LIGHT -> "Clair"
-                        ThemeMode.DARK -> "Sombre"
+                        ThemeMode.SYSTEM -> stringResource(R.string.theme_systeme)
+                        ThemeMode.LIGHT -> stringResource(R.string.theme_clair)
+                        ThemeMode.DARK -> stringResource(R.string.theme_sombre)
                     }
                     FilterChip(
                         selected = themeMode == mode,
@@ -73,7 +75,7 @@ fun SettingsScreen(vm: TrackViewModel, settingsViewModel: SettingsViewModel, pad
             Spacer(modifier = Modifier.weight(1f))
 
             Text(
-                text = "Version 1.0 - Mario Kart World App - ${BuildConfig.COMMIT_SHA}",
+                text = stringResource(R.string.version_app, BuildConfig.COMMIT_SHA),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.align(Alignment.CenterHorizontally)

@@ -15,7 +15,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.escatrag.mkworldrandomiser.R
 
 @Composable
 fun BiasSlider(
@@ -52,9 +54,9 @@ fun BiasSlider(
                 .padding(horizontal = 8.dp), // Ajustement pour aligner avec le pouce du slider
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            MarkerText(label = "Circuits")
-            MarkerText(label = "50 / 50")
-            MarkerText(label = "Connections")
+            MarkerText(label = stringResource(R.string.slider_circuits))
+            MarkerText(label = stringResource(R.string.slider_50_50))
+            MarkerText(label = stringResource(R.string.slider_connexions))
         }
     }
 }

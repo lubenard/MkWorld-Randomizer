@@ -61,6 +61,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.escatrag.mkworldrandomiser.R
 import com.escatrag.mkworldrandomiser.backend.TrackRepository
 import com.escatrag.mkworldrandomiser.backend.map
 import com.escatrag.mkworldrandomiser.backend.toTrackItem
@@ -92,7 +93,7 @@ fun TrackSelectionScreen(
 
     Column() {
 
-        TitleComposable(text = "CIRCUITS", fontSize = 40.sp, modifier = Modifier.padding(top = 70.dp, start = 25.dp))
+        TitleComposable(text = stringResource(R.string.title_circuits).uppercase(), fontSize = 40.sp, modifier = Modifier.padding(top = 70.dp, start = 25.dp))
         Spacer(Modifier.height(20.dp))
 
         val totalConnectionsCount = remember { TrackRepository.connections.values.sumOf { it.size } }
@@ -122,7 +123,7 @@ fun TrackSelectionScreen(
                     fontWeight = FontWeight.Bold
                 )
                 Text(
-                    text = if (hasConnections) "circuits + trajets dans le tirage" else "circuits dans le tirage",
+                    text = if (hasConnections) stringResource(R.string.circuits_trajets_tirage) else stringResource(R.string.circuits_tirage),
                     style = MaterialTheme.typography.labelMedium
                 )
             }
@@ -160,7 +161,7 @@ fun TrackSelectionScreen(
             value = searchQuery,
             onValueChange = { searchQuery = it },
             modifier = Modifier.clip(RoundedCornerShape(12.dp)).background(Color.White).fillMaxWidth(),
-            placeholder = { Text("Rechercher un circuit") },
+            placeholder = { Text(stringResource(R.string.rechercher_circuit)) },
             leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
             shape = RoundedCornerShape(12.dp),
             singleLine = true,
@@ -188,7 +189,7 @@ fun TrackSelectionScreen(
                             contentColor = Color.Blue
                         )
                     ) {
-                        Text("Tout activer", fontFamily = MinecraftFontFamily)
+                        Text(stringResource(R.string.tout_activer), fontFamily = MinecraftFontFamily)
                     }
                     Button(
                         onClick = { viewModel.clearAllTracks() },
@@ -198,7 +199,7 @@ fun TrackSelectionScreen(
                             contentColor = Color.Red
                         )
                     ) {
-                        Text("Tout désactiver", fontFamily = MinecraftFontFamily)
+                        Text(stringResource(R.string.tout_desactiver), fontFamily = MinecraftFontFamily)
                     }
                 }
             }
@@ -304,7 +305,7 @@ fun TrackSelectionScreen(
                                 ) {
                                     Icon(
                                         imageVector = Icons.Default.KeyboardArrowDown,
-                                        contentDescription = "Plus d'options",
+                                        contentDescription = stringResource(R.string.plus_options),
                                         modifier = Modifier.rotate(arrowRotationDegree), // La flèche tourne !
                                         tint = if (isSelected) Color.DarkGray else Color.Gray
                                     )
@@ -327,7 +328,7 @@ fun TrackSelectionScreen(
                                 Spacer(modifier = Modifier.height(12.dp))
 
                                 Text(
-                                    text = "Trajets:",
+                                    text = stringResource(R.string.trajets_label),
                                     style = MaterialTheme.typography.labelMedium,
                                     color = Color.DarkGray
                                 )
@@ -367,7 +368,7 @@ fun TrackSelectionScreen(
                     modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text("Inclure les trajets", modifier = Modifier.weight(1f))
+                    Text(stringResource(R.string.inclure_trajets), modifier = Modifier.weight(1f))
                     Switch(
                         checked = includeRoutes,
                         onCheckedChange = {

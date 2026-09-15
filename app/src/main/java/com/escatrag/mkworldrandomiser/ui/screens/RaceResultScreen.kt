@@ -35,10 +35,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.escatrag.mkworldrandomiser.R
 import com.escatrag.mkworldrandomiser.viewmodels.PlayerProfile
 import com.escatrag.mkworldrandomiser.viewmodels.ScoreViewModel
 import com.escatrag.mkworldrandomiser.viewmodels.TrackViewModel
@@ -84,9 +86,9 @@ fun RaceResultScreen(
     val rankings = remember { mutableStateMapOf<String, Int>() }
 
     Column(modifier = Modifier.fillMaxSize().padding(padding).padding(16.dp)) {
-        Text("Résultats de la course", style = MaterialTheme.typography.headlineMedium)
+        Text(stringResource(R.string.resultats_course), style = MaterialTheme.typography.headlineMedium)
 
-        Text("1. Sélectionnez les participants (${participants.size}/4)", modifier = Modifier.padding(vertical = 8.dp))
+        Text(stringResource(R.string.selectionner_participants, participants.size), modifier = Modifier.padding(vertical = 8.dp))
 
         // Liste horizontale des joueurs
         LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -113,7 +115,7 @@ fun RaceResultScreen(
 
         HorizontalDivider(Modifier.padding(vertical = 16.dp))
 
-        Text("2. Classement final", modifier = Modifier.padding(bottom = 8.dp))
+        Text(stringResource(R.string.classement_final), modifier = Modifier.padding(bottom = 8.dp))
 
         // Liste des participants sélectionnés pour définir l'ordre
         LazyColumn(modifier = Modifier.weight(1f)) {
@@ -148,16 +150,16 @@ fun RaceResultScreen(
                             Badge(containerColor = MaterialTheme.colorScheme.primary) {
                                 Text(
                                     text = when(position) {
-                                        1 -> "1er 🏆"
-                                        2 -> "2nd 🥈"
-                                        3 -> "3ème 🥉"
-                                        else -> "${position}ème"
+                                        1 -> stringResource(R.string.position_1)
+                                        2 -> stringResource(R.string.position_2)
+                                        3 -> stringResource(R.string.position_3)
+                                        else -> stringResource(R.string.position_eme, position)
                                     },
                                     modifier = Modifier.padding(4.dp)
                                 )
                             }
                         } else {
-                            Text("Cliquer pour classer", style = MaterialTheme.typography.bodySmall, color = Color.Gray)
+                            Text(stringResource(R.string.cliquer_classer), style = MaterialTheme.typography.bodySmall, color = Color.Gray)
                         }
                     }
                 }
@@ -172,7 +174,7 @@ fun RaceResultScreen(
                 onResultsSubmitted()
             }
         ) {
-            Text("Enregistrer les scores")
+            Text(stringResource(R.string.enregistrer_scores))
         }
     }
 }

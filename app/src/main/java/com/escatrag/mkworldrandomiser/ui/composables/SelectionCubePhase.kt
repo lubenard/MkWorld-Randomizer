@@ -8,7 +8,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.escatrag.mkworldrandomiser.R
 
 @Composable
 fun SelectionCubePhase(
@@ -25,6 +27,6 @@ fun SelectionCubePhase(
             onCheckedChange = onToggleDeleteTrack,
         )
         Spacer(Modifier.width(8.dp))
-        Text("Supp. les trajets faits")
+        Text(stringResource(R.string.supp_trajets_faits))
     }
 }

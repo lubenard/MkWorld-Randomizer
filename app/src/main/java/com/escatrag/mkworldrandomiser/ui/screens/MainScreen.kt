@@ -19,7 +19,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.escatrag.mkworldrandomiser.R
 import com.escatrag.mkworldrandomiser.ui.composables.DualSpinnerPhase
 import com.escatrag.mkworldrandomiser.ui.composables.SelectionCubePhase
 import com.escatrag.mkworldrandomiser.ui.composables.SpinningTrackPhase
@@ -117,7 +119,7 @@ fun MainScreen(
 
         Icon(
             Icons.Default.Settings,
-            contentDescription = "Paramètres",
+            contentDescription = stringResource(R.string.parametres),
             modifier = Modifier
                 .align(Alignment.End)
                 .padding(top = 10.dp)

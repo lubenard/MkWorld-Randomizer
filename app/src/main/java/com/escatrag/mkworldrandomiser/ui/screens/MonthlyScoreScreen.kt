@@ -46,6 +46,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -86,8 +87,8 @@ fun MonthlyScoreScreen(
     if (showResetDialog) {
         AlertDialog(
             onDismissRequest = { showResetDialog = false },
-            title = { Text("Réinitialiser le mois ?") },
-            text = { Text("Tous les scores seront remis à zéro. Cette action est irréversible.") },
+            title = { Text(stringResource(R.string.reset_mois_titre)) },
+            text = { Text(stringResource(R.string.reset_mois_message)) },
             confirmButton = {
                 TextButton(
                     onClick = {
@@ -95,12 +96,12 @@ fun MonthlyScoreScreen(
                         showResetDialog = false
                     }
                 ) {
-                    Text("Confirmer", color = MaterialTheme.colorScheme.error)
+                    Text(stringResource(R.string.confirmer), color = MaterialTheme.colorScheme.error)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showResetDialog = false }) {
-                    Text("Annuler")
+                    Text(stringResource(R.string.annuler))
                 }
             }
         )
@@ -116,8 +117,8 @@ fun MonthlyScoreScreen(
     if (showResetPlayersDialog) {
         AlertDialog(
             onDismissRequest = { showResetPlayersDialog = false },
-            title = { Text("Réinitialiser les joueurs ?") },
-            text = { Text("Tous les joueurs seront remis à zéro. Cette action est irréversible.") },
+            title = { Text(stringResource(R.string.reset_joueurs_titre)) },
+            text = { Text(stringResource(R.string.reset_joueurs_message)) },
             confirmButton = {
                 TextButton(
                     onClick = {
@@ -125,12 +126,12 @@ fun MonthlyScoreScreen(
                         showResetPlayersDialog = false
                     }
                 ) {
-                    Text("Confirmer", color = MaterialTheme.colorScheme.error)
+                    Text(stringResource(R.string.confirmer), color = MaterialTheme.colorScheme.error)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showResetPlayersDialog = false }) {
-                    Text("Annuler")
+                    Text(stringResource(R.string.annuler))
                 }
             }
         )
@@ -139,8 +140,8 @@ fun MonthlyScoreScreen(
     if (selectedPlayerForDelete != null) {
         AlertDialog(
             onDismissRequest = { selectedPlayerForDelete = null },
-            title = { Text("Supprimer le joueur ?") },
-            text = { Text("Voulez-vous vraiment supprimer ${selectedPlayerForDelete?.name} ? Cette action est irréversible.") },
+            title = { Text(stringResource(R.string.supprimer_joueur_titre)) },
+            text = { Text(stringResource(R.string.supprimer_joueur_message, selectedPlayerForDelete?.name ?: "")) },
             confirmButton = {
                 TextButton(
                     onClick = {
@@ -148,12 +149,12 @@ fun MonthlyScoreScreen(
                         selectedPlayerForDelete = null
                     }
                 ) {
-                    Text("Oui", color = MaterialTheme.colorScheme.error)
+                    Text(stringResource(R.string.oui), color = MaterialTheme.colorScheme.error)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { selectedPlayerForDelete = null }) {
-                    Text("Annuler")
+                    Text(stringResource(R.string.annuler))
                 }
             }
         )
@@ -188,20 +189,20 @@ fun MonthlyScoreScreen(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                TitleComposable(text = "CLASSEMENT", fontSize = 30.sp)
+                TitleComposable(text = stringResource(R.string.classement), fontSize = 30.sp)
                 Log.d("escatrag", "${players.isNotEmpty()} || ${unsortedPlayers.isNotEmpty()}")
                 if (players.isNotEmpty() || unsortedPlayers.isNotEmpty()) {
                     IconButton(onClick = { showResetDialog = true }) {
                         Icon(
                             imageVector = Icons.Default.Delete,
-                            contentDescription = "Réinitialiser les scores",
+                            contentDescription = stringResource(R.string.cd_reset_scores),
                             tint = MaterialTheme.colorScheme.error
                         )
                     }
                     IconButton(onClick = { showResetPlayersDialog = true }) {
                         Icon(
                             imageVector = Icons.Default.GroupOff,
-                            contentDescription = "Supprimer tous les joueurs",
+                            contentDescription = stringResource(R.string.cd_supprimer_joueurs),
                             tint = MaterialTheme.colorScheme.error
                         )
                     }
@@ -213,12 +214,12 @@ fun MonthlyScoreScreen(
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Text(
-                            "Aucun pilote pour l'instant...",
+                            stringResource(R.string.aucun_pilote),
                             style = MaterialTheme.typography.bodyLarge,
                             color = Color.Gray
                         )
                         Text(
-                            "Clique sur le + pour créer ton profil !",
+                            stringResource(R.string.clique_plus_profil),
                             style = MaterialTheme.typography.bodyMedium,
                             color = Color.Gray
                         )
@@ -288,7 +289,7 @@ fun MonthlyScoreScreen(
             shape = CircleShape,
             modifier = Modifier.align(Alignment.BottomEnd).padding(bottom = 120.dp, end = 16.dp)
         ) {
-            Icon(Icons.Default.Add, contentDescription = "Ajouter un pilote")
+            Icon(Icons.Default.Add, contentDescription = stringResource(R.string.cd_ajouter_pilote))
         }
     }
 }
@@ -318,7 +319,7 @@ fun ScoreRow(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "#$rank",
+                text = stringResource(R.string.score_rank, rank),
                 modifier = Modifier.width(40.dp),
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -327,7 +328,7 @@ fun ScoreRow(
 
             // Avatar
             Image(
-                painter = painterResource(id = player.avatarRes ?: R.drawable.mont_tchou_tchou),
+                painter = painterResource(id = player.avatarRes ?: R.drawable.mario),
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.size(45.dp).clip(CircleShape).border(2.dp, player.composeColor, CircleShape)

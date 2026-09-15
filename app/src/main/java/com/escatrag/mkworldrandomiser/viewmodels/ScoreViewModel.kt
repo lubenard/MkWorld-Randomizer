@@ -9,6 +9,7 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.escatrag.mkworldrandomiser.R
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -48,6 +49,22 @@ data class Top3Maps(
 
 class ScoreViewModel(application: Application) : AndroidViewModel(application) {
 
+    companion object {
+        // Les 24 avatars valides (personnages principaux de Mario Kart World)
+        private val VALID_AVATARS = setOf(
+            R.drawable.mario, R.drawable.luigi, R.drawable.peach, R.drawable.yoshi,
+            R.drawable.bowser, R.drawable.toad, R.drawable.toadette, R.drawable.koopa,
+            R.drawable.wario, R.drawable.waluigi, R.drawable.baby_mario, R.drawable.baby_luigi,
+            R.drawable.baby_peach, R.drawable.baby_daisy, R.drawable.baby_rosalina, R.drawable.pauline,
+            R.drawable.shy_guy, R.drawable.donkey_kong, R.drawable.daisy, R.drawable.rosalina,
+            R.drawable.lakitu, R.drawable.birdo, R.drawable.king_boo, R.drawable.bowser_jr
+        )
+
+        // Ramène un avatar persisté vers une ressource valide (sinon null → fallback dans l'UI)
+        fun migrateAvatarRes(avatarRes: Int?): Int? =
+            avatarRes?.takeIf { it in VALID_AVATARS }
+    }
+
     private val gson = Gson()
     private val PLAYERS_KEY = stringPreferencesKey("players_list")
     private val context = application.applicationContext
@@ -72,7 +89,8 @@ class ScoreViewModel(application: Application) : AndroidViewModel(application) {
                 if (json.isNotEmpty()) {
                     val type = object : TypeToken<List<PlayerProfile>>() {}.type
                     val savedList: List<PlayerProfile> = gson.fromJson(json, type)
-                    _players.value = savedList
+                    // Migration à la volée : les anciens avatars (drawables circuits) deviennent null → fallback
+                    _players.value = savedList.map { it.copy(avatarRes = migrateAvatarRes(it.avatarRes)) }
                 }
             }
         }

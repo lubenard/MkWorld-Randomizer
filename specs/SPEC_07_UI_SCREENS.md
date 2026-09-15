@@ -140,23 +140,21 @@ fun ProfileCreationPopup(
 ```
 
 ### Comportement
-- Boîte de dialogue (`Dialog`) avec carte arrondie
+- Boîte de dialogue (`Dialog`) avec carte arrondie entièrement scrollable
 - Champ texte "Prénom" (obligatoire)
-- Grille d'avatars : `LazyVerticalGrid(columns = Fixed(4))`, 12 drawables disponibles
+- Grille d'avatars : `FlowRow` (hauteur dynamique), 24 personnages disponibles
 - Sélecteur de couleur : 6 cercles de couleur pastel
 - Boutons "Annuler" / "Sauvegarder"
 - `onSave(profile.copy(name = tempName, avatarRes = tempAvatar, profileColor = tempColor.toArgb()))`
 
-### ⚠️ Bug connu
-- `LazyVerticalGrid` a `height(150.dp)` fixe
-- 12 items en 4 colonnes = 3 lignes × ~56dp = 168dp → dépasse la hauteur allouée
-
 ### Avatars disponibles
+24 personnages principaux de Mario Kart World (ordre du roster, les 8 derniers déblocables via les Coupes) :
 ```
-circuit_mario, circuit_mario_bros, alpes_dk, cinema_boo,
-bloc_antique, bateau_volant, chemin_du_chene, mont_tchou_tchou,
-tropheopolis, galion_warion, gouffre_pissenlit, jungle_dino_dino
+mario, luigi, peach, yoshi, bowser, toad, toadette, koopa,
+wario, waluigi, baby_mario, baby_luigi, baby_peach, baby_daisy, baby_rosalina, pauline,
+shy_guy, donkey_kong, daisy, rosalina, lakitu, birdo, king_boo, bowser_jr
 ```
+- Anciens avatars (drawables circuits) : non utilisés dans l'UI ; `ScoreViewModel.migrateAvatarRes()` ramène un ID orphelin persisté vers `null` (fallback = `mario`) à la volée au chargement.
 
 ### Couleurs disponibles
 ```
