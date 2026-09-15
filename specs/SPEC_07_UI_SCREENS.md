@@ -142,17 +142,18 @@ fun ProfileCreationPopup(
 ### Comportement
 - Boîte de dialogue (`Dialog`) avec carte arrondie entièrement scrollable
 - Champ texte "Prénom" (obligatoire)
-- Grille d'avatars : `FlowRow` (hauteur dynamique), 24 personnages disponibles
+- Grille d'avatars : lignes fixes de 4 colonnes (`chunked(4)` + `Row` + `weight(1f)`), 28 personnages disponibles
 - Sélecteur de couleur : 6 cercles de couleur pastel
 - Boutons "Annuler" / "Sauvegarder"
 - `onSave(profile.copy(name = tempName, avatarRes = tempAvatar, profileColor = tempColor.toArgb()))`
 
 ### Avatars disponibles
-24 personnages principaux de Mario Kart World (ordre du roster, les 8 derniers déblocables via les Coupes) :
+28 personnages de Mario Kart World (24 personnages principaux — les 8 derniers déblocables via les Coupes — + 4 créatures) :
 ```
 mario, luigi, peach, yoshi, bowser, toad, toadette, koopa,
 wario, waluigi, baby_mario, baby_luigi, baby_peach, baby_daisy, baby_rosalina, pauline,
-shy_guy, donkey_kong, daisy, rosalina, lakitu, birdo, king_boo, bowser_jr
+shy_guy, donkey_kong, daisy, rosalina, lakitu, birdo, king_boo, bowser_jr,
+para_biddybud, peepa, swoop, stingby
 ```
 - Anciens avatars (drawables circuits) : non utilisés dans l'UI ; `ScoreViewModel.migrateAvatarRes()` ramène un ID orphelin persisté vers `null` (fallback = `mario`) à la volée au chargement.
 

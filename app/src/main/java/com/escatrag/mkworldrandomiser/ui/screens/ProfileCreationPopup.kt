@@ -7,10 +7,9 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -46,7 +45,6 @@ import androidx.compose.ui.window.Dialog
 import com.escatrag.mkworldrandomiser.R
 import com.escatrag.mkworldrandomiser.viewmodels.PlayerProfile
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun ProfileCreationPopup(
     profile: PlayerProfile,
@@ -58,14 +56,15 @@ fun ProfileCreationPopup(
     var tempAvatar by remember { mutableStateOf(profile.avatarRes) }
     var tempColor by remember { mutableStateOf(profile.composeColor) }
 
-    // Liste des avatars disponibles (24 personnages principaux de Mario Kart World)
+    // Liste des avatars disponibles (28 personnages de Mario Kart World)
     val availableAvatars = listOf(
         R.drawable.mario, R.drawable.luigi, R.drawable.peach, R.drawable.yoshi,
         R.drawable.bowser, R.drawable.toad, R.drawable.toadette, R.drawable.koopa,
         R.drawable.wario, R.drawable.waluigi, R.drawable.baby_mario, R.drawable.baby_luigi,
         R.drawable.baby_peach, R.drawable.baby_daisy, R.drawable.baby_rosalina, R.drawable.pauline,
         R.drawable.shy_guy, R.drawable.donkey_kong, R.drawable.daisy, R.drawable.rosalina,
-        R.drawable.lakitu, R.drawable.birdo, R.drawable.king_boo, R.drawable.bowser_jr
+        R.drawable.lakitu, R.drawable.birdo, R.drawable.king_boo, R.drawable.bowser_jr,
+        R.drawable.para_biddybud, R.drawable.peepa, R.drawable.swoop, R.drawable.stingby
     )
 
     // Liste des couleurs de fond disponibles
@@ -100,29 +99,32 @@ fun ProfileCreationPopup(
 
                 Text(stringResource(R.string.choisis_personnage), style = MaterialTheme.typography.titleMedium)
 
-                // 2. Grille d'Avatars (s'adapte au contenu)
-                FlowRow(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    availableAvatars.forEach { avatarRes ->
-                        val isSelected = tempAvatar == avatarRes
-                        Image(
-                            painter = painterResource(id = avatarRes),
-                            contentDescription = null,
-                            contentScale = ContentScale.Crop,
-                            modifier = Modifier
-                                .size(56.dp)
-                                .clip(RoundedCornerShape(12.dp))
-                                .border(
-                                    width = if (isSelected) 3.dp else 1.dp,
-                                    color = if (isSelected) MaterialTheme.colorScheme.primary else Color.LightGray,
-                                    shape = RoundedCornerShape(12.dp)
-                                )
-                                .background(if (isSelected) MaterialTheme.colorScheme.primaryContainer else Color.Transparent)
-                                .clickable { tempAvatar = avatarRes }
-                                .padding(if (isSelected) 4.dp else 0.dp)
-                        )
+                // 2. Grille d'Avatars (toujours 4 colonnes, s'adapte à la largeur)
+                availableAvatars.chunked(4).forEach { rowAvatars ->
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        rowAvatars.forEach { avatarRes ->
+                            val isSelected = tempAvatar == avatarRes
+                            Image(
+                                painter = painterResource(id = avatarRes),
+                                contentDescription = null,
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .aspectRatio(1f)
+                                    .clip(RoundedCornerShape(12.dp))
+                                    .border(
+                                        width = if (isSelected) 3.dp else 1.dp,
+                                        color = if (isSelected) MaterialTheme.colorScheme.primary else Color.LightGray,
+                                        shape = RoundedCornerShape(12.dp)
+                                    )
+                                    .background(if (isSelected) MaterialTheme.colorScheme.primaryContainer else Color.Transparent)
+                                    .clickable { tempAvatar = avatarRes }
+                                    .padding(if (isSelected) 4.dp else 0.dp)
+                            )
+                        }
                     }
                 }
 

@@ -50,14 +50,15 @@ data class Top3Maps(
 class ScoreViewModel(application: Application) : AndroidViewModel(application) {
 
     companion object {
-        // Les 24 avatars valides (personnages principaux de Mario Kart World)
+        // Les 28 avatars valides (personnages de Mario Kart World)
         private val VALID_AVATARS = setOf(
             R.drawable.mario, R.drawable.luigi, R.drawable.peach, R.drawable.yoshi,
             R.drawable.bowser, R.drawable.toad, R.drawable.toadette, R.drawable.koopa,
             R.drawable.wario, R.drawable.waluigi, R.drawable.baby_mario, R.drawable.baby_luigi,
             R.drawable.baby_peach, R.drawable.baby_daisy, R.drawable.baby_rosalina, R.drawable.pauline,
             R.drawable.shy_guy, R.drawable.donkey_kong, R.drawable.daisy, R.drawable.rosalina,
-            R.drawable.lakitu, R.drawable.birdo, R.drawable.king_boo, R.drawable.bowser_jr
+            R.drawable.lakitu, R.drawable.birdo, R.drawable.king_boo, R.drawable.bowser_jr,
+            R.drawable.para_biddybud, R.drawable.peepa, R.drawable.swoop, R.drawable.stingby
         )
 
         // Ramène un avatar persisté vers une ressource valide (sinon null → fallback dans l'UI)

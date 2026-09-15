@@ -16,6 +16,7 @@ class ScoreViewModelTest {
     fun migrateAvatarRes_validDrawable_unchanged() {
         assertEquals(R.drawable.mario, ScoreViewModel.migrateAvatarRes(R.drawable.mario))
         assertEquals(R.drawable.bowser_jr, ScoreViewModel.migrateAvatarRes(R.drawable.bowser_jr))
+        assertEquals(R.drawable.stingby, ScoreViewModel.migrateAvatarRes(R.drawable.stingby))
     }
 
     @Test
