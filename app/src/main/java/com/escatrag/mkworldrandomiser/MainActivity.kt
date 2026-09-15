@@ -24,6 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -70,7 +71,7 @@ class MainActivity : ComponentActivity() {
                                 selectedTab = 0
                                 navController.navigate("main")
                             },
-                            label = { Text("Aléatoire") },
+                            label = { Text(stringResource(R.string.aleatoire)) },
                             icon = { Icon(Icons.Default.Home, contentDescription = null) }
                         )
                         NavigationBarItem(
@@ -79,7 +80,7 @@ class MainActivity : ComponentActivity() {
                                 selectedTab = 1
                                 navController.navigate("selection")
                             },
-                            label = { Text("Circuits") },
+                            label = { Text(stringResource(R.string.circuits)) },
                             icon = { Icon(Icons.Default.Map, contentDescription = null) }
                         )
                         NavigationBarItem(
@@ -88,7 +89,7 @@ class MainActivity : ComponentActivity() {
                                 selectedTab = 2
                                 navController.navigate("score")
                             },
-                            label = { Text("Scores") },
+                            label = { Text(stringResource(R.string.scores)) },
                             icon = { Icon(Icons.Default.Groups, contentDescription = null) }
                         )
                     }

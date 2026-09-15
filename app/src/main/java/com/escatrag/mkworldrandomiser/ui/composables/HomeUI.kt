@@ -35,9 +35,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.escatrag.mkworldrandomiser.R
 import com.escatrag.mkworldrandomiser.ui.theme.MinecraftFontFamily
 import kotlin.math.sin
 
@@ -97,8 +99,8 @@ fun HomeUI(availableCoursesCount: Int, onClick: () -> Unit) {
             .fillMaxHeight(0.85f),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        TitleComposable(text = "MARIO KART", fontSize = 50.sp, Modifier.padding(top = 30.dp))
-        Text("Circuit aléatoire".uppercase(),
+        TitleComposable(text = stringResource(R.string.mario_kart), fontSize = 50.sp, Modifier.padding(top = 30.dp))
+        Text(stringResource(R.string.circuit_aleatoire).uppercase(),
             fontFamily = MinecraftFontFamily,
             fontSize = 30.sp,
             color = Color.Black,
@@ -116,12 +118,12 @@ fun HomeUI(availableCoursesCount: Int, onClick: () -> Unit) {
         ) {
             Icon(
                 imageVector = Icons.Default.Flag,
-                contentDescription = "Courses",
+                contentDescription = stringResource(R.string.cd_courses),
                 tint = MaterialTheme.colorScheme.onPrimaryContainer
             )
             Spacer(modifier = Modifier.width(8.dp))
             Text(
-                text = "$availableCoursesCount courses disponibles",
+                text = stringResource(R.string.courses_disponibles, availableCoursesCount),
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onPrimaryContainer
             )
@@ -138,7 +140,7 @@ fun HomeUI(availableCoursesCount: Int, onClick: () -> Unit) {
         ) {
             Icon(
                 imageVector = Icons.Default.QuestionMark,
-                contentDescription = "Star",
+                contentDescription = stringResource(R.string.cd_star),
                 tint = Color.White,
                 modifier = Modifier.size(120.dp)
             )
@@ -146,7 +148,7 @@ fun HomeUI(availableCoursesCount: Int, onClick: () -> Unit) {
         Spacer(Modifier.height(24.dp))
         // --- ÉLÉMENT 3 : Le texte qui clignote (Alpha) ---
         Text(
-            text = "tape le bloc pour révéler".uppercase(),
+            text = stringResource(R.string.tape_le_bloc).uppercase(),
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.alpha(textAlpha) // Application de l'animation d'opacité
@@ -164,7 +166,7 @@ fun HomeUI(availableCoursesCount: Int, onClick: () -> Unit) {
 
                 Icon(
                     imageVector = Icons.Default.Star, // Tu peux remplacer par tes propres icônes
-                    contentDescription = "Vague $i",
+                    contentDescription = stringResource(R.string.cd_vague, i),
                     tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier
                         .size(32.dp)
