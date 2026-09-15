@@ -187,7 +187,7 @@ fun TrackSelectionScreen(
         LazyColumn(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(padding)
+                //.padding(padding)
                 .padding(horizontal = 16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
             contentPadding = PaddingValues(bottom = 16.dp)
