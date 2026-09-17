@@ -32,6 +32,7 @@ fun DualSpinnerPhase(
 ) {
     Column(Modifier.fillMaxSize()) {
         Column(
+            modifier = Modifier.weight(1f),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
