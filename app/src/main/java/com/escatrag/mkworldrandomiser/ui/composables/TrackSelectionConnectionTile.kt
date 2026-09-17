@@ -27,12 +27,13 @@ import androidx.compose.ui.unit.dp
 fun TrackSelectionConnectionTile(
     title: String,
     isActive: Boolean,
+    enabled: Boolean = true,
     themeColor: Color,
     onClick: () -> Unit
 ) {
     val borderColor = if (isActive) themeColor else Color.LightGray
     val backgroundColor = if (isActive) themeColor.copy(alpha = 0.8f) else Color.White.copy(alpha = 0.4f)
-    val textColor = if (isActive) Color.Black else Color.Gray
+    val textColor = if (isActive && enabled) Color.Black else Color.Gray
 
     Card(
         modifier = Modifier
@@ -41,7 +42,7 @@ fun TrackSelectionConnectionTile(
             .border(2.dp, borderColor, RoundedCornerShape(10.dp)),
         colors = CardDefaults.cardColors(containerColor = backgroundColor),
         shape = RoundedCornerShape(10.dp),
-        onClick = onClick
+        onClick = { if (enabled) onClick() }
     ) {
         Row(
             modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
@@ -56,7 +57,7 @@ fun TrackSelectionConnectionTile(
             )
 
             // Un petit indicateur visuel (optionnel) pour montrer que c'est coché
-            if (isActive) {
+            if (isActive && enabled) {
                 Icon(
                     imageVector = Icons.Default.Check,
                     contentDescription = null,

@@ -35,7 +35,7 @@ private var pendingDestinations: List<TrackItems>? = null
 | `getConnectionsForTrack(trackItem: TrackItems)` | Retourne les destinations possibles depuis le graphe |
 | `setIncludeRoutes(value: Boolean)` | Met à jour `_includeRoutes` |
 | `completeRace(result: TrackCombo)` | Après 3000ms, retire le résultat du pool |
-| `toggleConnection(parent: Track, childItem: TrackItems)` | Active/désactive un trajet spécifique |
+| `toggleConnection(parent: Track, childItem: TrackItems)` | Active/désactive un trajet spécifique (ignoré si le circuit parent est désactivé) |
 | `pickRandomMap()` | **Cœur** : sélection aléatoire avec biais |
 | `pickRandomDestination()` | Pour dual spinner : choisit une destination |
 | `resetCourse()` | Réinitialise tout l'état de phase |

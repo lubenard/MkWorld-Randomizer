@@ -63,7 +63,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.escatrag.mkworldrandomiser.R
-import com.escatrag.mkworldrandomiser.backend.TrackRepository
 import com.escatrag.mkworldrandomiser.backend.map
 import com.escatrag.mkworldrandomiser.backend.toTrackItem
 import com.escatrag.mkworldrandomiser.ui.composables.TitleComposable
@@ -97,17 +96,11 @@ fun TrackSelectionScreen(
         TitleComposable(text = stringResource(R.string.title_circuits).uppercase(), fontSize = 40.sp, modifier = Modifier.padding(top = 70.dp, start = 25.dp))
         Spacer(Modifier.height(20.dp))
 
-        val totalConnectionsCount = remember { TrackRepository.connections.values.sumOf { it.size } }
-
         val hasConnections by remember { derivedStateOf { includeRoutes || selectedConnections.isNotEmpty() } }
-        val selectedCount by remember { derivedStateOf {
-            if (hasConnections) selectedTracks.size + selectedConnections.size else selectedTracks.size
-        } }
-        val totalPoolCount by remember { derivedStateOf {
-            if (hasConnections) allTracksList.size + totalConnectionsCount else allTracksList.size
-        } }
+        val selectedCount by remember { derivedStateOf { selectedTracks.size + selectedConnections.size } }
+        val totalPoolCount by remember { derivedStateOf { selectedTracks.size + selectedConnections.size } }
         val progress by remember { derivedStateOf {
-            if (totalPoolCount > 0) selectedCount.toFloat() / totalPoolCount else 0f
+            if (totalPoolCount > 0) 1f else 0f
         } }
 
         Column(
@@ -363,6 +356,7 @@ fun TrackSelectionScreen(
                                         TrackSelectionConnectionTile(
                                             title = "-> ${stringResource(connectedTrackItem.nameRes)}",
                                             isActive = isThisConnectionSelected,
+                                            enabled = isSelected,
                                             themeColor = randomPastel
                                         ) {
                                             viewModel.toggleConnection(

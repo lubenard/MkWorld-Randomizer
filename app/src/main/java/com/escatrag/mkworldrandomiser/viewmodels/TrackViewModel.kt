@@ -123,6 +123,11 @@ class TrackViewModel : ViewModel() {
     }
 
     fun toggleConnection(parent: Track, childItem: TrackItems) {
+        if (_selectedTracks.value.none { it.start == parent }) {
+            Log.d("lubenard", "toggleConnection: circuit parent desactive, ignore — ${parent.text}")
+            return
+        }
+
         val combo = TrackCombo(
             start = parent,
             end = childItem.map(),
