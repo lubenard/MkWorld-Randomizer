@@ -48,7 +48,7 @@ fun DualSpinnerPhase(
                 Text(
                     text = stringResource(R.string.vers),
                     fontFamily = MinecraftFontFamily,
-                    fontSize = 22.sp,
+                    fontSize = 16.sp,
                     color = Color.Gray
                 )
 
@@ -58,7 +58,8 @@ fun DualSpinnerPhase(
                         targetIndex = destinationTargetIndex,
                         selectedItem = selectedItem.end,
                         onFinished = { onSecondSpinFinished() },
-                        modifier = Modifier
+                        modifier = Modifier,
+                        compact = true
                     )
                 } else {
                     Spacer(modifier = Modifier)

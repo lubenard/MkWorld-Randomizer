@@ -57,7 +57,8 @@ fun SpinWheel(
     onFinished: (Int) -> Unit,
     selectedItem: Track?,
     modifier: Modifier = Modifier,
-    simpleAnimation: Boolean = false
+    simpleAnimation: Boolean = false,
+    compact: Boolean = false
 ) {
     // 1. État du Pager (on met un grand nombre pour simuler un défilement infini)
     val pageCount = 500
@@ -175,7 +176,7 @@ fun SpinWheel(
             }
         }
 
-        Spacer(modifier = Modifier.height(32.dp))
+        Spacer(modifier = Modifier.height(if (compact) 8.dp else 32.dp))
 
         val fallbackEmptyText = if (items.isEmpty()) stringResource(R.string.merci_choisir_carte) else null
 
