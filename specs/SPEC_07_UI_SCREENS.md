@@ -52,10 +52,9 @@ fun TrackSelectionScreen(viewModel: TrackViewModel, padding: PaddingValues)
 - Switch « Inclure les trajets » en bas → active `includeRoutes` + `selectAllTracks(true)`
 
 ### Tri et comptage
-- `selectedCount` = `selectedTracks + selectedConnections` (pool réel)
-- `totalPoolCount` = `selectedTracks + selectedConnections` (le pool = la sélection)
-- Le ratio vaut 100 % tant que le pool n'est pas vide ; toutes les pistes + 1 trajet → `41 / 41`
-- `hasConnections` = `includeRoutes || selectedConnections.isNotEmpty()` ne sert que pour le libellé « circuits / circuits + trajets »
+- `selectedCount` = `selectedTracks + selectedConnections` (si routes activées)
+- `totalPoolCount` = `trackItems + totalConnectionsCount` (si routes activées)
+- `totalConnectionsCount` = somme des tailles de toutes les listes de l'adjacency map
 
 ## 3. RaceResultScreen — `ui/screens/RaceResultScreen.kt`
 
