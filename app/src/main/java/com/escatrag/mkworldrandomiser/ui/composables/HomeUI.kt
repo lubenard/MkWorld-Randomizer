@@ -150,6 +150,7 @@ fun HomeUI(availableCoursesCount: Int, onClick: () -> Unit) {
         Text(
             text = stringResource(R.string.tape_le_bloc).uppercase(),
             style = MaterialTheme.typography.titleMedium,
+            fontFamily = MinecraftFontFamily,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.alpha(textAlpha) // Application de l'animation d'opacité
         )

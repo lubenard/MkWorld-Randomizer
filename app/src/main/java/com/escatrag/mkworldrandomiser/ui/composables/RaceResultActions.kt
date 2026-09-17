@@ -29,37 +29,42 @@ fun RaceResultActions(
     onScoreSelection: () -> Unit,
     onRecommencer: () -> Unit,
 ) {
-    if (showResultActions) {
+    Box(
+        modifier = Modifier.fillMaxWidth().height(130.dp),
+        contentAlignment = Alignment.BottomCenter
+    ) {
         Column(
             modifier = Modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            if (hasPlayers) {
-                Button(
-                    onClick = onScoreSelection,
-                    modifier = Modifier.fillMaxWidth().height(48.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFFFFE401),
-                        contentColor = Color.Black
-                    ),
-                    shape = RoundedCornerShape(4.dp),
-                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 0.dp)
-                ) {
-                    Box(contentAlignment = Alignment.Center) {
-                        Text(
-                            text = stringResource(R.string.saisir_scores),
-                            fontWeight = FontWeight.Bold,
-                            fontFamily = MinecraftFontFamily,
-                            fontSize = 20.sp,
-                            textAlign = TextAlign.Center
-                        )
+            if (showResultActions) {
+                if (hasPlayers) {
+                    Button(
+                        onClick = onScoreSelection,
+                        modifier = Modifier.fillMaxWidth().height(48.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color(0xFFFFE401),
+                            contentColor = Color.Black
+                        ),
+                        shape = RoundedCornerShape(4.dp),
+                        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 0.dp)
+                    ) {
+                        Box(contentAlignment = Alignment.Center) {
+                            Text(
+                                text = stringResource(R.string.saisir_scores),
+                                fontWeight = FontWeight.Bold,
+                                fontFamily = MinecraftFontFamily,
+                                fontSize = 20.sp,
+                                textAlign = TextAlign.Center
+                            )
+                        }
                     }
                 }
+                RecommencerButton(
+                    onClick = onRecommencer,
+                    modifier = Modifier.fillMaxWidth()
+                )
             }
-            RecommencerButton(
-                onClick = onRecommencer,
-                modifier = Modifier.fillMaxWidth()
-            )
         }
     }
 }

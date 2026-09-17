@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.VerticalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -155,15 +156,23 @@ fun SpinWheel(
 
         val context = LocalContext.current
 
-        if (!showRestartButton) {
-            // --- TEXTE CLIGNOTANT ---
-            Text(
-                text = stringResource(R.string.selection_en_cours),
-                modifier = Modifier.alpha(textAlpha),
-                style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.error,
-                fontWeight = FontWeight.Black
-            )
+        // Zone réservée au texte clignotant : hauteur fixe pour ne pas décaler l'image
+        Box(
+            modifier = Modifier
+                .height(40.dp)
+                .fillMaxWidth(),
+            contentAlignment = Alignment.Center
+        ) {
+            if (!showRestartButton) {
+                // --- TEXTE CLIGNOTANT ---
+                Text(
+                    text = stringResource(R.string.selection_en_cours),
+                    modifier = Modifier.alpha(textAlpha),
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.error,
+                    fontWeight = FontWeight.Black
+                )
+            }
         }
 
         Spacer(modifier = Modifier.height(32.dp))
@@ -210,16 +219,26 @@ fun SpinWheel(
             }
         }
 
-        if (showRestartButton && selectedItem != null) {
-            Spacer(modifier = Modifier.height(20.dp))
+        // Zone réservée au nom du circuit : hauteur fixe pour ne pas décaler l'image
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(min = 76.dp),
+            contentAlignment = Alignment.TopCenter
+        ) {
+            if (showRestartButton && selectedItem != null) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Spacer(modifier = Modifier.height(20.dp))
 
-            Text(
-                text = context.getString(selectedItem.text),
-                fontWeight = FontWeight.Bold,
-                fontFamily = MinecraftFontFamily,
-                fontSize = 35.sp,
-                textAlign = TextAlign.Center
-            )
+                    Text(
+                        text = context.getString(selectedItem.text),
+                        fontWeight = FontWeight.Bold,
+                        fontFamily = MinecraftFontFamily,
+                        fontSize = 35.sp,
+                        textAlign = TextAlign.Center
+                    )
+                }
+            }
         }
     }
 }
