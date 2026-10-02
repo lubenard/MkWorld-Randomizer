@@ -3,7 +3,12 @@ package com.escatrag.mkworldrandomiser.backend
 import androidx.annotation.StringRes
 import com.escatrag.mkworldrandomiser.R
 
-enum class TrackItems(@StringRes val nameRes: Int, val imgRes: Int, val largeImgRes: Int) {
+enum class TrackItems(
+    @StringRes val nameRes: Int,
+    val imgRes: Int,
+    val largeImgRes: Int,
+    val series: TrackSeries = TrackSeries.STANDALONE
+) {
     CIRCUIT_MARIO_BROS(R.string.track_mario_bros, R.drawable.circuit_mario_bros, R.drawable.large_circuit_mario_bros),
     TROPHEOPOLIS(R.string.track_tropheopolis, R.drawable.tropheopolis, R.drawable.large_tropheopolis),
     MONT_TCHOU_TCHOU(R.string.track_mont_tchou_tchou, R.drawable.mont_tchou_tchou, R.drawable.large_mont_tchou_tchou),
@@ -34,16 +39,16 @@ enum class TrackItems(@StringRes val nameRes: Int, val imgRes: Int, val largeImg
     CIRCUIT_MARIO(R.string.track_circuit_mario, R.drawable.circuit_mario, R.drawable.large_circuit_mario),
     STADE_PEACH(R.string.track_stade_peach, R.drawable.stade_peach, R.drawable.large_stade_peach),
     ROUTE_ARC_EN_CIEL(R.string.track_route_arc_en_ciel, R.drawable.route_arcenciel, R.drawable.large_route_arcenciel),
-    SNES_MARIO_CIRCUIT_1(R.string.track_snes_mario_circuit_1, R.drawable.snes_mario_circuit_1, R.drawable.snes_mario_circuit_1),
-    SNES_MARIO_CIRCUIT_2(R.string.track_snes_mario_circuit_2, R.drawable.snes_mario_circuit_2, R.drawable.snes_mario_circuit_2),
-    SNES_MARIO_CIRCUIT_3(R.string.track_snes_mario_circuit_3, R.drawable.snes_mario_circuit_3, R.drawable.snes_mario_circuit_3),
-    SNES_GHOST_VALLEY_1(R.string.track_snes_ghost_valley_1, R.drawable.snes_ghost_valley_1, R.drawable.snes_ghost_valley_1),
-    SNES_GHOST_VALLEY_2(R.string.track_snes_ghost_valley_2, R.drawable.snes_ghost_valley_2, R.drawable.snes_ghost_valley_2),
-    SNES_GHOST_VALLEY_3(R.string.track_snes_ghost_valley_3, R.drawable.snes_ghost_valley_3, R.drawable.snes_ghost_valley_3),
-    SNES_CHOCO_ISLAND_1(R.string.track_snes_choco_island_1, R.drawable.snes_choco_island_1, R.drawable.snes_choco_island_1),
-    SNES_CHOCO_ISLAND_2(R.string.track_snes_choco_island_2, R.drawable.snes_choco_island_2, R.drawable.snes_choco_island_2),
-    SNES_VANILLA_LAKE_1(R.string.track_snes_vanilla_lake_1, R.drawable.snes_vanilla_lake_1, R.drawable.snes_vanilla_lake_1),
-    SNES_KOOPA_BEACH_1(R.string.track_snes_koopa_beach_1, R.drawable.snes_koopa_beach_1, R.drawable.snes_koopa_beach_1)
+    SNES_MARIO_CIRCUIT_1(R.string.track_snes_mario_circuit_1, R.drawable.snes_mario_circuit_1, R.drawable.snes_mario_circuit_1, TrackSeries.SNES_MARIO_CIRCUIT),
+    SNES_MARIO_CIRCUIT_2(R.string.track_snes_mario_circuit_2, R.drawable.snes_mario_circuit_2, R.drawable.snes_mario_circuit_2, TrackSeries.SNES_MARIO_CIRCUIT),
+    SNES_MARIO_CIRCUIT_3(R.string.track_snes_mario_circuit_3, R.drawable.snes_mario_circuit_3, R.drawable.snes_mario_circuit_3, TrackSeries.SNES_MARIO_CIRCUIT),
+    SNES_GHOST_VALLEY_1(R.string.track_snes_ghost_valley_1, R.drawable.snes_ghost_valley_1, R.drawable.snes_ghost_valley_1, TrackSeries.SNES_GHOST_VALLEY),
+    SNES_GHOST_VALLEY_2(R.string.track_snes_ghost_valley_2, R.drawable.snes_ghost_valley_2, R.drawable.snes_ghost_valley_2, TrackSeries.SNES_GHOST_VALLEY),
+    SNES_GHOST_VALLEY_3(R.string.track_snes_ghost_valley_3, R.drawable.snes_ghost_valley_3, R.drawable.snes_ghost_valley_3, TrackSeries.SNES_GHOST_VALLEY),
+    SNES_CHOCO_ISLAND_1(R.string.track_snes_choco_island_1, R.drawable.snes_choco_island_1, R.drawable.snes_choco_island_1, TrackSeries.SNES_CHOCO_ISLAND),
+    SNES_CHOCO_ISLAND_2(R.string.track_snes_choco_island_2, R.drawable.snes_choco_island_2, R.drawable.snes_choco_island_2, TrackSeries.SNES_CHOCO_ISLAND),
+    SNES_VANILLA_LAKE_1(R.string.track_snes_vanilla_lake_1, R.drawable.snes_vanilla_lake_1, R.drawable.snes_vanilla_lake_1, TrackSeries.SNES_VANILLA_LAKE),
+    SNES_KOOPA_BEACH_1(R.string.track_snes_koopa_beach_1, R.drawable.snes_koopa_beach_1, R.drawable.snes_koopa_beach_1, TrackSeries.SNES_KOOPA_BEACH)
 }
 
 fun Track.toTrackItem(): TrackItems? {

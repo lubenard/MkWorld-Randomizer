@@ -96,6 +96,28 @@ fun SettingsScreen(vm: TrackViewModel, settingsViewModel: SettingsViewModel, pad
                 )
             }
 
+            val snesEnabled by vm.snesEnabled.collectAsState()
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = stringResource(R.string.snes_maps),
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                    Text(
+                        text = stringResource(R.string.snes_maps_description),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+                Switch(
+                    checked = snesEnabled,
+                    onCheckedChange = { vm.setSnesEnabled(it) }
+                )
+            }
+
             Spacer(modifier = Modifier.weight(1f))
 
             Text(

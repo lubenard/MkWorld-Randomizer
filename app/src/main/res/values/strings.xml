@@ -127,4 +127,6 @@
     <string name="fermer">Fermer</string>
     <string name="voir_popup_circuit">Voir la popup de circuit</string>
     <string name="voir_popup_circuit_description">Afficher ou pas la popup de circuit</string>
+    <string name="snes_maps">Activer les maps SNES</string>
+    <string name="snes_maps_description">Désactivé, les 10 circuits SNES restent visibles dans la liste Circuits mais décochés, donc jamais tirés. Tu peux ensuite les réactiver une par une. Revient à chaque lancement de l\'app.</string>
 </resources>

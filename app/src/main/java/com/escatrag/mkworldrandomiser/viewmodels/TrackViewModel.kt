@@ -8,7 +8,9 @@ import com.escatrag.mkworldrandomiser.backend.TrackCombo
 import com.escatrag.mkworldrandomiser.backend.TrackComboType
 import com.escatrag.mkworldrandomiser.backend.TrackItems
 import com.escatrag.mkworldrandomiser.backend.TrackRepository
+import com.escatrag.mkworldrandomiser.backend.isSnesOrDefault
 import com.escatrag.mkworldrandomiser.backend.map
+import com.escatrag.mkworldrandomiser.backend.seriesMembers
 import com.escatrag.mkworldrandomiser.backend.toTrackItem
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -49,6 +51,11 @@ class TrackViewModel : ViewModel() {
     // generation bias: 0 for only tracks, 50 for random between tracks & connection, 100 for connections only
     private val _generationBias = MutableStateFlow(0F)
     val generationBias: StateFlow<Float> = _generationBias
+
+    // Maps SNES dans le tirage ? Valeur en mémoire uniquement, comme le switch de suppression :
+    // remise à true à chaque lancement de l'app.
+    private val _snesEnabled = MutableStateFlow(true)
+    val snesEnabled: StateFlow<Boolean> = _snesEnabled
 
     // Index de la destination dans TrackRepository.trackItems pour le second spinner
     private val _destinationTargetIndex = MutableStateFlow(-1)
@@ -114,12 +121,50 @@ class TrackViewModel : ViewModel() {
                 _selectedConnections.value = _selectedConnections.value.filter { it != result }
                 Log.d("lubenard", "completeRace: trajet retire de _selectedConnections — ${result.start.text} -> ${result.end?.text}")
             } else {
-                val item = result.start.toTrackItem()
-                _selectedTracks.value = _selectedTracks.value.filter { it != result }
-                _selectedConnections.value = _selectedConnections.value.filter { it.start != result.start }
-                Log.d("lubenard", "completeRace: circuit retire de _selectedTracks — ${result.start.text}")
+                removeSeriesFromPool(result)
             }
         }
+    }
+
+    /**
+     * Retire du pool toute la série du circuit tiré : « Circuit Mario 2 (SNES) » retire
+     * Circuit Mario 1, 2 et 3 du tirage, sans toucher au « Circuit Mario » de Mario Kart World.
+     */
+    private fun removeSeriesFromPool(combo: TrackCombo) {
+        val item = combo.start.toTrackItem()
+        if (item == null) {
+            // Track inconnu du pool : repli sur la suppression de l'entrée exacte
+            _selectedTracks.value = _selectedTracks.value.filter { it != combo }
+            _selectedConnections.value = _selectedConnections.value.filter { it.start != combo.start }
+            return
+        }
+        val members = item.seriesMembers()
+        _selectedTracks.value = _selectedTracks.value.filterNot { it.start.toTrackItem() in members }
+        _selectedConnections.value = _selectedConnections.value.filterNot { it.start.toTrackItem() in members }
+        Log.d("lubenard", "completeRace: ${members.size} circuit(s) de la serie '${item.series}' retires — ${combo.start.text}")
+    }
+
+    /**
+     * Active ou désactive d'un coup les 10 circuits SNES dans le tirage.
+     *
+     * Action de lot : le switch ne fait que donner la valeur initiale, les cartes SNES
+     * de l'écran Circuits restent ensuite indépendantes de ce réglage. Les 10 circuits
+     * restent toujours listés dans `_allTracksAvailable`, ils ne sont donc jamais retirés
+     * de la liste visible — juste décochés, comme un circuit déjà tiré.
+     *
+     * Valeur en mémoire uniquement, comme le switch de suppression : elle repart de true
+     * à chaque lancement de l'app.
+     */
+    fun setSnesEnabled(enabled: Boolean) {
+        _snesEnabled.value = enabled
+        if (enabled) {
+            val alreadyInPool = _selectedTracks.value.filter { it.start.isSnesOrDefault() }
+            _selectedTracks.value = _selectedTracks.value +
+                    (TrackRepository.trackItems.filter { it.start.isSnesOrDefault() } - alreadyInPool)
+        } else {
+            _selectedTracks.value = _selectedTracks.value.filterNot { it.start.isSnesOrDefault() }
+        }
+        Log.d("lubenard", "setSnesEnabled: snes=$enabled, pool=${_selectedTracks.value.size}")
     }
 
     fun toggleConnection(parent: Track, childItem: TrackItems) {
