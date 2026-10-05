@@ -1,6 +1,6 @@
 # SPEC 04 — Backend des Circuits (Tracks)
 
-## 1. TrackItems — Les 29 Pistes
+## 1. TrackItems — Les 40 Pistes
 
 Enum complet dans `backend/TrackItems.kt`:
 
@@ -36,8 +36,45 @@ Enum complet dans `backend/TrackItems.kt`:
 | 28 | CIRCUIT_MARIO | `track_circuit_mario` | `circuit_mario` / `large_circuit_mario` |
 | 29 | STADE_PEACH | `track_stade_peach` | `stade_peach` / `large_stade_peach` |
 | 30 | ROUTE_ARC_EN_CIEL | `track_route_arc_en_ciel` | `route_arcenciel` / `large_route_arcenciel` |
+| 31 | SNES_MARIO_CIRCUIT_1 | `track_snes_mario_circuit_1` | `snes_mario_circuit_1` / `snes_mario_circuit_1` |
+| 32 | SNES_MARIO_CIRCUIT_2 | `track_snes_mario_circuit_2` | `snes_mario_circuit_2` / `snes_mario_circuit_2` |
+| 33 | SNES_MARIO_CIRCUIT_3 | `track_snes_mario_circuit_3` | `snes_mario_circuit_3` / `snes_mario_circuit_3` |
+| 34 | SNES_GHOST_VALLEY_1 | `track_snes_ghost_valley_1` | `snes_ghost_valley_1` / `snes_ghost_valley_1` |
+| 35 | SNES_GHOST_VALLEY_2 | `track_snes_ghost_valley_2` | `snes_ghost_valley_2` / `snes_ghost_valley_2` |
+| 36 | SNES_GHOST_VALLEY_3 | `track_snes_ghost_valley_3` | `snes_ghost_valley_3` / `snes_ghost_valley_3` |
+| 37 | SNES_CHOCO_ISLAND_1 | `track_snes_choco_island_1` | `snes_choco_island_1` / `snes_choco_island_1` |
+| 38 | SNES_CHOCO_ISLAND_2 | `track_snes_choco_island_2` | `snes_choco_island_2` / `snes_choco_island_2` |
+| 39 | SNES_VANILLA_LAKE_1 | `track_snes_vanilla_lake_1` | `snes_vanilla_lake_1` / `snes_vanilla_lake_1` |
+| 40 | SNES_KOOPA_BEACH_1 | `track_snes_koopa_beach_1` | `snes_koopa_beach_1` / `snes_koopa_beach_1` |
 
-**Remarque :** Il y a 30 entrées dans le code mais les specs du jeu Mario Kart World en contiennent 29. La 30e est le `ROUTE_ARC_EN_CIEL` classique.
+**Remarque :** 40 entrées au total, réparties en **30 circuits Mario Kart World** (#1–#30) et **10 circuits SNES** (#31–#40). Parmi les 30 MKW, 29 correspondent aux circuits officiels du jeu ; le 30e, `ROUTE_ARC_EN_CIEL`, est ajouté car absent de la liste officielle. Les 10 SNES ne font pas partie du circuit officiel Mario Kart World : ce sont des variantes d'anciennes cartouches, regroupées en 5 séries (cf. « Séries de variantes » ci-dessous).
+
+**Le champ `series`** — Signature de l'enum : `TrackItems(nameRes, imgRes, largeImgRes, series = TrackSeries.STANDALONE)`. Les 30 circuits MKW n'annotent rien et restent donc `STANDALONE`.
+
+### Séries de variantes
+
+`backend/TrackSeries.kt` regroupe les variantes d'un même circuit d'origine.
+
+| Série | Membres | Taille |
+|---|---|---|
+| `STANDALONE` | les 30 circuits MKW, chacun seul dans sa série | 1 |
+| `SNES_MARIO_CIRCUIT` | `SNES_MARIO_CIRCUIT_1/2/3` | 3 |
+| `SNES_GHOST_VALLEY` | `SNES_GHOST_VALLEY_1/2/3` | 3 |
+| `SNES_CHOCO_ISLAND` | `SNES_CHOCO_ISLAND_1/2` | 2 |
+| `SNES_VANILLA_LAKE` | `SNES_VANILLA_LAKE_1` | 1 |
+| `SNES_KOOPA_BEACH` | `SNES_KOOPA_BEACH_1` | 1 |
+
+Extensions fournies :
+
+| Fonction | Rôle |
+|---|---|
+| `TrackItems.seriesMembers()` | Tous les circuits de la même série. `STANDALONE` → `listOf(this)`. |
+| `val TrackItems.isSnes` | `series != TrackSeries.STANDALONE`. |
+| `Track.isSnesOrDefault()` | Variante null-safe pour le pool : un `Track` inconnu du `TrackItems` enum est traité comme MKTW. |
+
+**Unique consommateur** : `TrackViewModel.removeSeriesFromPool()`, qui retire toute la série du
+circuit tiré du pool (cf. `SPEC_05` §5). Un `STANDALONE` n'appartenant qu'à lui-même, la
+suppression de série ne change rien au comportement des circuits MKW.
 
 ## 2. Mappers — Extensions Shadow
 
@@ -67,7 +104,7 @@ object TrackRepository {
 
 ### `trackItems`
 
-`get() = TrackItems.entries.toList().map()` — les 29 pistes converties en `List<TrackCombo>` avec `type = TRACK`.
+`get() = TrackItems.entries.toList().map()` — les 40 pistes converties en `List<TrackCombo>` avec `type = TRACK`.
 
 ### `connections`
 

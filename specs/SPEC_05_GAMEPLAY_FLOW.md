@@ -55,7 +55,7 @@ L'écran `MainScreen` alterne entre 3 phases définies par `TrackViewModel.phase
 ```
 
 - `SpinWheel` avec `simpleAnimation = true` (15 pages, décélération)
-- À la fin : confetti, `completeRace()` (retire la piste après 3s si auto-delete activé)
+- À la fin : confetti, `completeRace()` (retire la piste après 3s si auto-delete activé — et, pour une course `TRACK`, toute sa série de variantes : cf. §5)
 - Actions : saisir les scores ou recommencer
 
 ### Phase 3 : DUAL_SPINNER (Double roue)
@@ -82,7 +82,7 @@ L'écran `MainScreen` alterne entre 3 phases définies par `TrackViewModel.phase
 - Roue 2 : sélectionne la destination (parmi les connexions activées du départ)
 - `onFirstSpinFinished → pickRandomDestination()` prépare la 2e roue
 
-## 2. Logique de pickRandomMap() — `TrackViewModel.kt:127`
+## 2. Logique de pickRandomMap() — `TrackViewModel.kt:189`
 
 ```kotlin
 fun pickRandomMap()
@@ -101,7 +101,7 @@ fun pickRandomMap()
    - Sinon → phase `SPINNING_TRACK`
 5. **Mise à jour des StateFlow** : `selectedTrackIndex`, `_selectedTrack`, `_destinationItems`, `_phase`
 
-## 3. Logique de pickRandomDestination() — `TrackViewModel.kt:193`
+## 3. Logique de pickRandomDestination() — `TrackViewModel.kt:255`
 
 ```kotlin
 fun pickRandomDestination(): Boolean
@@ -114,7 +114,32 @@ fun pickRandomDestination(): Boolean
 5. Set `_isSecondSpinnerReady = true` → la 2e roue s'affiche
 6. Met à jour `_destinationTargetIndex` pour l'animation
 
-## 4. Auto-delete — `TrackViewModel.kt:268`
+## 4. Session & Coupe
+
+Deux notions d'**organisation de la rotation**, à distinguer du compteur de courses
+mensuelles de `ScoreViewModel` (qui est persistant) : celles-ci ne sont **persistées nulle part**.
+
+### Coupe
+
+**4 courses consécutives.** Une session en compte **4**.
+
+- **Aucune logique en code ne s'appuie sur la coupe.** Il n'existe ni compteur, ni StateFlow,
+  ni affichage : c'est une notion documentaire, un découpage mental de la rotation.
+- Une course = un circuit. Un **trajet compte pour une course** : `completeRace()` est appelé une
+  fois par course, pas une fois par piste.
+
+### Session
+
+Une session de jeu dure environ **1 heure**, soit **4 coupes d'environ 16 courses**.
+
+- **Début** : le joueur reconstruit le pool avec `selectAllTracks()`, qui réinjecte les 40
+  circuits dans `_selectedTracks`
+- **Fin** : le joueur relance (`selectAllTracks()`), ou le pool finit par s'épuiser
+  (`pickRandomMap()` abandonne alors sur pool vide)
+- `resetCourse()` **ne fait que changer de phase** : il ne touche pas au pool, donc il n'a pas
+  d'effet sur la session en cours
+
+## 5. Auto-delete — `TrackViewModel.kt:316`
 
 ```kotlin
 fun deleteCircuit(circuit: TrackCombo?)
@@ -124,17 +149,47 @@ Si `_deleteTrackAfterCompletion == true` :
 - `CONNECTION` → supprime de `_selectedConnections`
 - `TRACK` → supprime de `_selectedTracks` + toutes les connexions associées
 
-**Note :** `completeRace()` (`TrackViewModel.kt:98`) fait un `delay(3000L)` puis supprime aussi. Il y a donc **deux chemins** de suppression qui peuvent interférer : `completeRace()` (automatique, avec délai) et `deleteCircuit()` (appelé au clic sur "Recommencer").
+### Suppression de série — `TrackViewModel.kt:133`
 
-## 5. Reset — `TrackViewModel.kt:216`
+```kotlin
+private fun removeSeriesFromPool(combo: TrackCombo)
+```
+
+Appelée par `completeRace()` pour les courses `TRACK`. Contrairement à `deleteCircuit()` qui
+ne retire que l'entrée exacte, elle retire **toute la série** du circuit tiré : « Circuit
+Mario 2 (SNES) » désactive Circuit Mario 1, 2 **et** 3, sans toucher au « Circuit Mario » de
+Mario Kart World. Un circuit `STANDALONE` n'appartient qu'à lui-même, donc son comportement
+est inchangé.
+
+Repli si `combo.start.toTrackItem()` renvoie `null` (Track absent du `TrackItems` enum) :
+suppression de l'entrée exacte et des connexions de même `start`, comme `deleteCircuit()`.
+
+### Désactivation globale des SNES — `TrackViewModel.kt:158`
+
+```kotlin
+fun setSnesEnabled(enabled: Boolean)
+```
+
+Action de lot pilotée par le switch « Activer les maps SNES » des réglages. Elle ne modifie que
+`_selectedTracks` (le pool du tirage) et **jamais** `_allTracksAvailable` : les 10 circuits SNES
+restent donc toujours listés dans l'écran Circuits, simplement décochés — et absents du compteur
+de courses disponibles.
+
+C'est une **action de lot qui ne fournit qu'une valeur initiale** : après coup, chaque carte SNES
+de l'écran Circuits se pilote indépendamment via `toggleTrack()`. Le switch n'est pas persisté,
+il repart de `true` à chaque lancement — exactement comme `_deleteTrackAfterCompletion`.
+
+**Note :** `completeRace()` (`TrackViewModel.kt:113`) fait un `delay(3000L)` puis supprime aussi. Il y a donc **deux chemins de suppression** qui peuvent intervenir : `completeRace()` (automatique, avec délai) et `deleteCircuit()` (appelé au clic sur "Recommencer"). Le second ne retire qu'un circuit, le premier toute sa série.
+
+## 6. Reset — `TrackViewModel.kt:278`
 
 ```kotlin
 fun resetCourse()
 ```
 
-Remet tous les index à -1, vide `pendingDestinations`, `_destinationItems`, repasse en `SELECTION_CUBE`.
+Remet tous les index à -1, vide `pendingDestinations`, `_destinationItems`, repasse en `SELECTION_CUBE`. **Ne touche pas au pool** : la session continue.
 
-## 6. Résumé du Flow Complet
+## 7. Résumé du Flow Complet
 
 ```
 1. [SELECTION_CUBE] → clic bloc → pickRandomMap()

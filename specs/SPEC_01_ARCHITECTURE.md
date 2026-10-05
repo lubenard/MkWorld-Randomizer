@@ -109,6 +109,8 @@ app/src/main/java/com/escatrag/mkworldrandomiser/
 | **Circuit (Track)** | Une piste de Mario Kart World, identifiée par son `@StringRes nameRes`. |
 | **Trajet (Connection/Route)** | Une arête dirigée d'un circuit A vers un circuit B. Le joueur fait 1 tour du circuit B. |
 | **Pool** | Ensemble des circuits + trajets activés pour le tirage aléatoire. |
+| **Session** | Une session de jeu, environ 1 heure, soit 4 coupes. Commence quand le joueur reconstruit le pool avec `selectAllTracks()`. |
+| **Coupe** | 4 courses consécutives. Une session en compte 4. **Notion documentaire : aucun compteur ni affichage en code.** |
 | **Biais (Bias)** | Contrôle « Circuits » (0) ↔ « Connections » (100) — probabilité qu'un trajet soit tiré. |
 | **Phase** | État de l'écran principal : `SELECTION_CUBE`, `SPINNING_TRACK`, `DUAL_SPINNER`. |
 | **Score ELO** | Calcul pairwise (K=32/(n-1), scale=400) — **non persisté** dans l'état actuel. |
