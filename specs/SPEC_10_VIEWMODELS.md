@@ -27,9 +27,11 @@ SNES & coupe (voir `SPEC_05` §1⁄§4) :
 | Champ privé | Type Flow | Public | Initial | Description |
 |---|---|---|---|---|
 | `_snesEnabled` | `StateFlow<Boolean>` | `snesEnabled` | `true` | SNES présentes dans le pool (in-memory) |
-| `_racesPerCoupe` | `StateFlow<Int>` | `racesPerCoupe` | `4` | Courses par coupe (slider réglages, in-memory) |
+| `_racesPerCoupe` | `StateFlow<Int>` | `racesPerCoupe` | `4` | Courses par coupe (slider réglages, in-memory). Valeurs permises : `RACES_PER_COUPE_OPTIONS = [3,4,5,6,8,12,16,32]` |
 | `_racesInCoupe` | `StateFlow<Int>` | (privé) | `0` | Courses écoulées depuis le début de session |
-| `_snesDrawnInCoupe` | `StateFlow<Int>` | (privé) | `0` | SNES terminées dans la coupe courante (quota ≤ 1) |
+| `_snesDrawnInCoupe` | `StateFlow<Int>` | (privé) | `0` | SNES terminées dans la coupe courante (quota) |
+| `_maxSnesPerCoupe` | `StateFlow<SnesMaxPerCoupe>` | `maxSnesPerCoupe` | `ONE` | Quota SNES par coupe (slider réglages) : 0..4 ou RANDOM |
+| `_deleteSnesInBlock` | `StateFlow<Boolean>` | `deleteSnesInBlock` | `false` | Suppression en bloc des SNES après une course SNES |
 
 ### Internal state
 ```kotlin
@@ -53,7 +55,9 @@ private var pendingDestinations: List<TrackItems>? = null
 | `deleteCircuit(circuit: TrackCombo?)` | Supprime un élément du pool |
 | `updateDeleteTrackAfterCompletion(Boolean)` | Change le mode auto-delete |
 | `updateGenerationBias(Float)` | Change le biais |
-| `updateRacesPerCoupe(Int)` | Change `_racesPerCoupe` (clampé 2..10) |
+| `updateRacesPerCoupe(Int)` | Change `_racesPerCoupe` (ignoré si la valeur n'est pas dans `RACES_PER_COUPE_OPTIONS`) |
+| `updateMaxSnesPerCoupe(SnesMaxPerCoupe)` | Change le quota SNES par coupe |
+| `updateDeleteSnesInBlock(Boolean)` | Active/désactive la suppression en bloc des SNES |
 | `setSnesEnabled(Boolean)` | Action de lot : active/désactive les 10 SNES d'un coup |
 | `transformConnectionsToList(Map)` | Utilitaire : convertit la map en `List<TrackCombo>` |
 

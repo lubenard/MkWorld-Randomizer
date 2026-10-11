@@ -35,6 +35,7 @@ import com.escatrag.mkworldrandomiser.BuildConfig
 import com.escatrag.mkworldrandomiser.R
 import com.escatrag.mkworldrandomiser.ui.composables.BiasSlider
 import com.escatrag.mkworldrandomiser.viewmodels.SettingsViewModel
+import com.escatrag.mkworldrandomiser.viewmodels.SnesMaxPerCoupe
 import com.escatrag.mkworldrandomiser.viewmodels.ThemeMode
 import com.escatrag.mkworldrandomiser.viewmodels.TrackViewModel
 import kotlin.math.roundToInt
@@ -169,13 +170,82 @@ fun SettingsScreen(
                         style = MaterialTheme.typography.titleLarge
                     )
                 }
-                var localCoupe by remember { mutableStateOf(racesPerCoupe.toFloat()) }
+                var localCoupe by remember {
+                    mutableStateOf(TrackViewModel.RACES_PER_COUPE_OPTIONS.indexOf(racesPerCoupe).toFloat())
+                }
                 Slider(
                     value = localCoupe,
                     onValueChange = { localCoupe = it },
-                    onValueChangeFinished = { vm.updateRacesPerCoupe(localCoupe.roundToInt()) },
-                    valueRange = 2f..10f,
-                    steps = 7
+                    onValueChangeFinished = {
+                        vm.updateRacesPerCoupe(
+                            TrackViewModel.RACES_PER_COUPE_OPTIONS[localCoupe.roundToInt()]
+                        )
+                    },
+                    valueRange = 0f..(TrackViewModel.RACES_PER_COUPE_OPTIONS.size - 1).toFloat(),
+                    steps = TrackViewModel.RACES_PER_COUPE_OPTIONS.size - 2
+                )
+            }
+
+            val maxSnes by vm.maxSnesPerCoupe.collectAsState()
+            Column(modifier = Modifier.fillMaxWidth()) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = stringResource(R.string.max_snes_par_coupe),
+                            style = MaterialTheme.typography.bodyLarge
+                        )
+                        Text(
+                            text = stringResource(R.string.max_snes_par_coupe_description),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                    Text(
+                        text = when (maxSnes) {
+                            SnesMaxPerCoupe.ZERO -> "0"
+                            SnesMaxPerCoupe.ONE -> "1"
+                            SnesMaxPerCoupe.TWO -> "2"
+                            SnesMaxPerCoupe.THREE -> "3"
+                            SnesMaxPerCoupe.FOUR -> "4"
+                            SnesMaxPerCoupe.RANDOM -> stringResource(R.string.max_snes_aleatoire)
+                        },
+                        style = MaterialTheme.typography.titleLarge
+                    )
+                }
+                var localMax by remember { mutableStateOf(maxSnes.ordinal.toFloat()) }
+                Slider(
+                    value = localMax,
+                    onValueChange = { localMax = it },
+                    onValueChangeFinished = {
+                        vm.updateMaxSnesPerCoupe(SnesMaxPerCoupe.entries[localMax.roundToInt()])
+                    },
+                    valueRange = 0f..5f,
+                    steps = 4
+                )
+            }
+
+            val deleteSnesInBlock by vm.deleteSnesInBlock.collectAsState()
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = stringResource(R.string.supprimer_snes_en_bloc),
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                    Text(
+                        text = stringResource(R.string.supprimer_snes_en_bloc_description),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+                Switch(
+                    checked = deleteSnesInBlock,
+                    onCheckedChange = { vm.updateDeleteSnesInBlock(it) }
                 )
             }
 

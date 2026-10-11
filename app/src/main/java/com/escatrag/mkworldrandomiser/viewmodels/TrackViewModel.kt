@@ -8,6 +8,7 @@ import com.escatrag.mkworldrandomiser.backend.TrackCombo
 import com.escatrag.mkworldrandomiser.backend.TrackComboType
 import com.escatrag.mkworldrandomiser.backend.TrackItems
 import com.escatrag.mkworldrandomiser.backend.TrackRepository
+import com.escatrag.mkworldrandomiser.backend.isSnes
 import com.escatrag.mkworldrandomiser.backend.isSnesOrDefault
 import com.escatrag.mkworldrandomiser.backend.map
 import com.escatrag.mkworldrandomiser.backend.seriesMembers
@@ -21,7 +22,14 @@ import kotlin.random.Random
 
 enum class Phase { SELECTION_CUBE, SPINNING_TRACK, DUAL_SPINNER }
 
+enum class SnesMaxPerCoupe { ZERO, ONE, TWO, THREE, FOUR, RANDOM }
+
 class TrackViewModel : ViewModel() {
+
+    companion object {
+        // Valeurs possibles du slider "courses par coupe" (non-linéaires : le Slider travaille sur l'index).
+        val RACES_PER_COUPE_OPTIONS = listOf(3, 4, 5, 6, 8, 12, 16, 32)
+    }
 
     // Liste des circuits sélectionnés (TRACK uniquement)
     private val _selectedTracks = MutableStateFlow(TrackRepository.trackItems)
@@ -65,8 +73,18 @@ class TrackViewModel : ViewModel() {
     // Courses écoulées depuis le début de la session ; une coupe = racesPerCoupe courses.
     private val _racesInCoupe = MutableStateFlow(0)
 
-    // SNES terminées dans la coupe courante ; quota d'une map SNES au plus par coupe.
+    // SNES terminées dans la coupe courante ; comparées à _maxSnesPerCoupe dans pickRandomMap.
     private val _snesDrawnInCoupe = MutableStateFlow(0)
+
+    // Quota de maps SNES par coupe (slider réglages) : 0..4 puis RANDOM (aucun filtrage).
+    // Valeur en mémoire uniquement, comme _racesPerCoupe.
+    private val _maxSnesPerCoupe = MutableStateFlow(SnesMaxPerCoupe.ONE)
+    val maxSnesPerCoupe: StateFlow<SnesMaxPerCoupe> = _maxSnesPerCoupe
+
+    // Suppression "en bloc" : si activé, une course SNES retire les 10 circuits SNES du pool
+    // au lieu de seulement la série du circuit tiré.
+    private val _deleteSnesInBlock = MutableStateFlow(false)
+    val deleteSnesInBlock: StateFlow<Boolean> = _deleteSnesInBlock
 
     // Index de la destination dans TrackRepository.trackItems pour le second spinner
     private val _destinationTargetIndex = MutableStateFlow(-1)
@@ -159,6 +177,13 @@ class TrackViewModel : ViewModel() {
             _selectedConnections.value = _selectedConnections.value.filter { it.start != combo.start }
             return
         }
+        // Suppression en bloc : une SNES tirée retire les 10 circuits SNES du pool d'un coup.
+        if (item.isSnes && _deleteSnesInBlock.value) {
+            _selectedTracks.value = _selectedTracks.value.filterNot { it.start.isSnesOrDefault() }
+            _selectedConnections.value = _selectedConnections.value.filterNot { it.start.isSnesOrDefault() }
+            Log.d("lubenard", "completeRace: suppression en bloc — tous les circuits SNES retires")
+            return
+        }
         val members = item.seriesMembers()
         _selectedTracks.value = _selectedTracks.value.filterNot { it.start.toTrackItem() in members }
         _selectedConnections.value = _selectedConnections.value.filterNot { it.start.toTrackItem() in members }
@@ -224,8 +249,13 @@ class TrackViewModel : ViewModel() {
 
         pendingDestinations = null
 
-        val available = if (_snesDrawnInCoupe.value > 0) {
-            // Quota SNES de la coupe déjà consommé : les SNES restantes sont exclues du tirage.
+        val snesQuotaReached = when (val maxSnes = _maxSnesPerCoupe.value) {
+            SnesMaxPerCoupe.RANDOM -> false
+            SnesMaxPerCoupe.ZERO -> true
+            else -> _snesDrawnInCoupe.value >= maxSnes.ordinal
+        }
+        val available = if (snesQuotaReached) {
+            // Quota SNES de la coupe consommé : les SNES restantes sont exclues du tirage.
             currentSelectedTracks.filterNot { it.start.isSnesOrDefault() }
         } else {
             currentSelectedTracks
@@ -368,6 +398,16 @@ class TrackViewModel : ViewModel() {
     }
 
     fun updateRacesPerCoupe(value: Int) {
-        _racesPerCoupe.value = value.coerceIn(2, 10)
+        if (value in RACES_PER_COUPE_OPTIONS) {
+            _racesPerCoupe.value = value
+        }
+    }
+
+    fun updateMaxSnesPerCoupe(value: SnesMaxPerCoupe) {
+        _maxSnesPerCoupe.value = value
+    }
+
+    fun updateDeleteSnesInBlock(value: Boolean) {
+        _deleteSnesInBlock.value = value
     }
 }
