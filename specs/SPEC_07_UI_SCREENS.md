@@ -125,6 +125,9 @@ fun SettingsScreen(
 - TopAppBar "Paramètres"
 - **Thème :** 3 `FilterChip` (Système / Clair / Sombre)
 - **BiasSlider :** connecté à `vm.generationBias`
+- **Popup circuit :** `Switch` connecté à `settingsViewModel.isPopupEnabled`
+- **Maps SNES :** `Switch` connecté à `vm.snesEnabled` (action de lot)
+- **Courses par coupe :** `Slider` 2..10 (pas de 1), défaut 4, connecté à `vm.racesPerCoupe` / `vm.updateRacesPerCoupe` — pilote le quota SNES (SPEC_05 §4)
 - Pied de page : version + `BuildConfig.COMMIT_SHA`
 
 ## 6. ProfileCreationPopup — `ui/screens/ProfileCreationPopup.kt`

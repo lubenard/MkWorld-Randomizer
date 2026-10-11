@@ -22,6 +22,15 @@
 | `_isSecondSpinnerReady` | `StateFlow<Boolean>` | `isSecondSpinnerReady` | `false` | 2e spinner prêt |
 | `selectedTrackIndex` | `MutableStateFlow<Int>` | (direct) | `-1` | Index dans selectedTracks pour l'animation |
 
+SNES & coupe (voir `SPEC_05` §1⁄§4) :
+
+| Champ privé | Type Flow | Public | Initial | Description |
+|---|---|---|---|---|
+| `_snesEnabled` | `StateFlow<Boolean>` | `snesEnabled` | `true` | SNES présentes dans le pool (in-memory) |
+| `_racesPerCoupe` | `StateFlow<Int>` | `racesPerCoupe` | `4` | Courses par coupe (slider réglages, in-memory) |
+| `_racesInCoupe` | `StateFlow<Int>` | (privé) | `0` | Courses écoulées depuis le début de session |
+| `_snesDrawnInCoupe` | `StateFlow<Int>` | (privé) | `0` | SNES terminées dans la coupe courante (quota ≤ 1) |
+
 ### Internal state
 ```kotlin
 private var pendingDestinations: List<TrackItems>? = null
@@ -44,6 +53,8 @@ private var pendingDestinations: List<TrackItems>? = null
 | `deleteCircuit(circuit: TrackCombo?)` | Supprime un élément du pool |
 | `updateDeleteTrackAfterCompletion(Boolean)` | Change le mode auto-delete |
 | `updateGenerationBias(Float)` | Change le biais |
+| `updateRacesPerCoupe(Int)` | Change `_racesPerCoupe` (clampé 2..10) |
+| `setSnesEnabled(Boolean)` | Action de lot : active/désactive les 10 SNES d'un coup |
 | `transformConnectionsToList(Map)` | Utilitaire : convertit la map en `List<TrackCombo>` |
 
 ## 2. ScoreViewModel — `viewmodels/ScoreViewModel.kt`

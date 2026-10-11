@@ -12,6 +12,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Slider
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -19,6 +20,9 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -29,6 +33,7 @@ import com.escatrag.mkworldrandomiser.ui.composables.BiasSlider
 import com.escatrag.mkworldrandomiser.viewmodels.SettingsViewModel
 import com.escatrag.mkworldrandomiser.viewmodels.ThemeMode
 import com.escatrag.mkworldrandomiser.viewmodels.TrackViewModel
+import kotlin.math.roundToInt
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -115,6 +120,38 @@ fun SettingsScreen(vm: TrackViewModel, settingsViewModel: SettingsViewModel, pad
                 Switch(
                     checked = snesEnabled,
                     onCheckedChange = { vm.setSnesEnabled(it) }
+                )
+            }
+
+            val racesPerCoupe by vm.racesPerCoupe.collectAsState()
+            Column(modifier = Modifier.fillMaxWidth()) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = stringResource(R.string.courses_par_coupe),
+                            style = MaterialTheme.typography.bodyLarge
+                        )
+                        Text(
+                            text = stringResource(R.string.courses_par_coupe_description),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                    Text(
+                        text = "$racesPerCoupe",
+                        style = MaterialTheme.typography.titleLarge
+                    )
+                }
+                var localCoupe by remember { mutableStateOf(racesPerCoupe.toFloat()) }
+                Slider(
+                    value = localCoupe,
+                    onValueChange = { localCoupe = it },
+                    onValueChangeFinished = { vm.updateRacesPerCoupe(localCoupe.roundToInt()) },
+                    valueRange = 2f..10f,
+                    steps = 7
                 )
             }
 

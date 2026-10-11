@@ -57,6 +57,17 @@ class TrackViewModel : ViewModel() {
     private val _snesEnabled = MutableStateFlow(true)
     val snesEnabled: StateFlow<Boolean> = _snesEnabled
 
+    // Coupe : nombre de courses avant rotation du quota SNES. Modifiable via le slider des réglages.
+    // Valeur en mémoire uniquement, comme _snesEnabled.
+    private val _racesPerCoupe = MutableStateFlow(4)
+    val racesPerCoupe: StateFlow<Int> = _racesPerCoupe
+
+    // Courses écoulées depuis le début de la session ; une coupe = racesPerCoupe courses.
+    private val _racesInCoupe = MutableStateFlow(0)
+
+    // SNES terminées dans la coupe courante ; quota d'une map SNES au plus par coupe.
+    private val _snesDrawnInCoupe = MutableStateFlow(0)
+
     // Index de la destination dans TrackRepository.trackItems pour le second spinner
     private val _destinationTargetIndex = MutableStateFlow(-1)
     val destinationTargetIndex: StateFlow<Int> = _destinationTargetIndex
@@ -111,6 +122,16 @@ class TrackViewModel : ViewModel() {
     }
 
     fun completeRace(result: TrackCombo) {
+        // La course est jouée : la coupe avance dans tous les cas (même si le switch
+        // de suppression est off). Une map SNES terminée consomme le quota de la coupe.
+        _racesInCoupe.value = _racesInCoupe.value + 1
+        if (result.start.isSnesOrDefault()) {
+            _snesDrawnInCoupe.value = _snesDrawnInCoupe.value + 1
+        }
+        // Fin de coupe : rotation, le quota SNES repart de zéro.
+        if (_racesInCoupe.value % _racesPerCoupe.value == 0) {
+            _snesDrawnInCoupe.value = 0
+        }
         viewModelScope.launch {
             delay(3000L)
             if (!_deleteTrackAfterCompletion.value) {
@@ -203,7 +224,12 @@ class TrackViewModel : ViewModel() {
 
         pendingDestinations = null
 
-        val available = currentSelectedTracks
+        val available = if (_snesDrawnInCoupe.value > 0) {
+            // Quota SNES de la coupe déjà consommé : les SNES restantes sont exclues du tirage.
+            currentSelectedTracks.filterNot { it.start.isSnesOrDefault() }
+        } else {
+            currentSelectedTracks
+        }
         if (available.isEmpty()) {
             Log.w("lubenard", "pickRandomMap: tous les circuits deja joues, abandon")
             return
@@ -287,6 +313,8 @@ class TrackViewModel : ViewModel() {
 
     fun selectAllTracks(includeRoutes: Boolean) {
         _selectedTracks.value = TrackRepository.trackItems
+        _racesInCoupe.value = 0
+        _snesDrawnInCoupe.value = 0
         if (includeRoutes) {
             val tracksInPool = _selectedTracks.value.map { it.start }
             _selectedConnections.value = transformConnectionsToList(TrackRepository.connections)
@@ -299,6 +327,8 @@ class TrackViewModel : ViewModel() {
     fun clearAllTracks() {
         _selectedTracks.value = mutableListOf()
         _selectedConnections.value = mutableListOf()
+        _racesInCoupe.value = 0
+        _snesDrawnInCoupe.value = 0
     }
 
     fun transformConnectionsToList(connections: Map<TrackItems, List<TrackItems>>): List<TrackCombo> {
@@ -335,5 +365,9 @@ class TrackViewModel : ViewModel() {
 
     fun updateGenerationBias(newValue: Float) {
         _generationBias.value = newValue
+    }
+
+    fun updateRacesPerCoupe(value: Int) {
+        _racesPerCoupe.value = value.coerceIn(2, 10)
     }
 }

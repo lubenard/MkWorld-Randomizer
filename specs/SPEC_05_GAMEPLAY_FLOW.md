@@ -121,12 +121,21 @@ mensuelles de `ScoreViewModel` (qui est persistant) : celles-ci ne sont **persis
 
 ### Coupe
 
-**4 courses consécutives.** Une session en compte **4**.
+**4 courses consécutives par défaut**, réglable via le slider « Courses par coupe » des
+réglages (2 à 10, valeur en mémoire uniquement, repart de 4 à chaque lancement). Une session
+en compte **4** à défaut.
 
-- **Aucune logique en code ne s'appuie sur la coupe.** Il n'existe ni compteur, ni StateFlow,
-  ni affichage : c'est une notion documentaire, un découpage mental de la rotation.
-- Une course = un circuit. Un **trajet compte pour une course** : `completeRace()` est appelé une
-  fois par course, pas une fois par piste.
+La coupe porte la **régulation SNES** : une map SNES est tirée **au plus 1 fois par coupe**
+(quota). Les compteurs `_racesInCoupe`, `_snesDrawnInCoupe` et `_racesPerCoupe` sont en mémoire :
+
+- `completeRace()` (`TrackViewModel.kt:124`) incrémente `_racesInCoupe` à chaque course
+  terminée. Un **trajet compte pour une course**, `completeRace()` est appelé une fois par
+  course, pas une fois par piste.
+- si la course terminée est une SNES, `_snesDrawnInCoupe` passe à 1 pour la coupe en cours
+- à la rotation (`_racesInCoupe % _racesPerCoupe == 0`), le quota repart de zéro
+- `pickRandomMap()` (`TrackViewModel.kt:210`) exclut les SNES du pool de tirage tant que le
+  quota de la coupe n'est pas consommé
+- `selectAllTracks()` / `clearAllTracks()` remettent les deux compteurs à zéro (nouvelle session)
 
 ### Session
 
@@ -139,7 +148,7 @@ Une session de jeu dure environ **1 heure**, soit **4 coupes d'environ 16 course
 - `resetCourse()` **ne fait que changer de phase** : il ne touche pas au pool, donc il n'a pas
   d'effet sur la session en cours
 
-## 5. Auto-delete — `TrackViewModel.kt:316`
+## 5. Auto-delete — `TrackViewModel.kt:346`
 
 ```kotlin
 fun deleteCircuit(circuit: TrackCombo?)
@@ -149,7 +158,7 @@ Si `_deleteTrackAfterCompletion == true` :
 - `CONNECTION` → supprime de `_selectedConnections`
 - `TRACK` → supprime de `_selectedTracks` + toutes les connexions associées
 
-### Suppression de série — `TrackViewModel.kt:133`
+### Suppression de série — `TrackViewModel.kt:154`
 
 ```kotlin
 private fun removeSeriesFromPool(combo: TrackCombo)
@@ -164,7 +173,7 @@ est inchangé.
 Repli si `combo.start.toTrackItem()` renvoie `null` (Track absent du `TrackItems` enum) :
 suppression de l'entrée exacte et des connexions de même `start`, comme `deleteCircuit()`.
 
-### Désactivation globale des SNES — `TrackViewModel.kt:158`
+### Désactivation globale des SNES — `TrackViewModel.kt:179`
 
 ```kotlin
 fun setSnesEnabled(enabled: Boolean)
@@ -179,9 +188,9 @@ C'est une **action de lot qui ne fournit qu'une valeur initiale** : après coup,
 de l'écran Circuits se pilote indépendamment via `toggleTrack()`. Le switch n'est pas persisté,
 il repart de `true` à chaque lancement — exactement comme `_deleteTrackAfterCompletion`.
 
-**Note :** `completeRace()` (`TrackViewModel.kt:113`) fait un `delay(3000L)` puis supprime aussi. Il y a donc **deux chemins de suppression** qui peuvent intervenir : `completeRace()` (automatique, avec délai) et `deleteCircuit()` (appelé au clic sur "Recommencer"). Le second ne retire qu'un circuit, le premier toute sa série.
+**Note :** `completeRace()` (`TrackViewModel.kt:124`) fait un `delay(3000L)` puis supprime aussi. Il y a donc **deux chemins de suppression** qui peuvent intervenir : `completeRace()` (automatique, avec délai) et `deleteCircuit()` (appelé au clic sur "Recommencer"). Le second ne retire qu'un circuit, le premier toute sa série.
 
-## 6. Reset — `TrackViewModel.kt:278`
+## 6. Reset — `TrackViewModel.kt:304`
 
 ```kotlin
 fun resetCourse()
