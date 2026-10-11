@@ -83,7 +83,7 @@ class TrackViewModel : ViewModel() {
 
     // Suppression "en bloc" : si activé, une course SNES retire les 10 circuits SNES du pool
     // au lieu de seulement la série du circuit tiré.
-    private val _deleteSnesInBlock = MutableStateFlow(false)
+    private val _deleteSnesInBlock = MutableStateFlow(true)
     val deleteSnesInBlock: StateFlow<Boolean> = _deleteSnesInBlock
 
     // Index de la destination dans TrackRepository.trackItems pour le second spinner
