@@ -8,8 +8,12 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
@@ -37,13 +41,26 @@ import kotlin.math.roundToInt
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SettingsScreen(vm: TrackViewModel, settingsViewModel: SettingsViewModel, padding: PaddingValues) {
+fun SettingsScreen(
+    vm: TrackViewModel,
+    settingsViewModel: SettingsViewModel,
+    onBack: () -> Unit,
+    padding: PaddingValues
+) {
     val themeMode by settingsViewModel.themeMode.collectAsState()
 
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(R.string.parametres)) },
+                navigationIcon = {
+                    IconButton(onClick = onBack) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = stringResource(R.string.cd_retour)
+                        )
+                    }
+                },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
                     titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
@@ -73,6 +90,13 @@ fun SettingsScreen(vm: TrackViewModel, settingsViewModel: SettingsViewModel, pad
                     )
                 }
             }
+
+            Text(stringResource(R.string.biais_generation), style = MaterialTheme.typography.titleMedium)
+            Text(
+                text = stringResource(R.string.biais_generation_description),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
 
             val bias = vm.generationBias.collectAsState()
             BiasSlider(bias.value) {

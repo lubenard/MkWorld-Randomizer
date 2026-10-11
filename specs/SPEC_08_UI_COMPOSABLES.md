@@ -157,6 +157,7 @@ fun BiasSlider(value: Float, onValueChange: (Float) -> Unit)
 - État local `localValue` pour réactivité instantanée
 - Commit au ViewModel seulement dans `onValueChangeFinished`
 - Labels : « Circuits » | « 50 / 50 » | « Connections »
+- Padding vertical uniquement (pas de padding horizontal) pour s'aligner avec la légende affichée par `SettingsScreen`
 
 ## 9. TitleComposable — `ui/composables/TitleComposable.kt`
 

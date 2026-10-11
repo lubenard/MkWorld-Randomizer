@@ -123,7 +123,12 @@ class MainActivity : ComponentActivity() {
                     }
 
                     composable("settings") {
-                        SettingsScreen(trackViewModel, settingsVM, padding)
+                        SettingsScreen(
+                            trackViewModel,
+                            settingsVM,
+                            onBack = { navController.popBackStack() },
+                            padding = padding
+                        )
                     }
 
                     composable("scoreSelection") {

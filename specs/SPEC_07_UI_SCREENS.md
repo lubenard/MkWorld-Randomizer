@@ -117,14 +117,15 @@ fun MonthlyScoreScreen(viewModel: ScoreViewModel, navController: NavHostControll
 fun SettingsScreen(
     vm: TrackViewModel,
     settingsViewModel: SettingsViewModel,
+    onBack: () -> Unit,
     padding: PaddingValues
 )
 ```
 
 ### Comportement
-- TopAppBar "Paramètres"
+- TopAppBar "Paramètres" avec flèche retour (`navigationIcon` → `onBack` = `navController.popBackStack()`)
 - **Thème :** 3 `FilterChip` (Système / Clair / Sombre)
-- **BiasSlider :** connecté à `vm.generationBias`
+- **Biais de génération :** légende (`biais_generation` + `biais_generation_description`) puis `BiasSlider` connecté à `vm.generationBias`
 - **Popup circuit :** `Switch` connecté à `settingsViewModel.isPopupEnabled`
 - **Maps SNES :** `Switch` connecté à `vm.snesEnabled` (action de lot)
 - **Courses par coupe :** `Slider` 2..10 (pas de 1), défaut 4, connecté à `vm.racesPerCoupe` / `vm.updateRacesPerCoupe` — pilote le quota SNES (SPEC_05 §4)

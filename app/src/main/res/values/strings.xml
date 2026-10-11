@@ -77,6 +77,8 @@
     <string name="theme_systeme">Système</string>
     <string name="theme_clair">Clair</string>
     <string name="theme_sombre">Sombre</string>
+    <string name="biais_generation">Biais de génération</string>
+    <string name="biais_generation_description">Glisse vers Circuits ou Connexions pour orienter le tirage.</string>
     <string name="version_app">Version 1.0 - Mario Kart World App - %1$s</string>
     <string name="classement">CLASSEMENT</string>
     <string name="cd_reset_scores">Réinitialiser les scores</string>
@@ -125,6 +127,7 @@
 
     <string name="selectionne">Sélectionné !</string>
     <string name="fermer">Fermer</string>
+    <string name="cd_retour">Retour</string>
     <string name="voir_popup_circuit">Voir la popup de circuit</string>
     <string name="voir_popup_circuit_description">Afficher ou pas la popup de circuit</string>
     <string name="snes_maps">Activer les maps SNES</string>
