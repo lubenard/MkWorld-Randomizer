@@ -8,10 +8,9 @@ import com.escatrag.mkworldrandomiser.backend.TrackCombo
 import com.escatrag.mkworldrandomiser.backend.TrackComboType
 import com.escatrag.mkworldrandomiser.backend.TrackItems
 import com.escatrag.mkworldrandomiser.backend.TrackRepository
-import com.escatrag.mkworldrandomiser.backend.isSnes
 import com.escatrag.mkworldrandomiser.backend.isSnesOrDefault
 import com.escatrag.mkworldrandomiser.backend.map
-import com.escatrag.mkworldrandomiser.backend.seriesMembers
+import com.escatrag.mkworldrandomiser.backend.removalTargets
 import com.escatrag.mkworldrandomiser.backend.toTrackItem
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -81,8 +80,9 @@ class TrackViewModel : ViewModel() {
     private val _maxSnesPerCoupe = MutableStateFlow(SnesMaxPerCoupe.ONE)
     val maxSnesPerCoupe: StateFlow<SnesMaxPerCoupe> = _maxSnesPerCoupe
 
-    // Suppression "en bloc" : si activé, une course SNES retire les 10 circuits SNES du pool
-    // au lieu de seulement la série du circuit tiré.
+    // Suppression "en bloc" : si activé, une course SNES retire toute la série du circuit tiré
+    // (ex. « Circuit Mario 1 » retire « Circuit Mario 2 » et « Circuit Mario 3 »), sans toucher
+    // aux autres séries SNES. Désactivé : seul le circuit tiré est retiré du pool.
     private val _deleteSnesInBlock = MutableStateFlow(true)
     val deleteSnesInBlock: StateFlow<Boolean> = _deleteSnesInBlock
 
@@ -166,8 +166,11 @@ class TrackViewModel : ViewModel() {
     }
 
     /**
-     * Retire du pool toute la série du circuit tiré : « Circuit Mario 2 (SNES) » retire
-     * Circuit Mario 1, 2 et 3 du tirage, sans toucher au « Circuit Mario » de Mario Kart World.
+     * Retire du pool le circuit tiré, ou sa série entière si la suppression en bloc est activée.
+     *
+     * Suppression en bloc : « Circuit Mario 2 (SNES) » retire Circuit Mario 1, 2 et 3,
+     * sans toucher aux autres circuits SNES ni au « Circuit Mario » de Mario Kart World.
+     * Désactivée : seul le circuit exact est retiré.
      */
     private fun removeSeriesFromPool(combo: TrackCombo) {
         val item = combo.start.toTrackItem()
@@ -177,17 +180,10 @@ class TrackViewModel : ViewModel() {
             _selectedConnections.value = _selectedConnections.value.filter { it.start != combo.start }
             return
         }
-        // Suppression en bloc : une SNES tirée retire les 10 circuits SNES du pool d'un coup.
-        if (item.isSnes && _deleteSnesInBlock.value) {
-            _selectedTracks.value = _selectedTracks.value.filterNot { it.start.isSnesOrDefault() }
-            _selectedConnections.value = _selectedConnections.value.filterNot { it.start.isSnesOrDefault() }
-            Log.d("lubenard", "completeRace: suppression en bloc — tous les circuits SNES retires")
-            return
-        }
-        val members = item.seriesMembers()
+        val members = item.removalTargets(_deleteSnesInBlock.value)
         _selectedTracks.value = _selectedTracks.value.filterNot { it.start.toTrackItem() in members }
         _selectedConnections.value = _selectedConnections.value.filterNot { it.start.toTrackItem() in members }
-        Log.d("lubenard", "completeRace: ${members.size} circuit(s) de la serie '${item.series}' retires — ${combo.start.text}")
+        Log.d("lubenard", "completeRace: ${members.size} circuit(s) retire(s) — ${combo.start.text}")
     }
 
     /**

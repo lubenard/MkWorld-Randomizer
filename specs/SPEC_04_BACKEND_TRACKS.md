@@ -71,10 +71,11 @@ Extensions fournies :
 | `TrackItems.seriesMembers()` | Tous les circuits de la même série. `STANDALONE` → `listOf(this)`. |
 | `val TrackItems.isSnes` | `series != TrackSeries.STANDALONE`. |
 | `Track.isSnesOrDefault()` | Variante null-safe pour le pool : un `Track` inconnu du `TrackItems` enum est traité comme MKTW. |
+| `TrackItems.removalTargets(Boolean)` | Circuits à retirer après une course : la série entière si SNES **et** switch groupe actif, sinon le circuit seul. |
 
-**Unique consommateur** : `TrackViewModel.removeSeriesFromPool()`, qui retire toute la série du
-circuit tiré du pool (cf. `SPEC_05` §5). Un `STANDALONE` n'appartenant qu'à lui-même, la
-suppression de série ne change rien au comportement des circuits MKW.
+**Consommateur** : `TrackViewModel.removeSeriesFromPool()`, qui retire du pool les circuits
+retournés par `removalTargets()` (cf. `SPEC_05` §5). Un `STANDALONE` n'appartenant qu'à lui-même,
+la suppression de série ne change rien au comportement des circuits MKW.
 
 ## 2. Mappers — Extensions Shadow
 

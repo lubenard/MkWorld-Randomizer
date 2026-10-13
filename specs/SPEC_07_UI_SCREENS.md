@@ -130,7 +130,7 @@ fun SettingsScreen(
 - **Maps SNES :** `Switch` connecté à `vm.snesEnabled` (action de lot)
 - **Courses par coupe :** `Slider` à valeurs non-linéaires `3, 4, 5, 6, 8, 12, 16, 32` (le curseur travaille sur l'index 0..7 via `TrackViewModel.RACES_PER_COUPE_OPTIONS`), défaut 4, connecté à `vm.racesPerCoupe` / `vm.updateRacesPerCoupe` — pilote le quota SNES (SPEC_05 §4)
 - **Max de maps SNES par coupe :** `Slider` 0..5 (positions 0, 1, 2, 3, 4, Aléatoire), connecté à `vm.maxSnesPerCoupe` / `vm.updateMaxSnesPerCoupe`
-- **Supprimer en bloc les SNES :** `Switch` connecté à `vm.deleteSnesInBlock` / `vm.updateDeleteSnesInBlock`
+- **Supprimer le groupe des SNES :** `Switch` connecté à `vm.deleteSnesInBlock` / `vm.updateDeleteSnesInBlock` (activé : retire la série du circuit SNES tiré ; désactivé : seulement le circuit tiré)
 - Pied de page : version + `BuildConfig.COMMIT_SHA`
 
 ## 6. ProfileCreationPopup — `ui/screens/ProfileCreationPopup.kt`

@@ -137,6 +137,6 @@
     <string name="max_snes_par_coupe">Max de maps SNES par coupe</string>
     <string name="max_snes_par_coupe_description">Limite le nombre de circuits SNES tirés par coupe (0 = aucun). « Aléatoire » : aucun filtrage.</string>
     <string name="max_snes_aleatoire">Aléatoire</string>
-    <string name="supprimer_snes_en_bloc">Supprimer en bloc les circuits SNES</string>
-    <string name="supprimer_snes_en_bloc_description">Activé : tirer une SNES retire les 10 circuits SNES du pool. Désactivé : seule la série du circuit tiré est retirée (comportement actuel).</string>
+    <string name="supprimer_snes_en_bloc">Supprimer le groupe des circuits SNES</string>
+    <string name="supprimer_snes_en_bloc_description">Activé : tirer un circuit SNES retire aussi ses variantes (Circuit Mario 1 retire 2 et 3), sans toucher aux autres circuits SNES. Désactivé : seul le circuit tiré est retiré. Remis à ON à chaque lancement.</string>
 </resources>
