@@ -190,7 +190,7 @@ fun TrackSelectionScreen(
                 //.padding(padding)
                 .padding(horizontal = 16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
-            contentPadding = PaddingValues(bottom = 16.dp)
+            contentPadding = PaddingValues(bottom = padding.calculateBottomPadding() + 16.dp)
         ) {
             // 3. BOUTONS TOUT ACTIVER / DÉSACTIVER
             item {
