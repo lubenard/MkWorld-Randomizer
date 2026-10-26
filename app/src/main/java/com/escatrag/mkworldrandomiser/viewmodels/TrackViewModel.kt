@@ -3,6 +3,7 @@ package com.escatrag.mkworldrandomiser.viewmodels
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.escatrag.mkworldrandomiser.backend.SnesRemovalMode
 import com.escatrag.mkworldrandomiser.backend.Track
 import com.escatrag.mkworldrandomiser.backend.TrackCombo
 import com.escatrag.mkworldrandomiser.backend.TrackComboType
@@ -80,11 +81,11 @@ class TrackViewModel : ViewModel() {
     private val _maxSnesPerCoupe = MutableStateFlow(SnesMaxPerCoupe.ONE)
     val maxSnesPerCoupe: StateFlow<SnesMaxPerCoupe> = _maxSnesPerCoupe
 
-    // Suppression "en bloc" : si activé, une course SNES retire toute la série du circuit tiré
-    // (ex. « Circuit Mario 1 » retire « Circuit Mario 2 » et « Circuit Mario 3 »), sans toucher
-    // aux autres séries SNES. Désactivé : seul le circuit tiré est retiré du pool.
-    private val _deleteSnesInBlock = MutableStateFlow(true)
-    val deleteSnesInBlock: StateFlow<Boolean> = _deleteSnesInBlock
+    // Suppression des circuits SNES après une course (slider réglages) :
+    // OFF = seul le circuit tiré, SERIES = toute sa série, ALL_SNES = toutes les SNES du tirage.
+    // Valeur en mémoire uniquement : elle repart de ALL_SNES à chaque lancement de l'app.
+    private val _snesRemovalMode = MutableStateFlow(SnesRemovalMode.ALL_SNES)
+    val snesRemovalMode: StateFlow<SnesRemovalMode> = _snesRemovalMode
 
     // Index de la destination dans TrackRepository.trackItems pour le second spinner
     private val _destinationTargetIndex = MutableStateFlow(-1)
@@ -166,11 +167,12 @@ class TrackViewModel : ViewModel() {
     }
 
     /**
-     * Retire du pool le circuit tiré, ou sa série entière si la suppression en bloc est activée.
+     * Retire du pool le circuit tiré, selon le mode de suppression SNES courant.
      *
-     * Suppression en bloc : « Circuit Mario 2 (SNES) » retire Circuit Mario 1, 2 et 3,
-     * sans toucher aux autres circuits SNES ni au « Circuit Mario » de Mario Kart World.
-     * Désactivée : seul le circuit exact est retiré.
+     * - OFF : seul le circuit exact est retiré.
+     * - SERIES : « Circuit Mario 2 (SNES) » retire Circuit Mario 1, 2 et 3,
+     *   sans toucher aux autres circuits SNES ni au « Circuit Mario » de Mario Kart World.
+     * - ALL_SNES : toutes les maps SNES restantes sont retirées du tirage.
      */
     private fun removeSeriesFromPool(combo: TrackCombo) {
         val item = combo.start.toTrackItem()
@@ -180,10 +182,13 @@ class TrackViewModel : ViewModel() {
             _selectedConnections.value = _selectedConnections.value.filter { it.start != combo.start }
             return
         }
-        val members = item.removalTargets(_deleteSnesInBlock.value)
+        val members = item.removalTargets(_snesRemovalMode.value)
         _selectedTracks.value = _selectedTracks.value.filterNot { it.start.toTrackItem() in members }
         _selectedConnections.value = _selectedConnections.value.filterNot { it.start.toTrackItem() in members }
-        Log.d("lubenard", "completeRace: ${members.size} circuit(s) retire(s) — ${combo.start.text}")
+        Log.d(
+            "lubenard",
+            "completeRace: ${members.size} circuit(s) retire(s) [mode=${_snesRemovalMode.value}] — ${combo.start.text}"
+        )
     }
 
     /**
@@ -403,7 +408,7 @@ class TrackViewModel : ViewModel() {
         _maxSnesPerCoupe.value = value
     }
 
-    fun updateDeleteSnesInBlock(value: Boolean) {
-        _deleteSnesInBlock.value = value
+    fun updateSnesRemovalMode(value: SnesRemovalMode) {
+        _snesRemovalMode.value = value
     }
 }

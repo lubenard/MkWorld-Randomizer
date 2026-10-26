@@ -31,9 +31,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.escatrag.mkworldrandomiser.BuildConfig
 import com.escatrag.mkworldrandomiser.R
+import com.escatrag.mkworldrandomiser.backend.SnesRemovalMode
 import com.escatrag.mkworldrandomiser.ui.composables.BiasSlider
 import com.escatrag.mkworldrandomiser.viewmodels.SettingsViewModel
 import com.escatrag.mkworldrandomiser.viewmodels.SnesMaxPerCoupe
@@ -230,25 +232,38 @@ fun SettingsScreen(
                 )
             }
 
-            val deleteSnesInBlock by vm.deleteSnesInBlock.collectAsState()
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        text = stringResource(R.string.supprimer_snes_en_bloc),
-                        style = MaterialTheme.typography.bodyLarge
-                    )
-                    Text(
-                        text = stringResource(R.string.supprimer_snes_en_bloc_description),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
+            val snesRemovalMode by vm.snesRemovalMode.collectAsState()
+            Column(modifier = Modifier.fillMaxWidth()) {
+                Text(
+                    text = stringResource(R.string.supprimer_snes_en_bloc),
+                    style = MaterialTheme.typography.bodyLarge
+                )
+                Text(
+                    text = stringResource(R.string.supprimer_snes_en_bloc_description),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                var localMode by remember(snesRemovalMode) {
+                    mutableStateOf(snesRemovalMode.ordinal.toFloat())
                 }
-                Switch(
-                    checked = deleteSnesInBlock,
-                    onCheckedChange = { vm.updateDeleteSnesInBlock(it) }
+                Slider(
+                    value = localMode,
+                    onValueChange = { localMode = it },
+                    onValueChangeFinished = {
+                        vm.updateSnesRemovalMode(SnesRemovalMode.entries[localMode.roundToInt()])
+                    },
+                    valueRange = 0f..2f,
+                    steps = 1
+                )
+                Text(
+                    text = when (snesRemovalMode) {
+                        SnesRemovalMode.OFF -> stringResource(R.string.snes_suppression_desactive)
+                        SnesRemovalMode.SERIES -> stringResource(R.string.snes_suppression_active)
+                        SnesRemovalMode.ALL_SNES -> stringResource(R.string.snes_suppression_toutes)
+                    },
+                    style = MaterialTheme.typography.titleMedium,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth()
                 )
             }
 

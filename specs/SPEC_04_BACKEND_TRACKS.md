@@ -71,7 +71,11 @@ Extensions fournies :
 | `TrackItems.seriesMembers()` | Tous les circuits de la même série. `STANDALONE` → `listOf(this)`. |
 | `val TrackItems.isSnes` | `series != TrackSeries.STANDALONE`. |
 | `Track.isSnesOrDefault()` | Variante null-safe pour le pool : un `Track` inconnu du `TrackItems` enum est traité comme MKTW. |
-| `TrackItems.removalTargets(Boolean)` | Circuits à retirer après une course : la série entière si SNES **et** switch groupe actif, sinon le circuit seul. |
+| `TrackItems.removalTargets(SnesRemovalMode)` | Circuits à retirer après une course : le circuit seul (`OFF`), sa série (`SERIES`) ou toutes les SNES du tirage (`ALL_SNES`). |
+
+`SnesRemovalMode` (enum du même fichier) : `OFF`, `SERIES`, `ALL_SNES`. Les deux derniers modes
+n'ont d'effet que sur les circuits SNES ; un circuit `STANDALONE` (MKW) reste toujours seul dans
+sa série.
 
 **Consommateur** : `TrackViewModel.removeSeriesFromPool()`, qui retire du pool les circuits
 retournés par `removalTargets()` (cf. `SPEC_05` §5). Un `STANDALONE` n'appartenant qu'à lui-même,

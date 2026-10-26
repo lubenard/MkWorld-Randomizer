@@ -55,7 +55,7 @@ L'écran `MainScreen` alterne entre 3 phases définies par `TrackViewModel.phase
 ```
 
 - `SpinWheel` avec `simpleAnimation = true` (15 pages, décélération)
-- À la fin : confetti, `completeRace()` (retire la piste après 3s si auto-delete activé — et, pour une course `TRACK`, la piste ou sa série de variantes selon le switch « groupe SNES » : cf. §5)
+- À la fin : confetti, `completeRace()` (retire la piste après 3s si auto-delete activé — et, pour une course `TRACK`, la piste, sa série ou toutes les SNES selon le mode « Suppression des circuits SNES » : cf. §5)
 - Actions : saisir les scores ou recommencer
 
 ### Phase 3 : DUAL_SPINNER (Double roue)
@@ -169,14 +169,18 @@ private fun removeSeriesFromPool(combo: TrackCombo)
 ```
 
 Appelée par `completeRace()` pour les courses `TRACK`. Elle retire du pool les circuits retournés
-par `TrackItems.removalTargets(deleteInBlock)` (`backend/TrackSeries.kt`) :
+par `TrackItems.removalTargets(_snesRemovalMode.value)` (`backend/TrackSeries.kt`). Le mode est
+piloté par le slider « Suppression des circuits SNES » des réglages (`_snesRemovalMode`, valeur en
+mémoire, défaut `ALL_SNES`) :
 
-- **Suppression en bloc activée** (`_deleteSnesInBlock`, switch « Supprimer le groupe des circuits
-  SNES » des réglages, valeur en mémoire, défaut `true`) et circuit SNES : retire **toute la série**
-  du circuit tiré — « Circuit Mario 2 (SNES) » désactive Circuit Mario 1, 2 **et** 3 — **sans
-  toucher aux autres séries SNES** ni au « Circuit Mario » de Mario Kart World.
-- **Désactivée**, ou circuit MKW (`STANDALONE`, seul dans sa série) : retire **uniquement** le
-  circuit tiré.
+- **`OFF`** : retire **uniquement** le circuit tiré.
+- **`SERIES`** et circuit SNES : retire **toute la série** du circuit tiré — « Circuit Mario 2
+  (SNES) » désactive Circuit Mario 1, 2 **et** 3 — **sans toucher aux autres séries SNES** ni au
+  « Circuit Mario » de Mario Kart World.
+- **`ALL_SNES`** et circuit SNES : retire **toutes les maps SNES restantes** du tirage, toutes
+  séries confondues.
+- Un circuit MKW (`STANDALONE`, seul dans sa série) n'est jamais concerné par `SERIES` ou
+  `ALL_SNES` : seul le circuit tiré est retiré.
 
 Contrairement à `deleteCircuit()` qui ne retire que l'entrée exacte, `removeSeriesFromPool()`
 peut donc retirer plusieurs circuits. Repli si `combo.start.toTrackItem()` renvoie `null`
@@ -198,7 +202,7 @@ C'est une **action de lot qui ne fournit qu'une valeur initiale** : après coup,
 de l'écran Circuits se pilote indépendamment via `toggleTrack()`. Le switch n'est pas persisté,
 il repart de `true` à chaque lancement — exactement comme `_deleteTrackAfterCompletion`.
 
-**Note :** `completeRace()` (`TrackViewModel.kt:137`) fait un `delay(3000L)` puis supprime aussi. Il y a donc **deux chemins de suppression** qui peuvent intervenir : `completeRace()` (automatique, avec délai) et `deleteCircuit()` (appelé au clic sur "Recommencer"). Le second ne retire qu'un circuit, le premier retire le circuit tiré ou, selon le switch, toute sa série SNES.
+**Note :** `completeRace()` (`TrackViewModel.kt:137`) fait un `delay(3000L)` puis supprime aussi. Il y a donc **deux chemins de suppression** qui peuvent intervenir : `completeRace()` (automatique, avec délai) et `deleteCircuit()` (appelé au clic sur "Recommencer"). Le second ne retire qu'un circuit, le premier retire le circuit tiré, toute sa série SNES ou toutes les SNES selon `_snesRemovalMode`.
 
 ## 6. Reset — `TrackViewModel.kt:329`
 

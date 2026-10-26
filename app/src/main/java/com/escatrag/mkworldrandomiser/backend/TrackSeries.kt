@@ -31,15 +31,34 @@ fun TrackItems.seriesMembers(): List<TrackItems> =
 val TrackItems.isSnes: Boolean
     get() = series != TrackSeries.STANDALONE
 
+/** Comportement de suppression appliqué après une course SNES (slider des réglages). */
+enum class SnesRemovalMode {
+    /** Seul le circuit tiré est retiré du pool. */
+    OFF,
+
+    /** Toute la série du circuit tiré est retirée (ex. Mario 1 retire Mario 2 et 3). */
+    SERIES,
+
+    /** Toutes les autres maps SNES du tirage sont retirées. */
+    ALL_SNES
+}
+
 /**
  * Circuits à retirer du pool après avoir joué [this].
  *
- * - [deleteInBlock] vrai ET circuit SNES : toute la série (ex. « Circuit Mario 1 » retire
+ * - [SnesRemovalMode.OFF] : uniquement le circuit joué.
+ * - [SnesRemovalMode.SERIES] et circuit SNES : toute la série (ex. « Circuit Mario 1 » retire
  *   « Circuit Mario 2 » et « Circuit Mario 3 »), sans toucher aux autres séries SNES.
- * - Sinon : uniquement le circuit joué (les circuits MKW sont seuls dans leur série).
+ * - [SnesRemovalMode.ALL_SNES] et circuit SNES : toutes les maps SNES du tirage.
+ *
+ * Les circuits MKW (`STANDALONE`) sont toujours seuls dans leur série : ils ne sont jamais
+ * concernés par les modes SNES.
  */
-fun TrackItems.removalTargets(deleteInBlock: Boolean): List<TrackItems> =
-    if (deleteInBlock && isSnes) seriesMembers() else listOf(this)
+fun TrackItems.removalTargets(mode: SnesRemovalMode): List<TrackItems> = when {
+    !isSnes || mode == SnesRemovalMode.OFF -> listOf(this)
+    mode == SnesRemovalMode.SERIES -> seriesMembers()
+    else -> TrackItems.entries.filter { it.isSnes }
+}
 
 /** Version null-safe pour les circuits du pool : un Track inconnu est traité comme MKTW. */
 fun Track.isSnesOrDefault(): Boolean = toTrackItem()?.isSnes ?: false
