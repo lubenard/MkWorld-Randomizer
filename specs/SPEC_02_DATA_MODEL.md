@@ -44,12 +44,12 @@ enum class TrackComboType {
 enum class TrackItems(@StringRes val nameRes: Int, val imgRes: Int, val largeImgRes: Int) {
     CIRCUIT_MARIO_BROS(R.string.track_mario_bros, ...),
     TROPHEOPOLIS(...),
-    // ... 29 entries total
+    // ... 48 entries total
     ROUTE_ARC_EN_CIEL(R.string.track_route_arc_en_ciel, ...)
 }
 ```
 
-Les 29 pistes de Mario Kart World (Switch 2). Chaque entrée référence :
+Les 48 pistes disponibles (circuits Mario Kart World, variantes 1.9.0 et circuits SNES). Chaque entrée référence :
 - `nameRes` : `R.string.track_xxx` (nom français)
 - `imgRes` : `R.drawable.xxx` (icône 60×40dp)
 - `largeImgRes` : `R.drawable.large_xxx` (icône large pour le spinner)
@@ -127,7 +127,7 @@ enum class ThemeMode { SYSTEM, LIGHT, DARK }
 ```
 TrackRepository.trackItems : List<TrackCombo>
   → chaque TrackCombo a start = Track, type = TRACK, end = null
-  → 29 items (toutes les pistes)
+  → 48 items (toutes les pistes)
 
 TrackRepository.connections : Map<TrackItems, List<TrackItems>>
   → graphe dirigé : depuis un TrackItems, vers les destinations possibles

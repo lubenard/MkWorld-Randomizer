@@ -1,6 +1,6 @@
 # SPEC 04 — Backend des Circuits (Tracks)
 
-## 1. TrackItems — Les 40 Pistes
+## 1. TrackItems — Les 48 Pistes
 
 Enum complet dans `backend/TrackItems.kt`:
 
@@ -46,10 +46,18 @@ Enum complet dans `backend/TrackItems.kt`:
 | 38 | SNES_CHOCO_ISLAND_2 | `track_snes_choco_island_2` | `snes_choco_island_2` / `snes_choco_island_2` |
 | 39 | SNES_VANILLA_LAKE_1 | `track_snes_vanilla_lake_1` | `snes_vanilla_lake_1` / `snes_vanilla_lake_1` |
 | 40 | SNES_KOOPA_BEACH_1 | `track_snes_koopa_beach_1` | `snes_koopa_beach_1` / `snes_koopa_beach_1` |
+| 41 | CIRCUIT_MARIO_BROS_2 | `track_mario_bros_2` | `circuit_mario_bros_2` / `large_circuit_mario_bros_2` |
+| 42 | DESERT_SOLEIL_2 | `track_desert_soleil_2` | `desert_du_soleil_2` / `large_desert_du_soleil_2` |
+| 43 | SOUK_MASKASS_2 | `track_souk_maskass_2` | `souk_maskass_2` / `large_souk_maskass_2` |
+| 44 | STADE_WARIO_2 | `track_stade_wario_2` | `stade_warrio_2` / `large_stade_warrio_2` |
+| 45 | BATEAU_VOLANT_2 | `track_bateau_volant_2` | `bateau_volant_2` / `large_bateau_volant_2` |
+| 46 | ALPES_DK_2 | `track_alpes_dk_2` | `alpes_dk_2` / `large_alpes_dk_2` |
+| 47 | PLAGE_KOOPA_2 | `track_plage_koopa_2` | `plage_koopa_2` / `large_plage_koopa_2` |
+| 48 | CITE_FLEUR_SEL_2 | `track_cite_fleur_sel_2` | `cite_fleur_sel_2` / `large_cite_fleur_sel_2` |
 
-**Remarque :** 40 entrées au total, réparties en **30 circuits Mario Kart World** (#1–#30) et **10 circuits SNES** (#31–#40). Parmi les 30 MKW, 29 correspondent aux circuits officiels du jeu ; le 30e, `ROUTE_ARC_EN_CIEL`, est ajouté car absent de la liste officielle. Les 10 SNES ne font pas partie du circuit officiel Mario Kart World : ce sont des variantes d'anciennes cartouches, regroupées en 5 séries (cf. « Séries de variantes » ci-dessous).
+**Remarque :** 48 entrées au total, réparties en **30 circuits Mario Kart World** (#1–#30), **10 circuits SNES** (#31–#40) et **8 variantes de la mise à jour 1.9.0** (#41–#48). Parmi les 30 MKW, 29 correspondent aux circuits officiels du jeu ; le 30e, `ROUTE_ARC_EN_CIEL`, est ajouté car absent de la liste officielle. Les 10 SNES ne font pas partie du circuit officiel Mario Kart World : ce sont des variantes d'anciennes cartouches, regroupées en 5 séries (cf. « Séries de variantes » ci-dessous). Les 8 variantes `2` sont des circuits seuls, sans connexion dans le graphe.
 
-**Le champ `series`** — Signature de l'enum : `TrackItems(nameRes, imgRes, largeImgRes, series = TrackSeries.STANDALONE)`. Les 30 circuits MKW n'annotent rien et restent donc `STANDALONE`.
+**Le champ `series`** — Signature de l'enum : `TrackItems(nameRes, imgRes, largeImgRes, series = TrackSeries.STANDALONE)`. Les 38 circuits MKW (30 de base + 8 variantes 1.9.0) n'annotent rien et restent donc `STANDALONE`.
 
 ### Séries de variantes
 
@@ -57,7 +65,7 @@ Enum complet dans `backend/TrackItems.kt`:
 
 | Série | Membres | Taille |
 |---|---|---|
-| `STANDALONE` | les 30 circuits MKW, chacun seul dans sa série | 1 |
+| `STANDALONE` | les 38 circuits MKW (dont les 8 variantes 1.9.0), chacun seul dans sa série | 1 |
 | `SNES_MARIO_CIRCUIT` | `SNES_MARIO_CIRCUIT_1/2/3` | 3 |
 | `SNES_GHOST_VALLEY` | `SNES_GHOST_VALLEY_1/2/3` | 3 |
 | `SNES_CHOCO_ISLAND` | `SNES_CHOCO_ISLAND_1/2` | 2 |
@@ -109,7 +117,7 @@ object TrackRepository {
 
 ### `trackItems`
 
-`get() = TrackItems.entries.toList().map()` — les 40 pistes converties en `List<TrackCombo>` avec `type = TRACK`.
+`get() = TrackItems.entries.toList().map()` — les 48 pistes converties en `List<TrackCombo>` avec `type = TRACK`.
 
 ### `connections`
 

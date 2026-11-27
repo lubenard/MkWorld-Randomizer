@@ -42,7 +42,7 @@ fun TrackSelectionScreen(viewModel: TrackViewModel, padding: PaddingValues)
 - Barre de progression : `selectedCount / totalPoolCount`
 - Champ de recherche : filtre par nom (français, insensible à la casse)
 - Boutons « Tout activer » / « Tout désactiver »
-- Liste (`LazyColumn`) des 29 pistes, chaque carte contient :
+- Liste (`LazyColumn`) des 48 pistes, chaque carte contient :
   - Image de la piste (60×40dp) avec overlay sombre + ❌ si non sélectionnée
   - Switch pour activer/désactiver
   - Flèche dropdown pour déplier les connexions
@@ -72,7 +72,7 @@ fun RaceResultScreen(
 
 ### Comportement
 - Titre "Résultats de la course"
-- **Étape 1 :** Sélection des participants (max 4) via `LazyRow` de `FilterChip`
+- **Étape 1 :** Sélection des participants (sans limite) via `LazyRow` de `FilterChip`
 - **Étape 2 :** Classement final — clic sur chaque participant pour attribuer une position (cyclique : position suivante → désassigner)
 - Bouton « Enregistrer les scores » activé quand tous les participants ont un rang
 - `onClick` du bouton :

@@ -101,10 +101,7 @@ fun RaceResultScreen(
                             participants.remove(player)
                             rankings.remove(player.id)
                         } else {
-                            // Limite optionnelle à 4 joueurs max selon tes règles
-                            if (participants.size < 4) {
-                                participants.add(player)
-                            }
+                            participants.add(player)
                         }
                     },
                     label = { Text(player.name) },
